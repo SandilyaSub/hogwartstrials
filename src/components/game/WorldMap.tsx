@@ -8,10 +8,11 @@ interface WorldMapProps {
   onStartLevel: (worldId: number, levelIdx: number) => void;
   onOpenPetStore: () => void;
   onOpenShop?: () => void;
+  onOpenFeedback?: () => void;
   onResetGame: () => void;
 }
 
-const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onResetGame }: WorldMapProps) => {
+const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onResetGame }: WorldMapProps) => {
   const [expandedWorld, setExpandedWorld] = useState<number | null>(null);
   const [showMentor, setShowMentor] = useState(false);
   const { theme, toggleTheme } = useTheme();
