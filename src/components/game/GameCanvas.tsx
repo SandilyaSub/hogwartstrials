@@ -537,33 +537,82 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             ctx.textAlign = "center";
             ctx.fillText(p.label, bx + bw / 2, by - 4);
           }
-        } else {
-          // Default rectangular platform drawing
-          if (p.color) {
-            ctx.fillStyle = p.color;
-          } else {
-            const colors: Record<string, string> = {
-              normal: theme.platformColor,
-              moving: "#3a4a6a",
-              disappearing: p.timer && p.timer > 20 ? `rgba(100,80,60,${1 - (p.timer - 20) / 20})` : "#645040",
-              hazard: p.color || "#8a2020",
-              finish: "#c8a020",
-              chess: p.color || "#3a3a3a",
-              ice: "#8ac8e8",
-            };
-            ctx.fillStyle = colors[p.type] || theme.platformColor;
-          }
-          ctx.fillRect(p.x, p.y, p.w, p.h);
-
+        } else if (isFlyingCar && p.type === "hazard" && p.color !== "transparent") {
+          // Cloud-shaped hazards for flying car level
+          const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+          ctx.save();
+          ctx.globalAlpha = 0.85 + Math.sin(frameCount * 0.04 + p.x * 0.01) * 0.1;
+          ctx.fillStyle = "#c8c8d8";
+          // Main cloud puff
+          ctx.beginPath();
+          ctx.arc(cx, cy, p.w * 0.35, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx - p.w * 0.22, cy + 3, p.w * 0.25, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx + p.w * 0.22, cy + 2, p.w * 0.28, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx - p.w * 0.1, cy - p.h * 0.4, p.w * 0.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx + p.w * 0.12, cy - p.h * 0.35, p.w * 0.22, 0, Math.PI * 2);
+          ctx.fill();
           // Highlight
+          ctx.fillStyle = "#e8e8f0";
+          ctx.beginPath();
+          ctx.arc(cx - p.w * 0.05, cy - p.h * 0.2, p.w * 0.15, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else {
+          // Improved platform rendering with rounded corners and gradients
+          const colors: Record<string, string> = {
+            normal: theme.platformColor,
+            moving: "#3a4a6a",
+            disappearing: p.timer && p.timer > 20 ? `rgba(100,80,60,${1 - (p.timer - 20) / 20})` : "#645040",
+            hazard: p.color || "#8a2020",
+            finish: "#c8a020",
+            chess: p.color || "#3a3a3a",
+            ice: "#8ac8e8",
+          };
+          const baseColor = p.color || colors[p.type] || theme.platformColor;
+          const radius = Math.min(6, p.h / 2, p.w / 4);
+
+          // Platform body with rounded rect
+          ctx.beginPath();
+          ctx.roundRect(p.x, p.y, p.w, p.h, radius);
+          ctx.fillStyle = baseColor;
+          ctx.fill();
+
+          // Top highlight (subtle gradient feel)
+          ctx.beginPath();
+          ctx.roundRect(p.x, p.y, p.w, Math.min(4, p.h / 2), [radius, radius, 0, 0]);
           ctx.fillStyle = p.type === "finish" ? "#ffd700" : p.type === "hazard" ? "#ff4040" : theme.platformHighlight;
-          ctx.fillRect(p.x, p.y, p.w, 3);
+          ctx.globalAlpha = 0.6;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+
+          // Subtle border
+          if (p.type === "finish") {
+            ctx.strokeStyle = "#ffd700";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(p.x, p.y, p.w, p.h, radius);
+            ctx.stroke();
+            // Glow
+            ctx.shadowColor = "#ffd700";
+            ctx.shadowBlur = 12;
+            ctx.strokeStyle = "rgba(255,215,0,0.3)";
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+          }
         }
 
         // Labels for finish, hazards, dock
         if (p.type === "finish") {
           ctx.fillStyle = "#ffd700";
-          ctx.font = "14px Cinzel";
+          ctx.font = "14px Fredoka, sans-serif";
           ctx.textAlign = "center";
           ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 8);
         } else if (p.label && !isBoatPlatform) {
@@ -573,46 +622,79 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
-      // Draw enemies
+      // Draw enemies — emoji only, no boxes
       enemies.forEach(e => {
         if (e.y < -50) return;
         const defaultEmojis: Record<string, string> = { spider: "🕷️", dementor: "👻", deathEater: "💀", troll: "🧌", chess: "♟", quirrell: "🧙" };
         const emoji = e.emoji || defaultEmojis[e.type] || "👾";
-        ctx.fillStyle = "#222";
-        ctx.fillRect(e.x, e.y, e.w, e.h);
-        ctx.font = `${Math.max(14, e.w - 4)}px serif`;
+        const emojiSize = Math.max(18, e.w + 4);
+        // Subtle shadow/glow under enemy
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        ctx.fillStyle = e.type === "dementor" ? "#6a4aaa" : e.type === "chess" ? "#888" : "#ff4040";
+        ctx.beginPath();
+        ctx.ellipse(e.x + e.w / 2, e.y + e.h, e.w * 0.6, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Bobbing animation
+        const bob = Math.sin(frameCount * 0.06 + e.origX * 0.1) * 2;
+        ctx.font = `${emojiSize}px serif`;
         ctx.textAlign = "center";
-        ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + 5);
+        ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + emojiSize * 0.35 + bob);
       });
 
       // ─── Draw Boss ───
       if (isBossArena && bossData) {
         const bossW = 40, bossH = 50;
-        // Boss body
-        ctx.fillStyle = bossHitFlash > 0 ? "#fff" : bossData.color;
-        ctx.fillRect(bossX, bossY, bossW, bossH);
-        // Boss border glow
-        ctx.strokeStyle = bossHitFlash > 0 ? "#ff0" : "rgba(255,255,255,0.3)";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(bossX, bossY, bossW, bossH);
-        // Boss emoji
-        ctx.font = "28px serif";
+        // Boss shadow
+        ctx.save();
+        ctx.globalAlpha = 0.3;
+        ctx.fillStyle = bossData.color;
+        ctx.beginPath();
+        ctx.ellipse(bossX + bossW / 2, bossY + bossH + 4, bossW * 0.6, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Boss glow aura
+        ctx.save();
+        ctx.globalAlpha = 0.15 + Math.sin(frameCount * 0.05) * 0.05;
+        ctx.fillStyle = bossData.color;
+        ctx.beginPath();
+        ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Boss emoji (large, no box)
+        if (bossHitFlash > 0) {
+          ctx.save();
+          ctx.globalAlpha = 0.6;
+          ctx.fillStyle = "#fff";
+          ctx.beginPath();
+          ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+        ctx.font = "36px serif";
         ctx.textAlign = "center";
-        ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 8);
+        ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 12);
         // Boss name
-        ctx.font = "11px Cinzel";
+        ctx.font = "11px Fredoka, sans-serif";
         ctx.fillStyle = "#fff";
         ctx.fillText(bossData.name, bossX + bossW / 2, bossY - 28);
-        // Boss HP bar
+        // Boss HP bar (rounded)
         const hpW = 80, hpH = 6;
         const hpX = bossX + bossW / 2 - hpW / 2, hpY = bossY - 18;
+        ctx.beginPath();
+        ctx.roundRect(hpX, hpY, hpW, hpH, 3);
         ctx.fillStyle = "#333";
-        ctx.fillRect(hpX, hpY, hpW, hpH);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.roundRect(hpX, hpY, hpW * (bossHp / bossData.maxHp), hpH, 3);
         ctx.fillStyle = bossHp > bossData.maxHp * 0.3 ? "#e74c3c" : "#ff4444";
-        ctx.fillRect(hpX, hpY, hpW * (bossHp / bossData.maxHp), hpH);
-        ctx.strokeStyle = "#666";
+        ctx.fill();
+        ctx.strokeStyle = "#555";
         ctx.lineWidth = 1;
-        ctx.strokeRect(hpX, hpY, hpW, hpH);
+        ctx.beginPath();
+        ctx.roundRect(hpX, hpY, hpW, hpH, 3);
+        ctx.stroke();
       }
 
       // Draw projectiles
@@ -692,15 +774,28 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillText(profile.character?.emoji || "⚡", cx + carW / 2, cy + carH / 2 + 4);
       } else {
         const charColor = profile.character?.color || "#c0392b";
+        // Player shadow
+        ctx.save();
+        ctx.globalAlpha = 0.2;
+        ctx.fillStyle = "#000";
+        ctx.beginPath();
+        ctx.ellipse(px + PLAYER_W / 2, py + PLAYER_H + 2, PLAYER_W * 0.5, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Body (rounded)
         ctx.fillStyle = playerHitFlash > 0 ? "#fff" : charColor;
-        ctx.fillRect(px + 4, py, PLAYER_W - 8, PLAYER_H);
+        ctx.beginPath();
+        ctx.roundRect(px + 3, py + 6, PLAYER_W - 6, PLAYER_H - 6, 4);
+        ctx.fill();
+        // Head
         ctx.fillStyle = "#f0d0a0";
         ctx.beginPath();
-        ctx.arc(px + PLAYER_W / 2, py - 2, 8, 0, Math.PI * 2);
+        ctx.arc(px + PLAYER_W / 2, py + 2, 9, 0, Math.PI * 2);
         ctx.fill();
-        ctx.font = "10px serif";
+        // Character emoji above
+        ctx.font = "12px serif";
         ctx.textAlign = "center";
-        ctx.fillText(profile.character?.emoji || "⚡", px + PLAYER_W / 2, py - 12);
+        ctx.fillText(profile.character?.emoji || "⚡", px + PLAYER_W / 2, py - 10);
       }
 
       // Pet
@@ -710,11 +805,13 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillText(profile.pet.emoji, px + PLAYER_W + 8, py - 4 + Math.sin(frameCount * 0.1) * 3);
       }
 
-      // Particles
+      // Particles (rounded)
       particles.forEach(p => {
         ctx.globalAlpha = p.life / 20;
         ctx.fillStyle = p.color;
-        ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
       });
       ctx.globalAlpha = 1;
 
@@ -744,7 +841,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         // Lumos label
         ctx.fillStyle = "#fffae0";
         ctx.globalAlpha = 0.6;
-        ctx.font = "10px Cinzel";
+        ctx.font = "10px Fredoka, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("✨ Lumos", playerScreenX, playerScreenY - 50);
         ctx.globalAlpha = 1;
@@ -753,7 +850,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       // HUD
       ctx.fillStyle = "rgba(0,0,0,0.5)";
       ctx.fillRect(0, 0, W, isBossArena ? 60 : 36);
-      ctx.font = "14px Cinzel";
+      ctx.font = "14px Fredoka, sans-serif";
       ctx.fillStyle = "#c8a020";
       ctx.textAlign = "left";
       ctx.fillText(`World ${worldId}: ${level.name}`, 10, 24);
@@ -761,7 +858,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       if (isBossArena) {
         // Player HP bar
         ctx.fillStyle = "#aaa";
-        ctx.font = "10px Cinzel";
+        ctx.font = "10px Fredoka, sans-serif";
         ctx.fillText("HP", 10, 48);
         ctx.fillStyle = "#333";
         ctx.fillRect(30, 40, 120, 10);
@@ -782,7 +879,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.lineWidth = 1.5;
           ctx.strokeRect(sx, 34, 70, 22);
           ctx.fillStyle = ready ? "#fff" : "#555";
-          ctx.font = "10px Cinzel";
+          ctx.font = "10px Fredoka, sans-serif";
           ctx.fillText(`[${spell.key}] ${spell.emoji} ${spell.name}`, sx + 35, 49);
           // Cooldown overlay
           if (!ready) {

@@ -164,15 +164,14 @@ export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
 // ─── World 1 Level Generators ────────────────────────────
 
 function gen_1_1_HogwartsArrival(H: number): LevelData {
-  // Boat ride across the Black Lake to Hogwarts
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  const waterY = H - 60; // water surface level
+  const waterY = H - 60;
 
-  // Dock start - wooden pier
+  // Dock start
   platforms.push({ x: 0, y: waterY - 10, w: 120, h: 24, type: "normal", color: "#5a3a1a", label: "🏚️ Dock" });
 
-  // Boats floating on the water - gently bobbing (moving platforms)
+  // More boats across a longer lake
   const boats = [
     { x: 160, w: 100, moving: true },
     { x: 320, w: 90, moving: true },
@@ -184,34 +183,40 @@ function gen_1_1_HogwartsArrival(H: number): LevelData {
     { x: 1240, w: 100, moving: true },
     { x: 1400, w: 90, moving: false },
     { x: 1550, w: 100, moving: true },
+    { x: 1700, w: 85, moving: true },
+    { x: 1860, w: 100, moving: false },
+    { x: 2020, w: 90, moving: true },
+    { x: 2180, w: 95, moving: true },
   ];
 
   boats.forEach((b, i) => {
     const p: Platform = {
       x: b.x, y: waterY - 14, w: b.w, h: 18,
       type: b.moving ? "moving" : "normal",
-      color: "#6a4a2a", // dark wood color
-      label: i === 0 ? "⛵" : (i % 3 === 0 ? "🕯️" : ""),
+      color: "#6a4a2a",
+      label: i === 0 ? "⛵" : (i % 4 === 0 ? "🕯️" : ""),
     };
     if (b.moving) {
       p.origX = b.x;
       p.origY = waterY - 14;
       p.moveDir = i % 2 === 0 ? 1 : -1;
-      p.moveRange = 15 + (i % 3) * 8; // gentle bobbing
+      p.moveRange = 15 + (i % 3) * 8;
     }
     platforms.push(p);
   });
 
-  // Rocky outcrop mid-lake
+  // Rocky outcrops
   platforms.push({ x: 700, y: waterY - 50, w: 60, h: 14, type: "normal", color: "#4a4a4a", label: "🪨" });
+  platforms.push({ x: 1500, y: waterY - 45, w: 50, h: 14, type: "normal", color: "#4a4a4a", label: "🪨" });
 
-  // Giant squid tentacle hazard
+  // Squid tentacle hazards
   platforms.push({ x: 500, y: waterY - 30, w: 40, h: 12, type: "hazard", color: "#3a2a4a", label: "🦑" });
   platforms.push({ x: 1100, y: waterY - 25, w: 35, h: 12, type: "hazard", color: "#3a2a4a", label: "🦑" });
+  platforms.push({ x: 1800, y: waterY - 28, w: 38, h: 12, type: "hazard", color: "#3a2a4a", label: "🦑" });
 
   // Hogwarts dock finish
   platforms.push({
-    x: 1700, y: waterY - 20, w: 100, h: 24,
+    x: 2350, y: waterY - 20, w: 100, h: 24,
     type: "finish", color: "#4a3a2a", label: "🏰 Hogwarts",
   });
 
@@ -219,23 +224,24 @@ function gen_1_1_HogwartsArrival(H: number): LevelData {
 }
 
 function gen_1_2_StaircaseMaze(H: number): LevelData {
-  // Moving staircases - each staircase is a group of ascending steps that move
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Starting landing
   platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal", color: "#4a4a5a", label: "🏰" });
 
-  // Build actual staircases - groups of 3-4 steps that move together
+  // More staircases for a longer level
   const staircases = [
-    { baseX: 140, baseY: H - 50, steps: 4, dir: 1, range: 40 },
-    { baseX: 350, baseY: H - 130, steps: 3, dir: -1, range: 50 },
-    { baseX: 520, baseY: H - 80, steps: 4, dir: 1, range: 35 },
-    { baseX: 730, baseY: H - 160, steps: 3, dir: -1, range: 45 },
-    { baseX: 900, baseY: H - 110, steps: 4, dir: 1, range: 55 },
-    { baseX: 1100, baseY: H - 200, steps: 3, dir: -1, range: 40 },
-    { baseX: 1280, baseY: H - 140, steps: 4, dir: 1, range: 50 },
-    { baseX: 1460, baseY: H - 230, steps: 3, dir: -1, range: 35 },
+    { baseX: 140, baseY: H - 50, steps: 4, dir: 1, range: 35 },
+    { baseX: 350, baseY: H - 130, steps: 3, dir: -1, range: 45 },
+    { baseX: 520, baseY: H - 80, steps: 4, dir: 1, range: 30 },
+    { baseX: 730, baseY: H - 160, steps: 3, dir: -1, range: 40 },
+    { baseX: 900, baseY: H - 110, steps: 4, dir: 1, range: 50 },
+    { baseX: 1100, baseY: H - 200, steps: 3, dir: -1, range: 35 },
+    { baseX: 1280, baseY: H - 140, steps: 4, dir: 1, range: 45 },
+    { baseX: 1460, baseY: H - 230, steps: 3, dir: -1, range: 30 },
+    { baseX: 1640, baseY: H - 170, steps: 4, dir: 1, range: 40 },
+    { baseX: 1820, baseY: H - 260, steps: 3, dir: -1, range: 50 },
+    { baseX: 2000, baseY: H - 200, steps: 4, dir: 1, range: 35 },
   ];
 
   staircases.forEach((sc, si) => {
@@ -251,7 +257,7 @@ function gen_1_2_StaircaseMaze(H: number): LevelData {
       };
       platforms.push(p);
     }
-    // Railing post at top of each staircase
+    // Candle at top
     const topX = sc.baseX + (sc.steps - 1) * 35 + 20;
     const topY = sc.baseY - (sc.steps - 1) * 28 - 16;
     platforms.push({
@@ -260,17 +266,19 @@ function gen_1_2_StaircaseMaze(H: number): LevelData {
     });
   });
 
-  // Landings between staircases (safe spots)
+  // Landings between staircases
   platforms.push({ x: 320, y: H - 120, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
   platforms.push({ x: 700, y: H - 150, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
   platforms.push({ x: 1070, y: H - 190, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
   platforms.push({ x: 1430, y: H - 220, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
+  platforms.push({ x: 1800, y: H - 250, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
 
-  // Portraits that move (enemies)
+  // Portraits that move
   enemies.push({ x: 400, y: H - 170, w: 20, h: 20, type: "portrait", dir: 1, speed: 0.5, range: 40, origX: 400, emoji: "🖼️" });
   enemies.push({ x: 1000, y: H - 240, w: 20, h: 20, type: "portrait", dir: -1, speed: 0.6, range: 50, origX: 1000, emoji: "🖼️" });
+  enemies.push({ x: 1600, y: H - 280, w: 20, h: 20, type: "portrait", dir: 1, speed: 0.5, range: 45, origX: 1600, emoji: "🖼️" });
 
-  platforms.push({ x: 1600, y: H - 280, w: 80, h: 20, type: "finish", label: "🚪 Common Room" });
+  platforms.push({ x: 2200, y: H - 320, w: 80, h: 20, type: "finish", label: "🚪 Common Room" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
@@ -307,66 +315,67 @@ function gen_1_3_TrollDungeon(H: number): LevelData {
 }
 
 function gen_1_4_WizardChess(H: number): LevelData {
-  // Checkered platforms with deadly chess piece NPCs
+  // Checkered platforms with deadly chess piece NPCs — balanced, not overwhelming
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Chess board ground - wider board
   const tileSize = 60;
   const rows = 3;
-  const cols = 14;
+  const cols = 18; // Longer board
+
+  // Starting safe zone
+  platforms.push({ x: 0, y: H - 40, w: 80, h: 40, type: "normal", color: "#4a4a5a" });
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const isBlack = (r + c) % 2 === 0;
+      // Gaps in the board for challenge
+      if (r > 0 && (c === 5 || c === 10 || c === 15)) continue;
       platforms.push({
-        x: c * tileSize + 40,
+        x: c * tileSize + 100,
         y: H - 40 - r * (tileSize + 20) + (r > 0 ? -20 : 0),
         w: tileSize - 4, h: 16,
-        type: r === 0 ? "normal" : (c % 3 === 0 ? "moving" : "normal"),
+        type: r === 0 ? "normal" : (c % 5 === 0 ? "moving" : "normal"),
         color: isBlack ? "#1a1a1a" : "#d0d0d0",
-        origX: c * tileSize + 40,
+        origX: c * tileSize + 100,
         origY: H - 40 - r * (tileSize + 20) + (r > 0 ? -20 : 0),
         moveDir: c % 2 === 0 ? 1 : -1,
-        moveRange: r > 0 ? 25 : 0,
+        moveRange: r > 0 ? 20 : 0,
       });
     }
   }
 
-  // Chess piece enemies - deadly on contact!
-  // Pawns - slow, lots of them
-  for (let c = 1; c < cols; c += 2) {
+  // Fewer chess pieces — strategic placement, not a wall of death
+  // Pawns — only a few
+  for (let c = 2; c < cols; c += 4) {
     enemies.push({
-      x: c * tileSize + 50, y: H - 68, w: 20, h: 20,
+      x: c * tileSize + 110, y: H - 68, w: 18, h: 18,
       type: "chess", dir: 1, speed: 0.4,
-      range: tileSize * 0.8, origX: c * tileSize + 50,
+      range: tileSize * 0.7, origX: c * tileSize + 110,
       emoji: "♟",
     });
   }
 
-  // Knights - fast, jump-like movement
-  enemies.push({ x: 2 * tileSize + 50, y: H - 128, w: 24, h: 24, type: "chess", dir: 1, speed: 2.0, range: tileSize * 2, origX: 2 * tileSize + 50, emoji: "♞" });
-  enemies.push({ x: 9 * tileSize + 50, y: H - 128, w: 24, h: 24, type: "chess", dir: -1, speed: 2.0, range: tileSize * 2, origX: 9 * tileSize + 50, emoji: "♞" });
+  // One knight patrolling mid-section
+  enemies.push({ x: 6 * tileSize + 110, y: H - 128, w: 22, h: 22, type: "chess", dir: 1, speed: 1.5, range: tileSize * 2, origX: 6 * tileSize + 110, emoji: "♞" });
 
-  // Rooks - slow but wide patrol
-  enemies.push({ x: 4 * tileSize + 50, y: H - 68, w: 24, h: 24, type: "chess", dir: 1, speed: 0.5, range: tileSize * 3, origX: 4 * tileSize + 50, emoji: "♜" });
-  enemies.push({ x: 11 * tileSize + 50, y: H - 68, w: 24, h: 24, type: "chess", dir: -1, speed: 0.5, range: tileSize * 3, origX: 11 * tileSize + 50, emoji: "♜" });
+  // One rook with wide patrol in later section
+  enemies.push({ x: 11 * tileSize + 110, y: H - 68, w: 22, h: 22, type: "chess", dir: -1, speed: 0.5, range: tileSize * 2.5, origX: 11 * tileSize + 110, emoji: "♜" });
 
-  // Bishops - medium speed, diagonal feel
-  enemies.push({ x: 6 * tileSize + 50, y: H - 128, w: 22, h: 22, type: "chess", dir: 1, speed: 1.0, range: tileSize * 1.5, origX: 6 * tileSize + 50, emoji: "♝" });
+  // Bishop in upper tier
+  enemies.push({ x: 9 * tileSize + 110, y: H - 128, w: 20, h: 20, type: "chess", dir: 1, speed: 0.8, range: tileSize * 1.5, origX: 9 * tileSize + 110, emoji: "♝" });
 
-  // Queen - fast and wide range
-  enemies.push({ x: 8 * tileSize + 50, y: H - 68, w: 26, h: 26, type: "chess", dir: 1, speed: 1.5, range: tileSize * 2.5, origX: 8 * tileSize + 50, emoji: "♛" });
+  // Queen guards near the end — fast but contained
+  enemies.push({ x: 14 * tileSize + 110, y: H - 68, w: 24, h: 24, type: "chess", dir: 1, speed: 1.2, range: tileSize * 2, origX: 14 * tileSize + 110, emoji: "♛" });
 
-  // King at the end (stationary)
-  enemies.push({ x: 12 * tileSize + 50, y: H - 128, w: 26, h: 26, type: "chess", dir: 1, speed: 0.2, range: tileSize * 0.5, origX: 12 * tileSize + 50, emoji: "♚" });
+  // King at end (slow, mostly decorative)
+  enemies.push({ x: 16 * tileSize + 110, y: H - 128, w: 24, h: 24, type: "chess", dir: 1, speed: 0.2, range: tileSize * 0.4, origX: 16 * tileSize + 110, emoji: "♚" });
 
-  // Upper path to finish
-  platforms.push({ x: cols * tileSize + 60, y: H - 120, w: 70, h: 16, type: "normal" });
-  platforms.push({ x: cols * tileSize + 160, y: H - 160, w: 70, h: 16, type: "normal" });
-  platforms.push({ x: cols * tileSize + 260, y: H - 140, w: 80, h: 20, type: "finish" });
+  // Path to finish
+  platforms.push({ x: cols * tileSize + 130, y: H - 100, w: 70, h: 16, type: "normal" });
+  platforms.push({ x: cols * tileSize + 230, y: H - 140, w: 80, h: 20, type: "finish", label: "♔ Victory" });
 
-  return { platforms, enemies, startX: 60, startY: H - 60, checkered: true };
+  return { platforms, enemies, startX: 30, startY: H - 60, checkered: true };
 }
 
 function gen_1_5_MirrorOfErised(H: number): LevelData {

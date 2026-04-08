@@ -84,48 +84,44 @@ function gen_2_2_FlyingEscape(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Flying car level - auto-scrolling, dodge obstacles
-  // We place obstacles spread across a long level; the car auto-scrolls right
-  // Player only moves up/down to dodge
-
   // Invisible floor and ceiling boundaries
-  platforms.push({ x: 0, y: H - 30, w: 8000, h: 30, type: "hazard", color: "transparent" });
-  platforms.push({ x: 0, y: 0, w: 8000, h: 10, type: "hazard", color: "transparent" });
+  platforms.push({ x: 0, y: H - 30, w: 10000, h: 30, type: "hazard", color: "transparent" });
+  platforms.push({ x: 0, y: 0, w: 10000, h: 10, type: "hazard", color: "transparent" });
 
-  // Clouds to dodge (hazards placed at various heights)
-  for (let i = 0; i < 40; i++) {
-    const x = 400 + i * 180 + (i % 3) * 50;
-    const y = 40 + ((i * 137) % (H - 120));
-    const w = 50 + (i % 3) * 20;
-    const h = 20 + (i % 2) * 10;
+  // Clouds to dodge — fewer but larger, spaced out more
+  for (let i = 0; i < 30; i++) {
+    const x = 500 + i * 280 + (i % 3) * 60;
+    const y = 50 + ((i * 137) % (H - 130));
+    const w = 60 + (i % 3) * 25;
+    const h = 25 + (i % 2) * 12;
     platforms.push({
       x, y, w, h, type: "hazard",
-      color: "#888", label: "☁️",
+      color: "#c0c0d0", label: "☁️",
     });
   }
 
-  // Birds to dodge
-  for (let i = 0; i < 15; i++) {
-    const x = 600 + i * 450;
+  // Birds to dodge — moderate count
+  for (let i = 0; i < 10; i++) {
+    const x = 800 + i * 700;
     const y = 60 + ((i * 211) % (H - 140));
     enemies.push({
       x, y, w: 22, h: 22, type: "bird",
-      dir: -1, speed: 1.5 + (i % 3) * 0.5, range: 200,
+      dir: -1, speed: 1.5 + (i % 3) * 0.4, range: 180,
       origX: x, emoji: "🦅",
     });
   }
 
-  // Whomping Willow tree tops at intervals
-  for (let i = 0; i < 6; i++) {
-    const x = 800 + i * 1200;
+  // Whomping Willow tree tops
+  for (let i = 0; i < 5; i++) {
+    const x = 1200 + i * 1600;
     platforms.push({
-      x, y: H - 100, w: 60, h: 70, type: "hazard",
+      x, y: H - 100, w: 70, h: 70, type: "hazard",
       color: "#3a5a2a", label: "🌳",
     });
   }
 
-  // Hogwarts castle - the finish line
-  platforms.push({ x: 7600, y: H / 2 - 30, w: 120, h: 60, type: "finish", label: "🏰 Hogwarts" });
+  // Hogwarts castle — the finish
+  platforms.push({ x: 9200, y: H / 2 - 30, w: 120, h: 60, type: "finish", label: "🏰 Hogwarts" });
 
   return { platforms, enemies, startX: 60, startY: H / 2, flyingCar: true };
 }
@@ -244,24 +240,34 @@ function gen_3_1_TimePlatforms(H: number): LevelData {
 
   platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal" });
 
-  // Disappearing/reappearing platforms (time-shifted)
-  for (let i = 0; i < 18; i++) {
-    const x = 140 + i * 100;
-    const y = H - 80 - Math.sin(i * 0.6) * 50 - i * 6;
-    const isTimeShift = i % 3 === 0;
-    platforms.push({
-      x, y, w: 60 + (i % 2) * 20, h: 14,
-      type: isTimeShift ? "disappearing" : "normal",
+  // Longer time-shifting level with more variety
+  for (let i = 0; i < 26; i++) {
+    const x = 140 + i * 95;
+    const y = H - 80 - Math.sin(i * 0.5) * 50 - i * 5;
+    const isTimeShift = i % 4 === 0;
+    const isMoving = i % 6 === 3;
+    const p: Platform = {
+      x, y, w: 55 + (i % 2) * 20, h: 14,
+      type: isTimeShift ? "disappearing" : isMoving ? "moving" : "normal",
       timer: 0, visible: true,
-      color: isTimeShift ? "#8a6aaa" : undefined,
-      label: isTimeShift ? "⏳" : "",
-    });
+      color: isTimeShift ? "#8a6aaa" : isMoving ? "#6a6a9a" : undefined,
+      label: isTimeShift ? "⏳" : isMoving ? "⚙️" : "",
+    };
+    if (isMoving) {
+      p.origX = x; p.origY = y;
+      p.moveDir = i % 2 === 0 ? 1 : -1;
+      p.moveRange = 35;
+    }
+    platforms.push(p);
   }
 
-  enemies.push({ x: 500, y: H - 160, w: 20, h: 20, type: "dementor", dir: 1, speed: 0.5, range: 80, origX: 500, emoji: "👻" });
-  enemies.push({ x: 1200, y: H - 220, w: 20, h: 20, type: "dementor", dir: -1, speed: 0.7, range: 60, origX: 1200, emoji: "👻" });
+  // More dementors spread throughout
+  enemies.push({ x: 400, y: H - 140, w: 20, h: 20, type: "dementor", dir: 1, speed: 0.5, range: 70, origX: 400, emoji: "👻" });
+  enemies.push({ x: 900, y: H - 200, w: 20, h: 20, type: "dementor", dir: -1, speed: 0.6, range: 60, origX: 900, emoji: "👻" });
+  enemies.push({ x: 1500, y: H - 250, w: 22, h: 22, type: "dementor", dir: 1, speed: 0.7, range: 80, origX: 1500, emoji: "👻" });
+  enemies.push({ x: 2000, y: H - 180, w: 20, h: 20, type: "dementor", dir: -1, speed: 0.5, range: 65, origX: 2000, emoji: "👻" });
 
-  platforms.push({ x: 1940, y: H - 240, w: 80, h: 20, type: "finish", label: "⏰ Time Turner" });
+  platforms.push({ x: 2600, y: H - 280, w: 80, h: 20, type: "finish", label: "⏰ Time Turner" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
@@ -305,30 +311,35 @@ function gen_3_3_ForestRun(H: number): LevelData {
 
   platforms.push({ x: 0, y: H - 40, w: 140, h: 40, type: "normal", color: "#2a3a1a" });
 
-  // Forest floor with tree root platforms
-  for (let i = 0; i < 16; i++) {
-    const x = 160 + i * 110;
-    const y = H - 50 - Math.random() * 40 - (i % 3) * 30;
+  // Longer forest floor with tree root platforms
+  for (let i = 0; i < 24; i++) {
+    const x = 160 + i * 100;
+    const y = H - 50 - (i % 4) * 15 - (i % 3) * 20;
     platforms.push({
-      x, y, w: 60 + Math.random() * 30, h: 14,
-      type: "normal", color: "#3a2a1a",
+      x, y, w: 55 + (i % 3) * 15, h: 14,
+      type: i % 7 === 0 ? "disappearing" : "normal",
+      timer: 0, visible: true,
+      color: "#3a2a1a",
+      label: i % 5 === 0 ? "🍄" : "",
     });
   }
 
-  // Tree branch platforms (higher)
-  for (let i = 0; i < 8; i++) {
+  // Tree branch platforms (higher) — more of them
+  for (let i = 0; i < 12; i++) {
     platforms.push({
-      x: 200 + i * 220, y: H - 140 - (i % 2) * 40,
+      x: 200 + i * 200, y: H - 130 - (i % 3) * 30,
       w: 50, h: 10, type: "normal", color: "#4a3a1a", label: "🌿",
     });
   }
 
-  // Spiders and centaurs
-  enemies.push({ x: 400, y: H - 78, w: 22, h: 22, type: "spider", dir: 1, speed: 0.8, range: 60, origX: 400, emoji: "🕷️" });
-  enemies.push({ x: 800, y: H - 78, w: 24, h: 24, type: "centaur", dir: -1, speed: 1.2, range: 80, origX: 800, emoji: "🐴" });
-  enemies.push({ x: 1300, y: H - 78, w: 22, h: 22, type: "spider", dir: 1, speed: 1.0, range: 70, origX: 1300, emoji: "🕷️" });
+  // Spiders, centaurs, and wolves
+  enemies.push({ x: 300, y: H - 78, w: 20, h: 20, type: "spider", dir: 1, speed: 0.7, range: 50, origX: 300, emoji: "🕷️" });
+  enemies.push({ x: 700, y: H - 78, w: 24, h: 24, type: "centaur", dir: -1, speed: 1.0, range: 70, origX: 700, emoji: "🐴" });
+  enemies.push({ x: 1100, y: H - 78, w: 20, h: 20, type: "spider", dir: 1, speed: 0.9, range: 60, origX: 1100, emoji: "🕷️" });
+  enemies.push({ x: 1500, y: H - 150, w: 22, h: 22, type: "spider", dir: -1, speed: 1.1, range: 55, origX: 1500, emoji: "🕷️" });
+  enemies.push({ x: 1900, y: H - 78, w: 24, h: 24, type: "wolf", dir: 1, speed: 1.3, range: 80, origX: 1900, emoji: "🐺" });
 
-  platforms.push({ x: 1940, y: H - 100, w: 80, h: 20, type: "finish", label: "🌙 Clearing" });
+  platforms.push({ x: 2600, y: H - 100, w: 80, h: 20, type: "finish", label: "🌙 Clearing" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
@@ -365,24 +376,36 @@ function gen_4_1_DragonArena(H: number): LevelData {
 
   platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal" });
 
-  // Rocky arena with fire hazards
-  for (let i = 0; i < 14; i++) {
-    const x = 140 + i * 120;
-    const y = H - 70 - (i % 3) * 30 - i * 5;
-    const isFire = i % 5 === 3;
-    platforms.push({
-      x, y, w: 65 + (i % 2) * 15, h: 14,
-      type: isFire ? "hazard" : "normal",
+  // Longer rocky arena with fire hazards and varied terrain
+  for (let i = 0; i < 22; i++) {
+    const x = 140 + i * 110;
+    const y = H - 70 - (i % 3) * 30 - i * 4;
+    const isFire = i % 6 === 3;
+    const isMoving = i % 5 === 2;
+    const p: Platform = {
+      x, y, w: 60 + (i % 2) * 15, h: 14,
+      type: isFire ? "hazard" : isMoving ? "moving" : "normal",
       color: isFire ? "#aa3a0a" : "#5a4a3a",
-      label: isFire ? "🔥" : "",
-    });
+      label: isFire ? "🔥" : isMoving ? "🪨" : "",
+    };
+    if (isMoving) {
+      p.origX = x; p.origY = y;
+      p.moveDir = i % 2 === 0 ? 1 : -1;
+      p.moveRange = 40;
+    }
+    platforms.push(p);
   }
 
-  // Dragon fire breath enemies
-  enemies.push({ x: 500, y: H - 140, w: 28, h: 28, type: "dragon", dir: 1, speed: 0.5, range: 100, origX: 500, emoji: "🐉" });
-  enemies.push({ x: 1100, y: H - 200, w: 28, h: 28, type: "dragon", dir: -1, speed: 0.7, range: 80, origX: 1100, emoji: "🐉" });
+  // Egg nests as bonus platforms
+  platforms.push({ x: 600, y: H - 160, w: 50, h: 12, type: "normal", color: "#6a5a2a", label: "🪹" });
+  platforms.push({ x: 1200, y: H - 200, w: 50, h: 12, type: "normal", color: "#6a5a2a", label: "🪹" });
 
-  platforms.push({ x: 1820, y: H - 200, w: 80, h: 20, type: "finish", label: "🥚 Golden Egg" });
+  // Dragon enemies — spaced out
+  enemies.push({ x: 500, y: H - 150, w: 28, h: 28, type: "dragon", dir: 1, speed: 0.5, range: 90, origX: 500, emoji: "🐉" });
+  enemies.push({ x: 1100, y: H - 200, w: 28, h: 28, type: "dragon", dir: -1, speed: 0.6, range: 80, origX: 1100, emoji: "🐉" });
+  enemies.push({ x: 1800, y: H - 170, w: 26, h: 26, type: "dragon", dir: 1, speed: 0.7, range: 70, origX: 1800, emoji: "🐉" });
+
+  platforms.push({ x: 2550, y: H - 220, w: 80, h: 20, type: "finish", label: "🥚 Golden Egg" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
@@ -734,27 +757,35 @@ function gen_7_1_EscapeRun(H: number): LevelData {
 
   platforms.push({ x: 0, y: H - 40, w: 100, h: 40, type: "normal" });
 
-  // Fast-paced escape with narrow platforms and many enemies
-  for (let i = 0; i < 22; i++) {
+  // Longer, more intense escape with varied platform types
+  for (let i = 0; i < 30; i++) {
     const x = 110 + i * 80;
-    const y = H - 60 - (i % 4) * 20 - i * 3;
+    const y = H - 60 - (i % 4) * 18 - i * 3;
+    const roll = i % 5;
     platforms.push({
-      x, y, w: 40 + (i % 2) * 15, h: 12,
-      type: i % 3 === 0 ? "disappearing" : "normal",
+      x, y, w: 42 + (i % 2) * 15, h: 12,
+      type: roll === 0 ? "disappearing" : roll === 3 ? "moving" : "normal",
       timer: 0, visible: true,
       color: "#3a2a2a",
+      origX: x, origY: y,
+      moveDir: i % 2 === 0 ? 1 : -1,
+      moveRange: roll === 3 ? 30 : 0,
     });
   }
 
-  // Death Eaters chasing
-  for (let i = 0; i < 5; i++) {
+  // Death Eaters chasing — staggered
+  for (let i = 0; i < 4; i++) {
     enemies.push({
-      x: 200 + i * 350, y: H - 90 - i * 10, w: 22, h: 22,
-      type: "deathEater", dir: 1, speed: 1.0 + i * 0.2, range: 80, origX: 200 + i * 350, emoji: "💀",
+      x: 300 + i * 500, y: H - 90 - i * 10, w: 22, h: 22,
+      type: "deathEater", dir: 1, speed: 1.0 + i * 0.15, range: 70, origX: 300 + i * 500, emoji: "💀",
     });
   }
 
-  platforms.push({ x: 1880, y: H - 160, w: 80, h: 20, type: "finish", label: "🏠 Safe House" });
+  // Fire hazards from the battle
+  platforms.push({ x: 600, y: H - 130, w: 25, h: 8, type: "hazard", color: "#8a2a0a", label: "🔥" });
+  platforms.push({ x: 1400, y: H - 150, w: 25, h: 8, type: "hazard", color: "#8a2a0a", label: "🔥" });
+
+  platforms.push({ x: 2500, y: H - 180, w: 80, h: 20, type: "finish", label: "🏠 Safe House" });
   return { platforms, enemies, startX: 30, startY: H - 80 };
 }
 
