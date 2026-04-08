@@ -449,6 +449,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       } else if (!isBossArena) {
         cameraX += (px - W / 3 - cameraX) * 0.1;
         if (cameraX < 0) cameraX = 0;
+        // Vertical camera: follow player when above center of screen
+        const targetCameraY = Math.min(0, -(py - H / 2.5));
+        cameraY += (targetCameraY - cameraY) * 0.1;
       } else {
         cameraX = 0; // Fixed camera for boss arena
       }
