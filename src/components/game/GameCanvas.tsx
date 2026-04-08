@@ -3,6 +3,7 @@ import { WORLDS } from "@/lib/gameData";
 import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef } from "@/lib/levelGenerator";
 import { toggleMusic, isMusicPlaying, startMusic } from "@/lib/musicEngine";
 import type { PlayerProfile } from "@/hooks/useGameState";
+import dementorImg from "@/assets/dementor.png";
 
 interface GameCanvasProps {
   profile: PlayerProfile;
