@@ -19,15 +19,44 @@ export interface Particle {
   x: number; y: number; vx: number; vy: number; life: number; color: string;
 }
 
+export interface BossData {
+  name: string;
+  emoji: string;
+  maxHp: number;
+  attackSpeed: number;    // frames between attacks
+  projectileSpeed: number;
+  color: string;
+  spellResistance?: string; // spell type boss is resistant to
+  weakness?: string;         // spell type boss is weak to
+}
+
+export interface SpellDef {
+  name: string;
+  emoji: string;
+  damage: number;
+  speed: number;
+  cooldown: number; // frames
+  color: string;
+  key: string; // keyboard key
+}
+
+export interface Projectile {
+  x: number; y: number; vx: number; vy: number;
+  damage: number; color: string; radius: number;
+  fromPlayer: boolean; life: number; emoji?: string;
+}
+
 export interface LevelData {
   platforms: Platform[];
   enemies: Enemy[];
   startX: number;
   startY: number;
-  darkLevel?: boolean;     // Troll Dungeon - limited visibility
-  checkered?: boolean;     // Wizard Chess - draw checkered bg
-  mirrorBoss?: boolean;    // Mirror of Erised boss
-  boatLevel?: boolean;     // Hogwarts Arrival - water & boats
+  darkLevel?: boolean;
+  checkered?: boolean;
+  mirrorBoss?: boolean;
+  boatLevel?: boolean;
+  bossArena?: boolean;
+  boss?: BossData;
 }
 
 export interface LevelTheme {
