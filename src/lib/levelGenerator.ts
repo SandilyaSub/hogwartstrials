@@ -56,6 +56,7 @@ export interface LevelData {
   checkered?: boolean;
   mirrorBoss?: boolean;
   boatLevel?: boolean;
+  flyingCar?: boolean;
   bossArena?: boolean;
   boss?: BossData;
 }

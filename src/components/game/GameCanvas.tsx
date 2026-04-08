@@ -59,6 +59,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const isDark = levelData.darkLevel || false;
     const isCheckered = levelData.checkered || false;
     const isBoatLevel = levelData.boatLevel || false;
+    const isFlyingCar = levelData.flyingCar || false;
     const isBossArena = levelData.bossArena || false;
     const bossData = levelData.boss;
 
@@ -68,6 +69,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let hasRevive = petEffect.type === "revive";
     const particles: Particle[] = [];
     let frameCount = 0;
+    let flyingCarSpeed = 3; // auto-scroll speed for flying car mode
+    let carInvincible = 0; // invincibility frames after hit
 
     // Boss fight state
     let bossHp = bossData?.maxHp || 0;
@@ -116,22 +119,52 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       const left = keys.has("ArrowLeft") || keys.has("a") || touchLeft;
       const right = keys.has("ArrowRight") || keys.has("d") || touchRight;
       const jump = keys.has("ArrowUp") || keys.has("w") || keys.has(" ") || touchJump;
+      const down = keys.has("ArrowDown") || keys.has("s");
 
-      if (left) vx = -speed;
-      else if (right) vx = speed;
-      else vx *= 0.8;
+      if (isFlyingCar) {
+        // Flying car mode: auto-scroll right, player moves up/down freely
+        cameraX += flyingCarSpeed;
+        px = cameraX + 80; // lock player near left side of screen
 
-      if (jump && onGround) {
-        vy = jumpPower;
-        onGround = false;
-        for (let i = 0; i < 5; i++) {
-          particles.push({ x: px + PLAYER_W / 2, y: py + PLAYER_H, vx: (Math.random() - 0.5) * 3, vy: Math.random() * -2, life: 20, color: "hsl(45, 80%, 55%)" });
+        // Up/down movement (no gravity)
+        const carSpeed = 4;
+        if (jump || keys.has("ArrowUp") || keys.has("w")) vy = -carSpeed;
+        else if (down) vy = carSpeed;
+        else vy *= 0.85;
+
+        // Small left/right wiggle allowed
+        if (left) vx = -2;
+        else if (right) vx = 2;
+        else vx *= 0.8;
+
+        px += vx;
+        py += vy;
+
+        // Clamp to screen bounds
+        if (py < 20) py = 20;
+        if (py > H - 60) py = H - 60;
+
+        if (carInvincible > 0) carInvincible--;
+
+        // Increase speed over time
+        flyingCarSpeed = 3 + frameCount * 0.0005;
+      } else {
+        if (left) vx = -speed;
+        else if (right) vx = speed;
+        else vx *= 0.8;
+
+        if (jump && onGround) {
+          vy = jumpPower;
+          onGround = false;
+          for (let i = 0; i < 5; i++) {
+            particles.push({ x: px + PLAYER_W / 2, y: py + PLAYER_H, vx: (Math.random() - 0.5) * 3, vy: Math.random() * -2, life: 20, color: "hsl(45, 80%, 55%)" });
+          }
         }
-      }
 
-      vy += GRAVITY;
-      px += vx;
-      py += vy;
+        vy += GRAVITY;
+        px += vx;
+        py += vy;
+      }
 
       // Update moving platforms
       platforms.forEach(p => {
@@ -151,6 +184,34 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       });
 
       // Collision
+      if (isFlyingCar) {
+        // Flying car: check collision with hazards and finish
+        for (const p of platforms) {
+          if (p.type === "finish") {
+            if (px + PLAYER_W > p.x && px < p.x + p.w && py + PLAYER_H > p.y && py < p.y + p.h) {
+              handleComplete(); return;
+            }
+            continue;
+          }
+          if (p.type === "hazard" && p.color !== "transparent") {
+            if (px + PLAYER_W > p.x && px < p.x + p.w && py + PLAYER_H > p.y && py < p.y + p.h) {
+              if (carInvincible <= 0) {
+                if (hasRevive) { hasRevive = false; carInvincible = 60; }
+                else { handleDeath(); return; }
+              }
+            }
+          }
+        }
+        // Enemy collision in flying car
+        for (const e of enemies) {
+          if (px + PLAYER_W > e.x && px < e.x + e.w && py + PLAYER_H > e.y && py < e.y + e.h) {
+            if (carInvincible <= 0) {
+              if (hasRevive) { hasRevive = false; carInvincible = 60; }
+              else { handleDeath(); return; }
+            }
+          }
+        }
+      } else {
       onGround = false;
       for (const p of platforms) {
         if (!p.visible && p.type === "disappearing") continue;
@@ -186,6 +247,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             else { handleDeath(); return; }
           }
         }
+      }
       }
 
       // ─── Boss Fight Logic ───
@@ -286,14 +348,18 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (playerHitFlash > 0) playerHitFlash--;
       }
 
-      // Fall death (into water for boat level, off-screen otherwise)
-      const deathY = isBoatLevel ? H - 45 : H + 100;
-      if (py > deathY) {
-        if (hasRevive) { hasRevive = false; py = startY - 100; vy = 0; px = startX; }
-        else { handleDeath(); return; }
+      // Fall death (into water for boat level, off-screen otherwise) - skip for flying car
+      if (!isFlyingCar) {
+        const deathY = isBoatLevel ? H - 45 : H + 100;
+        if (py > deathY) {
+          if (hasRevive) { hasRevive = false; py = startY - 100; vy = 0; px = startX; }
+          else { handleDeath(); return; }
+        }
       }
 
-      if (!isBossArena) {
+      if (isFlyingCar) {
+        // Camera is auto-scrolled in update above
+      } else if (!isBossArena) {
         cameraX += (px - W / 3 - cameraX) * 0.1;
         if (cameraX < 0) cameraX = 0;
       } else {
@@ -309,12 +375,39 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
     function draw() {
       // Background
-      const [c1, c2] = theme.bgColors;
-      const grad = ctx.createLinearGradient(0, 0, 0, H);
-      grad.addColorStop(0, c1);
-      grad.addColorStop(1, c2);
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
+      if (isFlyingCar) {
+        // Sky gradient for flying
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+        skyGrad.addColorStop(0, "#0a1530");
+        skyGrad.addColorStop(0.4, "#1a2a50");
+        skyGrad.addColorStop(0.7, "#2a3a60");
+        skyGrad.addColorStop(1, "#1a3a2a");
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, W, H);
+        // Moon
+        ctx.fillStyle = "#e8e0c0";
+        ctx.beginPath();
+        ctx.arc(W - 80, 60, 25, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,240,200,0.05)";
+        ctx.beginPath();
+        ctx.arc(W - 80, 60, 50, 0, Math.PI * 2);
+        ctx.fill();
+        // Scrolling ground silhouette
+        ctx.fillStyle = "#0a1a0a";
+        for (let i = -1; i < W / 60 + 2; i++) {
+          const gx = (i * 60 - (cameraX * 0.3) % 60);
+          const gh = 20 + ((i * 37 + 13) % 30);
+          ctx.fillRect(gx, H - gh, 60, gh);
+        }
+      } else {
+        const [c1, c2] = theme.bgColors;
+        const grad = ctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, c1);
+        grad.addColorStop(1, c2);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      }
 
       // Stars
       ctx.fillStyle = "rgba(255,255,255,0.3)";
@@ -553,20 +646,67 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       });
 
       // Draw player
-      const charColor = profile.character?.color || "#c0392b";
-      ctx.fillStyle = playerHitFlash > 0 ? "#fff" : charColor;
-      ctx.fillRect(px + 4, py, PLAYER_W - 8, PLAYER_H);
-      ctx.fillStyle = "#f0d0a0";
-      ctx.beginPath();
-      ctx.arc(px + PLAYER_W / 2, py - 2, 8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.font = "10px serif";
-      ctx.textAlign = "center";
-      ctx.fillText(profile.character?.emoji || "⚡", px + PLAYER_W / 2, py - 12);
+      if (isFlyingCar) {
+        // Draw flying car
+        const cx = px, cy = py;
+        const carW = 50, carH = 28;
+        // Car body
+        ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + carH * 0.3);
+        ctx.lineTo(cx + 8, cy);
+        ctx.lineTo(cx + carW - 5, cy);
+        ctx.lineTo(cx + carW, cy + carH * 0.3);
+        ctx.lineTo(cx + carW + 5, cy + carH * 0.6);
+        ctx.lineTo(cx + carW, cy + carH);
+        ctx.lineTo(cx, cy + carH);
+        ctx.lineTo(cx - 3, cy + carH * 0.6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#2a6aaa";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        // Windows
+        ctx.fillStyle = "#aaddff";
+        ctx.fillRect(cx + 12, cy + 3, 14, 10);
+        ctx.fillRect(cx + 28, cy + 3, 12, 10);
+        // Wheels (flying, so they spin)
+        ctx.fillStyle = "#222";
+        ctx.beginPath();
+        ctx.arc(cx + 12, cy + carH + 2, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx + carW - 10, cy + carH + 2, 5, 0, Math.PI * 2);
+        ctx.fill();
+        // Exhaust particles
+        if (frameCount % 2 === 0) {
+          particles.push({
+            x: cx - 5, y: cy + carH * 0.6,
+            vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1.5,
+            life: 15, color: "rgba(200,200,200,0.6)",
+          });
+        }
+        // Character emoji in car
+        ctx.font = "14px serif";
+        ctx.textAlign = "center";
+        ctx.fillText(profile.character?.emoji || "⚡", cx + carW / 2, cy + carH / 2 + 4);
+      } else {
+        const charColor = profile.character?.color || "#c0392b";
+        ctx.fillStyle = playerHitFlash > 0 ? "#fff" : charColor;
+        ctx.fillRect(px + 4, py, PLAYER_W - 8, PLAYER_H);
+        ctx.fillStyle = "#f0d0a0";
+        ctx.beginPath();
+        ctx.arc(px + PLAYER_W / 2, py - 2, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.font = "10px serif";
+        ctx.textAlign = "center";
+        ctx.fillText(profile.character?.emoji || "⚡", px + PLAYER_W / 2, py - 12);
+      }
 
       // Pet
       if (profile.pet) {
         ctx.font = "12px serif";
+        ctx.textAlign = "center";
         ctx.fillText(profile.pet.emoji, px + PLAYER_W + 8, py - 4 + Math.sin(frameCount * 0.1) * 3);
       }
 
@@ -715,6 +855,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-foreground/30 font-display">
         {levelIdx === 4
           ? "Arrow Keys / WASD to move · Space to jump · 1/2/3 to cast spells"
+          : worldId === 2 && levelIdx === 1
+          ? "↑↓ Arrow Keys / W/S to dodge · Auto-scrolling flight"
           : "Arrow Keys / WASD to move · Space to jump"}
       </div>
     </div>

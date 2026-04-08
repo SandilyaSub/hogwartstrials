@@ -7,32 +7,76 @@ function gen_2_1_DiagonAlley(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Street level start
-  platforms.push({ x: 0, y: H - 40, w: 140, h: 40, type: "normal", color: "#5a4a3a", label: "🏪 Shop" });
+  // Cobblestone street - continuous ground
+  for (let i = 0; i < 30; i++) {
+    platforms.push({
+      x: i * 80, y: H - 40, w: 78, h: 40, type: "normal",
+      color: i % 2 === 0 ? "#5a4a3a" : "#4d4030",
+    });
+  }
 
-  // Rooftop jumping across shops
-  const rooftops = [
-    { x: 170, y: H - 100, w: 100, label: "🏬" },
-    { x: 310, y: H - 140, w: 80, label: "📚" },
-    { x: 430, y: H - 110, w: 90, label: "🧹" },
-    { x: 570, y: H - 160, w: 70, label: "🪄" },
-    { x: 690, y: H - 130, w: 100, label: "🦉" },
-    { x: 830, y: H - 180, w: 80, label: "⚗️" },
-    { x: 960, y: H - 150, w: 90, label: "🏪" },
-    { x: 1100, y: H - 200, w: 70, label: "📜" },
-    { x: 1230, y: H - 170, w: 100, label: "🧙" },
-    { x: 1380, y: H - 220, w: 80, label: "🏰" },
+  // Shop buildings - tall blocks with shop fronts you jump onto and between
+  const shops = [
+    { x: 100, w: 120, h: 90, name: "Ollivanders", emoji: "🪄", color: "#5a3a2a", awning: "#8a3333" },
+    { x: 280, w: 100, h: 70, name: "Flourish & Blotts", emoji: "📚", color: "#3a4a5a", awning: "#3355aa" },
+    { x: 440, w: 110, h: 100, name: "Eeylops Owl Emporium", emoji: "🦉", color: "#4a3a2a", awning: "#6a5a2a" },
+    { x: 620, w: 90, h: 60, name: "Potage's Cauldrons", emoji: "⚗️", color: "#3a3a3a", awning: "#555555" },
+    { x: 770, w: 130, h: 110, name: "Quality Quidditch", emoji: "🧹", color: "#3a2a1a", awning: "#aa4444" },
+    { x: 970, w: 100, h: 80, name: "Madam Malkin's", emoji: "👗", color: "#4a3a5a", awning: "#7744aa" },
+    { x: 1130, w: 120, h: 95, name: "Weasleys' WWW", emoji: "🎆", color: "#5a3a1a", awning: "#dd6600" },
+    { x: 1320, w: 110, h: 75, name: "Magical Menagerie", emoji: "🐱", color: "#2a4a3a", awning: "#338855" },
+    { x: 1500, w: 100, h: 85, name: "Slug & Jiggers", emoji: "🧪", color: "#3a3a2a", awning: "#667744" },
   ];
 
-  rooftops.forEach(r => {
-    platforms.push({ x: r.x, y: r.y, w: r.w, h: 16, type: "normal", color: "#6a4a2a", label: r.label });
+  shops.forEach(shop => {
+    // Shop body (tall platform you can walk behind or jump onto)
+    const shopTop = H - 40 - shop.h;
+    platforms.push({
+      x: shop.x, y: shopTop, w: shop.w, h: 16,
+      type: "normal", color: shop.color, label: `${shop.emoji} ${shop.name}`,
+    });
+    // Awning ledge (lower, can stand on but disappears)
+    platforms.push({
+      x: shop.x + 10, y: shopTop + 35, w: shop.w - 20, h: 10,
+      type: "disappearing", timer: 0, visible: true, color: shop.awning,
+    });
+    // Window ledge (narrow foothold on side)
+    platforms.push({
+      x: shop.x - 15, y: shopTop + 55, w: 20, h: 8,
+      type: "normal", color: "#6a5a4a",
+    });
   });
 
-  // Awnings (disappearing)
-  platforms.push({ x: 240, y: H - 120, w: 50, h: 10, type: "disappearing", timer: 0, visible: true, color: "#aa3333" });
-  platforms.push({ x: 780, y: H - 155, w: 50, h: 10, type: "disappearing", timer: 0, visible: true, color: "#3333aa" });
+  // Floating signs between shops
+  const signs = [
+    { x: 230, y: H - 120, label: "🪧" },
+    { x: 560, y: H - 100, label: "🏮" },
+    { x: 900, y: H - 130, label: "🪧" },
+    { x: 1250, y: H - 110, label: "🏮" },
+  ];
+  signs.forEach(s => {
+    platforms.push({ x: s.x, y: s.y, w: 30, h: 8, type: "normal", color: "#7a5a3a", label: s.label });
+  });
 
-  platforms.push({ x: 1500, y: H - 240, w: 80, h: 20, type: "finish", label: "🏦 Gringotts" });
+  // Street carts as moving platforms
+  const p1: Platform = { x: 360, y: H - 55, w: 50, h: 12, type: "moving", color: "#6a5a3a", label: "🛒", origX: 360, origY: H - 55, moveDir: 1, moveRange: 60 };
+  const p2: Platform = { x: 850, y: H - 55, w: 50, h: 12, type: "moving", color: "#6a5a3a", label: "🛒", origX: 850, origY: H - 55, moveDir: -1, moveRange: 50 };
+  platforms.push(p1, p2);
+
+  // NPCs wandering the street (wizards, goblins)
+  enemies.push({ x: 200, y: H - 68, w: 18, h: 18, type: "wizard_npc", dir: 1, speed: 0.4, range: 80, origX: 200, emoji: "🧙" });
+  enemies.push({ x: 500, y: H - 68, w: 16, h: 16, type: "goblin", dir: -1, speed: 0.6, range: 50, origX: 500, emoji: "👺" });
+  enemies.push({ x: 750, y: H - 68, w: 18, h: 18, type: "wizard_npc", dir: 1, speed: 0.5, range: 70, origX: 750, emoji: "🧙‍♀️" });
+  enemies.push({ x: 1050, y: H - 68, w: 16, h: 16, type: "goblin", dir: -1, speed: 0.7, range: 60, origX: 1050, emoji: "👺" });
+  enemies.push({ x: 1400, y: H - 68, w: 18, h: 18, type: "wizard_npc", dir: 1, speed: 0.4, range: 90, origX: 1400, emoji: "🧙" });
+
+  // Gringotts at the end - grand entrance
+  platforms.push({ x: 1700, y: H - 160, w: 140, h: 20, type: "finish", label: "🏦 Gringotts Bank" });
+  // Steps leading up to Gringotts
+  platforms.push({ x: 1650, y: H - 70, w: 60, h: 14, type: "normal", color: "#e0d0b0" });
+  platforms.push({ x: 1680, y: H - 100, w: 60, h: 14, type: "normal", color: "#e0d0b0" });
+  platforms.push({ x: 1710, y: H - 130, w: 60, h: 14, type: "normal", color: "#e0d0b0" });
+
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
@@ -40,33 +84,50 @@ function gen_2_2_FlyingEscape(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Flying car escape - mostly moving platforms (clouds + the car path)
-  platforms.push({ x: 0, y: H - 40, w: 100, h: 40, type: "normal", label: "🚗 Start" });
+  // Flying car level - auto-scrolling, dodge obstacles
+  // We place obstacles spread across a long level; the car auto-scrolls right
+  // Player only moves up/down to dodge
 
-  // Cloud platforms at varying heights
-  for (let i = 0; i < 16; i++) {
-    const x = 130 + i * 110;
-    const y = H - 100 - Math.sin(i * 0.7) * 60 - (i * 8);
-    const isMoving = i % 3 === 0;
-    const p: Platform = {
-      x, y, w: 70 + (i % 2) * 20, h: 14,
-      type: isMoving ? "moving" : "normal",
-      color: "#e8e8f0", label: "☁️",
-    };
-    if (isMoving) {
-      p.origX = x; p.origY = y;
-      p.moveDir = i % 2 === 0 ? 1 : -1;
-      p.moveRange = 40 + i * 3;
-    }
-    platforms.push(p);
+  // Invisible floor and ceiling boundaries
+  platforms.push({ x: 0, y: H - 30, w: 8000, h: 30, type: "hazard", color: "transparent" });
+  platforms.push({ x: 0, y: 0, w: 8000, h: 10, type: "hazard", color: "transparent" });
+
+  // Clouds to dodge (hazards placed at various heights)
+  for (let i = 0; i < 40; i++) {
+    const x = 400 + i * 180 + (i % 3) * 50;
+    const y = 40 + ((i * 137) % (H - 120));
+    const w = 50 + (i % 3) * 20;
+    const h = 20 + (i % 2) * 10;
+    platforms.push({
+      x, y, w, h, type: "hazard",
+      color: "#888", label: "☁️",
+    });
   }
 
-  // Whomping Willow branches (hazards)
-  enemies.push({ x: 600, y: H - 200, w: 30, h: 30, type: "willow", dir: 1, speed: 0.8, range: 60, origX: 600, emoji: "🌳" });
-  enemies.push({ x: 1200, y: H - 260, w: 30, h: 30, type: "willow", dir: -1, speed: 1.0, range: 50, origX: 1200, emoji: "🌳" });
+  // Birds to dodge
+  for (let i = 0; i < 15; i++) {
+    const x = 600 + i * 450;
+    const y = 60 + ((i * 211) % (H - 140));
+    enemies.push({
+      x, y, w: 22, h: 22, type: "bird",
+      dir: -1, speed: 1.5 + (i % 3) * 0.5, range: 200,
+      origX: x, emoji: "🦅",
+    });
+  }
 
-  platforms.push({ x: 1900, y: H - 280, w: 80, h: 20, type: "finish", label: "🏰 Hogwarts" });
-  return { platforms, enemies, startX: 30, startY: H - 80 };
+  // Whomping Willow tree tops at intervals
+  for (let i = 0; i < 6; i++) {
+    const x = 800 + i * 1200;
+    platforms.push({
+      x, y: H - 100, w: 60, h: 70, type: "hazard",
+      color: "#3a5a2a", label: "🌳",
+    });
+  }
+
+  // Hogwarts castle - the finish line
+  platforms.push({ x: 7600, y: H / 2 - 30, w: 120, h: 60, type: "finish", label: "🏰 Hogwarts" });
+
+  return { platforms, enemies, startX: 60, startY: H / 2, flyingCar: true };
 }
 
 function gen_2_3_PipeBalance(H: number): LevelData {
