@@ -110,7 +110,7 @@ export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
     // World 2 - Chamber of Secrets (green/sewer tones)
     "2-0": { bgColors: ["#0a0f1a", "#151a25"], platformColor: "#5a4a3a", platformHighlight: "#8a7a5a", ambientParticles: { color: "hsl(40, 60%, 50%)", count: 5 } },
     "2-1": { bgColors: ["#0a1020", "#152040"], platformColor: "#8a8aaa", platformHighlight: "#b0b0d0", ambientParticles: { color: "hsl(220, 40%, 70%)", count: 8 } },
-    "2-2": { bgColors: ["#050a05", "#0a150a"], platformColor: "#3a5a3a", platformHighlight: "#5a7a5a", ambientParticles: { color: "hsl(120, 30%, 30%)", count: 3 } },
+    "2-2": { bgColors: ["#1a1008", "#2a1a10"], platformColor: "#6a5030", platformHighlight: "#8a7050", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 5 } },
     "2-3": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#3a3a3a", platformHighlight: "#5a5a6a", ambientParticles: { color: "hsl(150, 40%, 40%)", count: 4 } },
     "2-4": { bgColors: ["#0a1a0a", "#052a10"], platformColor: "#2a4a2a", platformHighlight: "#4a7a4a", ambientParticles: { color: "hsl(120, 60%, 40%)", count: 8 } },
     // World 3 - Prisoner of Azkaban (cold purples/blues)
