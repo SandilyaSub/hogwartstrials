@@ -13,6 +13,92 @@ interface GameCanvasProps {
   onBack: () => void;
 }
 
+function shadeColor(hex: string, amount: number): string {
+  const num = parseInt(hex.replace("#", ""), 16);
+  const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+  const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+  return `rgb(${r},${g},${b})`;
+}
+
+function getHairColor(charId: string): string {
+  const hairColors: Record<string, string> = {
+    harry: "#1a1a1a", hermione: "#6a3a1a", ron: "#c44a00",
+    luna: "#d4b870", ginny: "#b83000", neville: "#4a3520",
+    draco: "#e0d8b0", cedric: "#5a3a1a", cho: "#0a0a0a",
+  };
+  return hairColors[charId] || "#3a2a1a";
+}
+
+function drawCharacterDetails(ctx: CanvasRenderingContext2D, cx: number, cy: number, charId: string, pw: number, flash: boolean) {
+  switch (charId) {
+    case "harry":
+      // Lightning scar
+      ctx.strokeStyle = flash ? "#ddd" : "#c0392b";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx + pw / 2 - 1, cy - 1);
+      ctx.lineTo(cx + pw / 2 + 1, cy + 1);
+      ctx.lineTo(cx + pw / 2 - 1, cy + 3);
+      ctx.stroke();
+      // Glasses
+      ctx.strokeStyle = flash ? "#aaa" : "#333";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx + 9, cy + 5.5, 3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx + 15, cy + 5.5, 3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx + 12, cy + 5.5);
+      ctx.lineTo(cx + 12, cy + 5.5);
+      ctx.stroke();
+      break;
+    case "hermione":
+      // Bushy hair puffs
+      ctx.fillStyle = flash ? "#ddd" : "#6a3a1a";
+      ctx.beginPath(); ctx.arc(cx + 4, cy + 3, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + pw - 4, cy + 3, 4, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "ron":
+      // Freckles
+      ctx.fillStyle = flash ? "#ccc" : "#c08060";
+      ctx.fillRect(cx + 7, cy + 7, 1, 1);
+      ctx.fillRect(cx + 10, cy + 8, 1, 1);
+      ctx.fillRect(cx + 15, cy + 7, 1, 1);
+      break;
+    case "luna":
+      // Radish earrings
+      ctx.fillStyle = flash ? "#ddd" : "#e74c3c";
+      ctx.beginPath(); ctx.arc(cx + 4, cy + 9, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + pw - 4, cy + 9, 2, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "draco":
+      // Slicked-back hair point
+      ctx.fillStyle = flash ? "#ddd" : "#e0d8b0";
+      ctx.beginPath();
+      ctx.moveTo(cx + pw / 2 - 5, cy - 2);
+      ctx.lineTo(cx + pw / 2, cy - 5);
+      ctx.lineTo(cx + pw / 2 + 5, cy - 2);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case "neville":
+      // Rounder cheeks
+      ctx.fillStyle = flash ? "#fdd" : "#f0b0a0";
+      ctx.beginPath(); ctx.arc(cx + 6, cy + 7, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + pw - 6, cy + 7, 2, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "ginny":
+      // Long flowing hair
+      ctx.fillStyle = flash ? "#ddd" : "#b83000";
+      ctx.fillRect(cx + 3, cy + 2, 3, 12);
+      ctx.fillRect(cx + pw - 6, cy + 2, 3, 12);
+      break;
+  }
+}
+
 const GRAVITY = 0.6;
 const BASE_JUMP = -12;
 const BASE_SPEED = 5;
