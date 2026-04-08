@@ -9,7 +9,7 @@ const CharacterSelect = ({ onSelect }: CharacterSelectProps) => {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 overflow-y-auto">
       <div className="max-w-3xl w-full space-y-8 text-center animate-slide-up">
         <div>
           <div className="text-5xl mb-3 animate-wiggle inline-block">🧙</div>

@@ -34,7 +34,7 @@ const AuthScreen = ({ onAuth }: AuthScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 overflow-y-auto">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {Array.from({ length: 8 }).map((_, i) => (
