@@ -619,20 +619,67 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       });
 
       // Draw player
-      const charColor = profile.character?.color || "#c0392b";
-      ctx.fillStyle = playerHitFlash > 0 ? "#fff" : charColor;
-      ctx.fillRect(px + 4, py, PLAYER_W - 8, PLAYER_H);
-      ctx.fillStyle = "#f0d0a0";
-      ctx.beginPath();
-      ctx.arc(px + PLAYER_W / 2, py - 2, 8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.font = "10px serif";
-      ctx.textAlign = "center";
-      ctx.fillText(profile.character?.emoji || "⚡", px + PLAYER_W / 2, py - 12);
+      if (isFlyingCar) {
+        // Draw flying car
+        const cx = px, cy = py;
+        const carW = 50, carH = 28;
+        // Car body
+        ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + carH * 0.3);
+        ctx.lineTo(cx + 8, cy);
+        ctx.lineTo(cx + carW - 5, cy);
+        ctx.lineTo(cx + carW, cy + carH * 0.3);
+        ctx.lineTo(cx + carW + 5, cy + carH * 0.6);
+        ctx.lineTo(cx + carW, cy + carH);
+        ctx.lineTo(cx, cy + carH);
+        ctx.lineTo(cx - 3, cy + carH * 0.6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#2a6aaa";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        // Windows
+        ctx.fillStyle = "#aaddff";
+        ctx.fillRect(cx + 12, cy + 3, 14, 10);
+        ctx.fillRect(cx + 28, cy + 3, 12, 10);
+        // Wheels (flying, so they spin)
+        ctx.fillStyle = "#222";
+        ctx.beginPath();
+        ctx.arc(cx + 12, cy + carH + 2, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(cx + carW - 10, cy + carH + 2, 5, 0, Math.PI * 2);
+        ctx.fill();
+        // Exhaust particles
+        if (frameCount % 2 === 0) {
+          particles.push({
+            x: cx - 5, y: cy + carH * 0.6,
+            vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1.5,
+            life: 15, color: "rgba(200,200,200,0.6)",
+          });
+        }
+        // Character emoji in car
+        ctx.font = "14px serif";
+        ctx.textAlign = "center";
+        ctx.fillText(profile.character?.emoji || "⚡", cx + carW / 2, cy + carH / 2 + 4);
+      } else {
+        const charColor = profile.character?.color || "#c0392b";
+        ctx.fillStyle = playerHitFlash > 0 ? "#fff" : charColor;
+        ctx.fillRect(px + 4, py, PLAYER_W - 8, PLAYER_H);
+        ctx.fillStyle = "#f0d0a0";
+        ctx.beginPath();
+        ctx.arc(px + PLAYER_W / 2, py - 2, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.font = "10px serif";
+        ctx.textAlign = "center";
+        ctx.fillText(profile.character?.emoji || "⚡", px + PLAYER_W / 2, py - 12);
+      }
 
       // Pet
       if (profile.pet) {
         ctx.font = "12px serif";
+        ctx.textAlign = "center";
         ctx.fillText(profile.pet.emoji, px + PLAYER_W + 8, py - 4 + Math.sin(frameCount * 0.1) * 3);
       }
 
