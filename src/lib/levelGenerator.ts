@@ -1,4 +1,5 @@
 // Themed level generator for each world/level
+import { getWorldLevelGenerator } from "./worldGenerators";
 
 export interface Platform {
   x: number; y: number; w: number; h: number;
