@@ -188,6 +188,104 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       }
 
+      // ─── Boss Fight Logic ───
+      if (isBossArena && bossData) {
+        // Fire spells with number keys
+        spells.forEach((spell, i) => {
+          if (keys.has(spell.key) && spellCooldowns[i] <= 0) {
+            const dirX = bossX > px ? 1 : -1;
+            const dirY = (bossY - py) / (Math.abs(bossX - px) || 1);
+            projectiles.push({
+              x: px + PLAYER_W / 2, y: py + PLAYER_H / 2,
+              vx: spell.speed * dirX, vy: dirY * spell.speed * 0.3,
+              damage: spell.damage, color: spell.color, radius: 5,
+              fromPlayer: true, life: 120, emoji: spell.emoji,
+            });
+            spellCooldowns[i] = spell.cooldown;
+            // Muzzle flash particles
+            for (let p = 0; p < 4; p++) {
+              particles.push({
+                x: px + PLAYER_W / 2, y: py + PLAYER_H / 2,
+                vx: (Math.random() - 0.5) * 4 + dirX * 3,
+                vy: (Math.random() - 0.5) * 4,
+                life: 15, color: spell.color,
+              });
+            }
+          }
+        });
+        // Tick cooldowns
+        spellCooldowns.forEach((cd, i) => { if (cd > 0) spellCooldowns[i]--; });
+
+        // Boss movement - paces back and forth
+        bossX += bossDir * 1.5;
+        if (bossX < 300 || bossX > 520) bossDir *= -1;
+
+        // Boss attacks - fires projectiles at player
+        bossAttackTimer++;
+        if (bossAttackTimer >= bossData.attackSpeed) {
+          bossAttackTimer = 0;
+          const dx = px - bossX, dy = py - bossY;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          projectiles.push({
+            x: bossX + 20, y: bossY + 20,
+            vx: (dx / dist) * bossData.projectileSpeed,
+            vy: (dy / dist) * bossData.projectileSpeed,
+            damage: 10 + worldId * 2, color: bossData.color, radius: 6,
+            fromPlayer: false, life: 180, emoji: "💀",
+          });
+          // Extra projectiles for harder bosses
+          if (worldId >= 4) {
+            projectiles.push({
+              x: bossX + 20, y: bossY + 20,
+              vx: (dx / dist) * bossData.projectileSpeed * 0.8 + 1,
+              vy: (dy / dist) * bossData.projectileSpeed * 0.8 - 1,
+              damage: 8 + worldId, color: bossData.color, radius: 4,
+              fromPlayer: false, life: 150,
+            });
+          }
+        }
+
+        // Update projectiles
+        for (let i = projectiles.length - 1; i >= 0; i--) {
+          const proj = projectiles[i];
+          proj.x += proj.vx;
+          proj.y += proj.vy;
+          proj.life--;
+
+          if (proj.life <= 0) { projectiles.splice(i, 1); continue; }
+
+          // Player spell hits boss
+          if (proj.fromPlayer) {
+            const bossW = 40, bossH = 50;
+            if (proj.x > bossX && proj.x < bossX + bossW && proj.y > bossY && proj.y < bossY + bossH) {
+              bossHp -= proj.damage;
+              bossHitFlash = 10;
+              projectiles.splice(i, 1);
+              // Hit particles
+              for (let p = 0; p < 6; p++) {
+                particles.push({
+                  x: proj.x, y: proj.y,
+                  vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+                  life: 20, color: proj.color,
+                });
+              }
+              if (bossHp <= 0) { handleComplete(); return; }
+            }
+          } else {
+            // Boss projectile hits player
+            if (proj.x > px && proj.x < px + PLAYER_W && proj.y > py && proj.y < py + PLAYER_H) {
+              playerHp -= proj.damage;
+              playerHitFlash = 8;
+              projectiles.splice(i, 1);
+              if (playerHp <= 0) { handleDeath(); return; }
+            }
+          }
+        }
+
+        if (bossHitFlash > 0) bossHitFlash--;
+        if (playerHitFlash > 0) playerHitFlash--;
+      }
+
       // Fall death (into water for boat level, off-screen otherwise)
       const deathY = isBoatLevel ? H - 45 : H + 100;
       if (py > deathY) {
@@ -195,8 +293,12 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         else { handleDeath(); return; }
       }
 
-      cameraX += (px - W / 3 - cameraX) * 0.1;
-      if (cameraX < 0) cameraX = 0;
+      if (!isBossArena) {
+        cameraX += (px - W / 3 - cameraX) * 0.1;
+        if (cameraX < 0) cameraX = 0;
+      } else {
+        cameraX = 0; // Fixed camera for boss arena
+      }
 
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
