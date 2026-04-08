@@ -15,40 +15,44 @@ const LevelComplete = ({ worldId, levelIdx, isFinalBoss, onNextLevel, onWorldMap
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="text-center space-y-6 max-w-md">
-        <div className="text-6xl animate-float">
-          {isFinalBoss ? "🏆" : isWorldComplete ? "⭐" : "✨"}
-        </div>
-        
-        <div>
-          <h2 className="font-display text-3xl text-primary text-glow">
-            {isFinalBoss ? "YOU DEFEATED VOLDEMORT!" : isWorldComplete ? "World Complete!" : "Level Complete!"}
-          </h2>
-          <p className="text-foreground/60 mt-2 font-display">{level.name}</p>
-          {isFinalBoss && (
-            <p className="text-foreground/50 mt-4 italic">
-              "The boy who lived... has conquered the Dark Lord."
-            </p>
-          )}
-        </div>
+      <div className="text-center space-y-8 max-w-md animate-bounce-in">
+        <div className="card-illustrated p-10 space-y-6">
+          <div className="text-7xl animate-float">
+            {isFinalBoss ? "🏆" : isWorldComplete ? "⭐" : "✨"}
+          </div>
+          
+          <div>
+            <h2 className="font-display text-3xl font-bold text-primary text-glow">
+              {isFinalBoss ? "YOU DEFEATED VOLDEMORT!" : isWorldComplete ? "World Complete!" : "Level Complete!"}
+            </h2>
+            <p className="text-foreground/55 mt-3 font-display font-medium">{level.name}</p>
+            {isFinalBoss && (
+              <p className="text-foreground/45 mt-4 italic font-body text-base leading-relaxed">
+                "The boy who lived... has conquered the Dark Lord."
+              </p>
+            )}
+          </div>
 
-        <div className="text-primary text-sm font-display">+{levelIdx === 4 ? 50 : 20} 🪙</div>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary/12 text-primary font-display font-semibold text-sm">
+            +{levelIdx === 4 ? 50 : 20} 🪙
+          </div>
 
-        <div className="flex flex-col gap-3">
-          {!isFinalBoss && (
+          <div className="flex flex-col gap-3 pt-2">
+            {!isFinalBoss && (
+              <button
+                onClick={onNextLevel}
+                className="btn-storybook text-lg px-8 py-4 bg-primary text-primary-foreground animate-magic-pulse"
+              >
+                {isWorldComplete ? "🌍 Next World" : "➡️ Next Level"}
+              </button>
+            )}
             <button
-              onClick={onNextLevel}
-              className="font-display text-lg px-8 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all tracking-wider animate-magic-pulse"
+              onClick={onWorldMap}
+              className="btn-storybook px-8 py-3 border-2 border-border text-foreground/55 hover:text-foreground hover:border-primary/30 bg-transparent"
             >
-              {isWorldComplete ? "Next World" : "Next Level"}
+              🗺️ World Map
             </button>
-          )}
-          <button
-            onClick={onWorldMap}
-            className="font-display px-8 py-3 rounded-lg border border-border text-foreground/60 hover:text-foreground hover:border-primary/30 transition-all"
-          >
-            World Map
-          </button>
+          </div>
         </div>
       </div>
     </div>

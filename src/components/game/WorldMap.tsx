@@ -28,69 +28,88 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onResetGame }: WorldM
 
   return (
     <div className="min-h-screen bg-background p-4 overflow-y-auto">
-      {/* Header */}
       <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="font-display text-2xl text-primary text-glow">
-              {profile.character?.emoji} {profile.username}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {profile.house?.name} · {profile.pet?.emoji || "No pet"} · 🪙 {profile.coins}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <button onClick={toggleTheme} className="text-sm px-3 py-1.5 rounded bg-card border border-border hover:border-primary/30 font-display text-foreground/70">
-              {theme === "dark" ? "☀️" : "🌙"}
-            </button>
-            <button onClick={onOpenPetStore} className="text-sm px-3 py-1.5 rounded bg-card border border-border hover:border-primary/30 font-display text-foreground/70">
-              🐾 Pets
-            </button>
-            <button onClick={() => setShowMentor(true)} className="text-sm px-3 py-1.5 rounded bg-card border border-border hover:border-primary/30 font-display text-foreground/70">
-              🧙 Mentor
-            </button>
-            <button onClick={onResetGame} className="text-sm px-3 py-1.5 rounded bg-card border border-destructive/30 hover:border-destructive font-display text-destructive/70">
-              Reset
-            </button>
+        {/* Header card */}
+        <div className="card-illustrated p-5 mb-5 animate-slide-up">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center text-2xl">
+                {profile.character?.emoji || "⚡"}
+              </div>
+              <div>
+                <h1 className="font-display text-xl font-semibold text-primary text-glow">
+                  {profile.username}
+                </h1>
+                <p className="text-sm text-muted-foreground font-body">
+                  {profile.house?.name} · {profile.pet?.emoji || "No pet"} · 🪙 {profile.coins}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={toggleTheme} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground">
+                {theme === "dark" ? "☀️" : "🌙"}
+              </button>
+              <button onClick={onOpenPetStore} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
+                🐾
+              </button>
+              <button onClick={() => setShowMentor(true)} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
+                🧙
+              </button>
+              <button onClick={onResetGame} className="p-2.5 rounded-xl bg-secondary/60 border border-destructive/30 hover:border-destructive transition-all duration-300 text-destructive/60 hover:text-destructive font-display text-sm">
+                ↺
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Mentor popup */}
         {showMentor && (
-          <div className="mb-4 p-4 rounded-lg bg-card border border-primary/30 box-glow">
+          <div className="mb-4 card-illustrated p-5 box-glow animate-pop-in">
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-display text-sm text-primary">{profile.house?.mentor || "Albus Dumbledore"}</p>
-                <p className="text-foreground/70 mt-1 italic">"{randomQuote}"</p>
+                <p className="font-display text-sm font-semibold text-primary">{profile.house?.mentor || "Albus Dumbledore"}</p>
+                <p className="text-foreground/65 mt-2 italic font-body text-base leading-relaxed">"{randomQuote}"</p>
               </div>
-              <button onClick={() => setShowMentor(false)} className="text-muted-foreground hover:text-foreground">✕</button>
+              <button onClick={() => setShowMentor(false)} className="text-muted-foreground hover:text-foreground transition-colors p-1">✕</button>
             </div>
           </div>
         )}
 
         {/* Worlds */}
         <div className="space-y-3">
-          {WORLDS.map((world) => {
+          {WORLDS.map((world, wi) => {
             const completedCount = world.levels.filter(l => profile.completedLevels.includes(l.id)).length;
             const isExpanded = expandedWorld === world.id;
 
             return (
-              <div key={world.id} className="rounded-lg border border-border bg-card overflow-hidden">
+              <div
+                key={world.id}
+                className="card-illustrated overflow-hidden animate-slide-up transition-all duration-300"
+                style={{ animationDelay: `${wi * 0.06}s` }}
+              >
                 <button
                   onClick={() => setExpandedWorld(isExpanded ? null : world.id)}
-                  className="w-full p-4 text-left flex items-center gap-3 hover:bg-secondary/30 transition-colors"
+                  className="w-full p-4 text-left flex items-center gap-4 hover:bg-secondary/20 transition-all duration-300"
                 >
-                  <span className="text-2xl">{world.emoji}</span>
-                  <div className="flex-1">
-                    <h3 className="font-display text-lg" style={{ color: world.color }}>
+                  <div
+                    className="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+                    style={{ backgroundColor: `${world.color}18` }}
+                  >
+                    {world.emoji}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display text-base font-semibold" style={{ color: world.color }}>
                       World {world.id}: {world.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground">{world.subtitle} · {completedCount}/5 completed</p>
+                    <p className="text-xs text-muted-foreground font-body truncate">{world.subtitle} · {completedCount}/5</p>
                   </div>
-                  <div className="w-16 h-2 rounded-full bg-secondary overflow-hidden">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${(completedCount / 5) * 100}%`, backgroundColor: world.color }} />
+                  <div className="w-20 h-2.5 rounded-full bg-secondary/60 overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${(completedCount / 5) * 100}%`, backgroundColor: world.color }}
+                    />
                   </div>
-                  <span className="text-muted-foreground">{isExpanded ? "▲" : "▼"}</span>
+                  <span className="text-muted-foreground text-sm transition-transform duration-300" style={{ transform: isExpanded ? "rotate(180deg)" : "" }}>▾</span>
                 </button>
 
                 {isExpanded && (
@@ -104,18 +123,23 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onResetGame }: WorldM
                           key={level.id}
                           onClick={() => unlocked && onStartLevel(world.id, idx)}
                           disabled={!unlocked}
-                          className={`w-full p-3 rounded text-left flex items-center gap-3 transition-all ${
-                            completed ? "bg-magic-green/10 border border-magic-green/30" :
-                            unlocked ? "bg-secondary/50 border border-border hover:border-primary/40" :
-                            "bg-secondary/20 border border-border/50 opacity-40 cursor-not-allowed"
+                          className={`w-full p-3.5 rounded-xl text-left flex items-center gap-3 transition-all duration-300 animate-pop-in ${
+                            completed ? "bg-magic-green/10 border-2 border-magic-green/25" :
+                            unlocked ? "bg-secondary/40 border-2 border-border hover:border-primary/30 hover:bg-secondary/60" :
+                            "bg-secondary/15 border-2 border-border/30 opacity-35 cursor-not-allowed"
                           }`}
+                          style={{ animationDelay: `${idx * 0.05}s` }}
                         >
                           <span className="text-lg">{completed ? "✅" : level.isBoss ? "💀" : unlocked ? "🔓" : "🔒"}</span>
-                          <div className="flex-1">
-                            <p className="font-display text-sm text-foreground">{level.name}</p>
-                            <p className="text-xs text-muted-foreground">{level.description}</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-display text-sm font-medium text-foreground">{level.name}</p>
+                            <p className="text-xs text-muted-foreground font-body truncate">{level.description}</p>
                           </div>
-                          {level.isBoss && <span className="text-xs font-display text-destructive">BOSS</span>}
+                          {level.isBoss && (
+                            <span className="text-xs font-display font-semibold text-destructive px-2.5 py-1 rounded-full bg-destructive/10">
+                              BOSS
+                            </span>
+                          )}
                         </button>
                       );
                     })}

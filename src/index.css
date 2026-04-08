@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,115 +6,128 @@
 
 @layer base {
   :root {
-    --background: 230 25% 8%;
-    --foreground: 45 30% 90%;
+    --background: 250 30% 12%;
+    --foreground: 50 40% 92%;
 
-    --card: 230 20% 12%;
-    --card-foreground: 45 30% 90%;
+    --card: 250 25% 16%;
+    --card-foreground: 50 40% 92%;
 
-    --popover: 230 20% 14%;
-    --popover-foreground: 45 30% 90%;
+    --popover: 250 25% 18%;
+    --popover-foreground: 50 40% 92%;
 
-    --primary: 45 80% 55%;
-    --primary-foreground: 230 25% 8%;
+    --primary: 42 90% 58%;
+    --primary-foreground: 250 30% 10%;
 
-    --secondary: 230 15% 18%;
-    --secondary-foreground: 45 30% 85%;
+    --secondary: 260 20% 22%;
+    --secondary-foreground: 50 30% 85%;
 
-    --muted: 230 15% 15%;
-    --muted-foreground: 230 10% 50%;
+    --muted: 255 18% 20%;
+    --muted-foreground: 250 12% 55%;
 
-    --accent: 280 40% 45%;
-    --accent-foreground: 45 30% 95%;
+    --accent: 290 55% 55%;
+    --accent-foreground: 50 40% 95%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 230 15% 20%;
-    --input: 230 15% 18%;
-    --ring: 45 80% 55%;
+    --border: 255 18% 24%;
+    --input: 255 18% 22%;
+    --ring: 42 90% 58%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;
+
+    /* Storybook palette */
+    --storybook-warm: 35 60% 50%;
+    --storybook-sky: 210 60% 55%;
+    --storybook-forest: 150 45% 38%;
+    --storybook-rose: 340 55% 55%;
+    --storybook-cream: 40 50% 90%;
 
     /* House colors */
-    --gryffindor: 0 70% 45%;
-    --gryffindor-accent: 45 90% 50%;
-    --slytherin: 140 50% 30%;
-    --slytherin-accent: 0 0% 75%;
-    --ravenclaw: 220 60% 40%;
-    --ravenclaw-accent: 30 50% 55%;
-    --hufflepuff: 45 80% 50%;
-    --hufflepuff-accent: 25 30% 25%;
+    --gryffindor: 0 70% 48%;
+    --gryffindor-accent: 42 90% 55%;
+    --slytherin: 145 50% 35%;
+    --slytherin-accent: 0 0% 78%;
+    --ravenclaw: 220 60% 45%;
+    --ravenclaw-accent: 35 55% 58%;
+    --hufflepuff: 42 80% 52%;
+    --hufflepuff-accent: 28 30% 28%;
 
     /* Game-specific */
-    --magic-glow: 45 80% 55%;
-    --magic-blue: 220 80% 60%;
-    --magic-green: 140 60% 45%;
-    --health: 0 70% 50%;
-    --mana: 220 80% 60%;
+    --magic-glow: 42 90% 58%;
+    --magic-blue: 220 80% 62%;
+    --magic-green: 145 60% 48%;
+    --health: 0 70% 55%;
+    --mana: 220 80% 62%;
 
-    --sidebar-background: 230 20% 10%;
-    --sidebar-foreground: 45 30% 90%;
-    --sidebar-primary: 45 80% 55%;
-    --sidebar-primary-foreground: 230 25% 8%;
-    --sidebar-accent: 230 15% 18%;
-    --sidebar-accent-foreground: 45 30% 90%;
-    --sidebar-border: 230 15% 20%;
-    --sidebar-ring: 45 80% 55%;
+    --sidebar-background: 250 25% 14%;
+    --sidebar-foreground: 50 40% 92%;
+    --sidebar-primary: 42 90% 58%;
+    --sidebar-primary-foreground: 250 30% 10%;
+    --sidebar-accent: 260 20% 22%;
+    --sidebar-accent-foreground: 50 40% 92%;
+    --sidebar-border: 255 18% 24%;
+    --sidebar-ring: 42 90% 58%;
   }
 
   .light {
-    --background: 40 30% 95%;
-    --foreground: 230 25% 15%;
+    --background: 42 35% 94%;
+    --foreground: 250 25% 18%;
 
-    --card: 40 20% 90%;
-    --card-foreground: 230 25% 15%;
+    --card: 42 30% 88%;
+    --card-foreground: 250 25% 18%;
 
-    --popover: 40 20% 92%;
-    --popover-foreground: 230 25% 15%;
+    --popover: 42 25% 90%;
+    --popover-foreground: 250 25% 18%;
 
-    --primary: 45 80% 40%;
-    --primary-foreground: 40 30% 95%;
+    --primary: 42 80% 42%;
+    --primary-foreground: 42 35% 95%;
 
-    --secondary: 40 15% 85%;
-    --secondary-foreground: 230 15% 25%;
+    --secondary: 42 18% 82%;
+    --secondary-foreground: 250 18% 28%;
 
-    --muted: 40 10% 88%;
-    --muted-foreground: 230 10% 40%;
+    --muted: 42 15% 86%;
+    --muted-foreground: 250 12% 42%;
 
-    --accent: 280 40% 50%;
-    --accent-foreground: 40 30% 95%;
+    --accent: 290 50% 52%;
+    --accent-foreground: 42 35% 95%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 70% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 40 15% 80%;
-    --input: 40 15% 82%;
-    --ring: 45 80% 40%;
+    --border: 42 20% 78%;
+    --input: 42 18% 80%;
+    --ring: 42 80% 42%;
 
-    --gryffindor: 0 70% 45%;
-    --gryffindor-accent: 45 90% 50%;
-    --slytherin: 140 50% 30%;
-    --slytherin-accent: 0 0% 75%;
-    --ravenclaw: 220 60% 40%;
-    --ravenclaw-accent: 30 50% 55%;
-    --hufflepuff: 45 80% 50%;
-    --hufflepuff-accent: 25 30% 25%;
+    --storybook-warm: 35 60% 50%;
+    --storybook-sky: 210 55% 50%;
+    --storybook-forest: 150 42% 35%;
+    --storybook-rose: 340 50% 52%;
+    --storybook-cream: 40 40% 85%;
 
-    --magic-glow: 45 80% 40%;
-    --magic-blue: 220 80% 50%;
-    --magic-green: 140 60% 35%;
-    --health: 0 70% 50%;
-    --mana: 220 80% 50%;
+    --gryffindor: 0 70% 48%;
+    --gryffindor-accent: 42 90% 55%;
+    --slytherin: 145 50% 35%;
+    --slytherin-accent: 0 0% 78%;
+    --ravenclaw: 220 60% 45%;
+    --ravenclaw-accent: 35 55% 58%;
+    --hufflepuff: 42 80% 52%;
+    --hufflepuff-accent: 28 30% 28%;
 
-    --sidebar-background: 40 20% 92%;
-    --sidebar-foreground: 230 25% 15%;
-    --sidebar-primary: 45 80% 40%;
-    --sidebar-primary-foreground: 40 30% 95%;
-    --sidebar-accent: 40 15% 85%;
-    --sidebar-accent-foreground: 230 25% 15%;
-    --sidebar-border: 40 15% 80%;
-    --sidebar-ring: 45 80% 40%;
+    --magic-glow: 42 80% 42%;
+    --magic-blue: 220 75% 50%;
+    --magic-green: 145 55% 38%;
+    --health: 0 70% 52%;
+    --mana: 220 75% 50%;
+
+    --sidebar-background: 42 25% 90%;
+    --sidebar-foreground: 250 25% 18%;
+    --sidebar-primary: 42 80% 42%;
+    --sidebar-primary-foreground: 42 35% 95%;
+    --sidebar-accent: 42 18% 82%;
+    --sidebar-accent-foreground: 250 25% 18%;
+    --sidebar-border: 42 20% 78%;
+    --sidebar-ring: 42 80% 42%;
   }
 }
 
@@ -130,46 +143,92 @@
 
 @layer utilities {
   .font-display {
-    font-family: 'Cinzel', serif;
+    font-family: 'Fredoka', 'Cinzel', sans-serif;
   }
   .font-body {
-    font-family: 'Crimson Text', serif;
+    font-family: 'Quicksand', sans-serif;
+  }
+  .font-classic {
+    font-family: 'Cinzel', serif;
   }
   .text-glow {
-    text-shadow: 0 0 10px hsl(var(--magic-glow) / 0.6), 0 0 30px hsl(var(--magic-glow) / 0.3);
+    text-shadow: 0 0 12px hsl(var(--magic-glow) / 0.5), 0 0 35px hsl(var(--magic-glow) / 0.2);
   }
   .box-glow {
-    box-shadow: 0 0 15px hsl(var(--magic-glow) / 0.3), 0 0 40px hsl(var(--magic-glow) / 0.1);
+    box-shadow: 0 0 20px hsl(var(--magic-glow) / 0.25), 0 0 50px hsl(var(--magic-glow) / 0.08);
+  }
+  .card-illustrated {
+    background: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card) / 0.8));
+    border: 2px solid hsl(var(--border));
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 20px hsl(var(--background) / 0.5), inset 0 1px 0 hsl(var(--foreground) / 0.05);
+  }
+  .btn-storybook {
+    @apply font-display font-semibold tracking-wide rounded-2xl transition-all duration-300;
+    box-shadow: 0 4px 14px hsl(var(--primary) / 0.3), 0 2px 4px hsl(var(--background) / 0.2);
+  }
+  .btn-storybook:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px hsl(var(--primary) / 0.4), 0 3px 6px hsl(var(--background) / 0.3);
+  }
+  .btn-storybook:active {
+    transform: translateY(0) scale(0.98);
   }
   .gryffindor-glow {
-    box-shadow: 0 0 15px hsl(var(--gryffindor) / 0.5);
+    box-shadow: 0 0 18px hsl(var(--gryffindor) / 0.45);
   }
   .slytherin-glow {
-    box-shadow: 0 0 15px hsl(var(--slytherin) / 0.5);
+    box-shadow: 0 0 18px hsl(var(--slytherin) / 0.45);
   }
   .ravenclaw-glow {
-    box-shadow: 0 0 15px hsl(var(--ravenclaw) / 0.5);
+    box-shadow: 0 0 18px hsl(var(--ravenclaw) / 0.45);
   }
   .hufflepuff-glow {
-    box-shadow: 0 0 15px hsl(var(--hufflepuff) / 0.5);
+    box-shadow: 0 0 18px hsl(var(--hufflepuff) / 0.45);
   }
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-12px); }
 }
 
 @keyframes sparkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
 }
 
 @keyframes magicPulse {
-  0%, 100% { box-shadow: 0 0 5px hsl(var(--magic-glow) / 0.3); }
-  50% { box-shadow: 0 0 20px hsl(var(--magic-glow) / 0.6), 0 0 40px hsl(var(--magic-glow) / 0.2); }
+  0%, 100% { box-shadow: 0 4px 14px hsl(var(--magic-glow) / 0.25); }
+  50% { box-shadow: 0 4px 28px hsl(var(--magic-glow) / 0.5), 0 0 50px hsl(var(--magic-glow) / 0.15); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.08); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .animate-float { animation: float 3s ease-in-out infinite; }
 .animate-sparkle { animation: sparkle 2s ease-in-out infinite; }
-.animate-magic-pulse { animation: magicPulse 2s ease-in-out infinite; }
+.animate-magic-pulse { animation: magicPulse 2.5s ease-in-out infinite; }
+.animate-wiggle { animation: wiggle 2s ease-in-out infinite; }
+.animate-slide-up { animation: slideUp 0.5s ease-out forwards; }
+.animate-pop-in { animation: popIn 0.4s ease-out forwards; }
+.animate-bounce-in { animation: bounceIn 0.6s ease-out forwards; }
