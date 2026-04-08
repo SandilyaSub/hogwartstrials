@@ -6,9 +6,10 @@ interface TitleScreenProps {
   onNewGame: () => void;
   onContinue: () => void;
   hasSave: boolean;
+  onSignOut?: () => void;
 }
 
-const TitleScreen = ({ onNewGame, onContinue, hasSave }: TitleScreenProps) => {
+const TitleScreen = ({ onNewGame, onContinue, hasSave, onSignOut }: TitleScreenProps) => {
   const { theme, toggleTheme } = useTheme();
   const handleAction = (action: () => void) => {
     if (!isMusicPlaying()) startMusic();
@@ -71,6 +72,11 @@ const TitleScreen = ({ onNewGame, onContinue, hasSave }: TitleScreenProps) => {
           <span className="flex items-center gap-1.5">🏰 <span className="text-foreground/60">35 Levels</span></span>
           <span className="flex items-center gap-1.5">🐾 <span className="text-foreground/60">7 Pets</span></span>
         </div>
+        {onSignOut && (
+          <button onClick={onSignOut} className="mt-3 text-xs text-muted-foreground/50 hover:text-muted-foreground font-body transition-colors">
+            Sign Out
+          </button>
+        )}
       </div>
 
       {/* Floating particles */}
