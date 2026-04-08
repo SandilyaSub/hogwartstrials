@@ -224,23 +224,24 @@ function gen_1_1_HogwartsArrival(H: number): LevelData {
 }
 
 function gen_1_2_StaircaseMaze(H: number): LevelData {
-  // Moving staircases - each staircase is a group of ascending steps that move
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Starting landing
   platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal", color: "#4a4a5a", label: "🏰" });
 
-  // Build actual staircases - groups of 3-4 steps that move together
+  // More staircases for a longer level
   const staircases = [
-    { baseX: 140, baseY: H - 50, steps: 4, dir: 1, range: 40 },
-    { baseX: 350, baseY: H - 130, steps: 3, dir: -1, range: 50 },
-    { baseX: 520, baseY: H - 80, steps: 4, dir: 1, range: 35 },
-    { baseX: 730, baseY: H - 160, steps: 3, dir: -1, range: 45 },
-    { baseX: 900, baseY: H - 110, steps: 4, dir: 1, range: 55 },
-    { baseX: 1100, baseY: H - 200, steps: 3, dir: -1, range: 40 },
-    { baseX: 1280, baseY: H - 140, steps: 4, dir: 1, range: 50 },
-    { baseX: 1460, baseY: H - 230, steps: 3, dir: -1, range: 35 },
+    { baseX: 140, baseY: H - 50, steps: 4, dir: 1, range: 35 },
+    { baseX: 350, baseY: H - 130, steps: 3, dir: -1, range: 45 },
+    { baseX: 520, baseY: H - 80, steps: 4, dir: 1, range: 30 },
+    { baseX: 730, baseY: H - 160, steps: 3, dir: -1, range: 40 },
+    { baseX: 900, baseY: H - 110, steps: 4, dir: 1, range: 50 },
+    { baseX: 1100, baseY: H - 200, steps: 3, dir: -1, range: 35 },
+    { baseX: 1280, baseY: H - 140, steps: 4, dir: 1, range: 45 },
+    { baseX: 1460, baseY: H - 230, steps: 3, dir: -1, range: 30 },
+    { baseX: 1640, baseY: H - 170, steps: 4, dir: 1, range: 40 },
+    { baseX: 1820, baseY: H - 260, steps: 3, dir: -1, range: 50 },
+    { baseX: 2000, baseY: H - 200, steps: 4, dir: 1, range: 35 },
   ];
 
   staircases.forEach((sc, si) => {
@@ -256,7 +257,7 @@ function gen_1_2_StaircaseMaze(H: number): LevelData {
       };
       platforms.push(p);
     }
-    // Railing post at top of each staircase
+    // Candle at top
     const topX = sc.baseX + (sc.steps - 1) * 35 + 20;
     const topY = sc.baseY - (sc.steps - 1) * 28 - 16;
     platforms.push({
@@ -265,17 +266,19 @@ function gen_1_2_StaircaseMaze(H: number): LevelData {
     });
   });
 
-  // Landings between staircases (safe spots)
+  // Landings between staircases
   platforms.push({ x: 320, y: H - 120, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
   platforms.push({ x: 700, y: H - 150, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
   platforms.push({ x: 1070, y: H - 190, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
   platforms.push({ x: 1430, y: H - 220, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
+  platforms.push({ x: 1800, y: H - 250, w: 50, h: 14, type: "normal", color: "#5a5a6a" });
 
-  // Portraits that move (enemies)
+  // Portraits that move
   enemies.push({ x: 400, y: H - 170, w: 20, h: 20, type: "portrait", dir: 1, speed: 0.5, range: 40, origX: 400, emoji: "🖼️" });
   enemies.push({ x: 1000, y: H - 240, w: 20, h: 20, type: "portrait", dir: -1, speed: 0.6, range: 50, origX: 1000, emoji: "🖼️" });
+  enemies.push({ x: 1600, y: H - 280, w: 20, h: 20, type: "portrait", dir: 1, speed: 0.5, range: 45, origX: 1600, emoji: "🖼️" });
 
-  platforms.push({ x: 1600, y: H - 280, w: 80, h: 20, type: "finish", label: "🚪 Common Room" });
+  platforms.push({ x: 2200, y: H - 320, w: 80, h: 20, type: "finish", label: "🚪 Common Room" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
