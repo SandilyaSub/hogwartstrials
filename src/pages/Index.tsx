@@ -1,16 +1,118 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useGameState } from "@/hooks/useGameState";
+import { WORLDS } from "@/lib/gameData";
+import TitleScreen from "@/components/game/TitleScreen";
+import ProfileCreation from "@/components/game/ProfileCreation";
+import CharacterSelect from "@/components/game/CharacterSelect";
+import HouseSelect from "@/components/game/HouseSelect";
+import WorldMap from "@/components/game/WorldMap";
+import PetStore from "@/components/game/PetStore";
+import GameCanvas from "@/components/game/GameCanvas";
+import LevelComplete from "@/components/game/LevelComplete";
+import GameOver from "@/components/game/GameOver";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
-  return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
-  );
+const Index = () => {
+  const {
+    screen, setScreen,
+    profile,
+    setUsername, selectCharacter, selectHouse, selectPet,
+    completeLevel, startLevel, resetGame,
+    hasSave,
+  } = useGameState();
+
+  const currentWorld = WORLDS[profile.currentWorld - 1];
+  const currentLevel = currentWorld?.levels[profile.currentLevel];
+
+  switch (screen) {
+    case "title":
+      return (
+        <TitleScreen
+          hasSave={hasSave}
+          onNewGame={() => { resetGame(); setScreen("profile"); }}
+          onContinue={() => setScreen("worldmap")}
+        />
+      );
+
+    case "profile":
+      return (
+        <ProfileCreation onSubmit={(name) => { setUsername(name); setScreen("character"); }} />
+      );
+
+    case "character":
+      return (
+        <CharacterSelect onSelect={(id) => { selectCharacter(id); setScreen("house"); }} />
+      );
+
+    case "house":
+      return (
+        <HouseSelect onSelect={(id) => { selectHouse(id); setScreen("worldmap"); }} />
+      );
+
+    case "worldmap":
+      return (
+        <WorldMap
+          profile={profile}
+          onStartLevel={startLevel}
+          onOpenPetStore={() => setScreen("petstore")}
+          onResetGame={resetGame}
+        />
+      );
+
+    case "petstore":
+      return (
+        <PetStore
+          profile={profile}
+          onSelectPet={selectPet}
+          onBack={() => setScreen("worldmap")}
+        />
+      );
+
+    case "playing":
+      return (
+        <GameCanvas
+          profile={profile}
+          worldId={profile.currentWorld}
+          levelIdx={profile.currentLevel}
+          onComplete={() => {
+            completeLevel(currentLevel.id);
+            setScreen("levelComplete");
+          }}
+          onDeath={() => setScreen("gameOver")}
+          onBack={() => setScreen("worldmap")}
+        />
+      );
+
+    case "levelComplete": {
+      const isFinalBoss = profile.currentWorld === 7 && profile.currentLevel === 4;
+      return (
+        <LevelComplete
+          worldId={profile.currentWorld}
+          levelIdx={profile.currentLevel}
+          isFinalBoss={isFinalBoss}
+          onNextLevel={() => {
+            if (profile.currentLevel < 4) {
+              startLevel(profile.currentWorld, profile.currentLevel + 1);
+            } else if (profile.currentWorld < 7) {
+              startLevel(profile.currentWorld + 1, 0);
+            } else {
+              setScreen("worldmap");
+            }
+          }}
+          onWorldMap={() => setScreen("worldmap")}
+        />
+      );
+    }
+
+    case "gameOver":
+      return (
+        <GameOver
+          onRetry={() => startLevel(profile.currentWorld, profile.currentLevel)}
+          onWorldMap={() => setScreen("worldmap")}
+        />
+      );
+
+    default:
+      return null;
+  }
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
