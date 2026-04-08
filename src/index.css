@@ -62,6 +62,60 @@
     --sidebar-border: 230 15% 20%;
     --sidebar-ring: 45 80% 55%;
   }
+
+  .light {
+    --background: 40 30% 95%;
+    --foreground: 230 25% 15%;
+
+    --card: 40 20% 90%;
+    --card-foreground: 230 25% 15%;
+
+    --popover: 40 20% 92%;
+    --popover-foreground: 230 25% 15%;
+
+    --primary: 45 80% 40%;
+    --primary-foreground: 40 30% 95%;
+
+    --secondary: 40 15% 85%;
+    --secondary-foreground: 230 15% 25%;
+
+    --muted: 40 10% 88%;
+    --muted-foreground: 230 10% 40%;
+
+    --accent: 280 40% 50%;
+    --accent-foreground: 40 30% 95%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 15% 80%;
+    --input: 40 15% 82%;
+    --ring: 45 80% 40%;
+
+    --gryffindor: 0 70% 45%;
+    --gryffindor-accent: 45 90% 50%;
+    --slytherin: 140 50% 30%;
+    --slytherin-accent: 0 0% 75%;
+    --ravenclaw: 220 60% 40%;
+    --ravenclaw-accent: 30 50% 55%;
+    --hufflepuff: 45 80% 50%;
+    --hufflepuff-accent: 25 30% 25%;
+
+    --magic-glow: 45 80% 40%;
+    --magic-blue: 220 80% 50%;
+    --magic-green: 140 60% 35%;
+    --health: 0 70% 50%;
+    --mana: 220 80% 50%;
+
+    --sidebar-background: 40 20% 92%;
+    --sidebar-foreground: 230 25% 15%;
+    --sidebar-primary: 45 80% 40%;
+    --sidebar-primary-foreground: 40 30% 95%;
+    --sidebar-accent: 40 15% 85%;
+    --sidebar-accent-foreground: 230 25% 15%;
+    --sidebar-border: 40 15% 80%;
+    --sidebar-ring: 45 80% 40%;
+  }
 }
 
 @layer base {
