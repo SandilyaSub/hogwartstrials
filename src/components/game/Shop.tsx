@@ -4,10 +4,11 @@ import type { PlayerProfile } from "@/hooks/useGameState";
 interface ShopProps {
   profile: PlayerProfile;
   onPurchase: (item: ShopItem) => void;
+  onActivate: (item: ShopItem) => void;
   onBack: () => void;
 }
 
-const Shop = ({ profile, onPurchase, onBack }: ShopProps) => {
+const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
   const purchased = profile.purchasedUpgrades || {};
   const categories = ["upgrade", "consumable", "theme", "song"] as const;
 
@@ -46,8 +47,14 @@ const Shop = ({ profile, onPurchase, onBack }: ShopProps) => {
                   return (
                     <button
                       key={item.id}
-                      onClick={() => !owned && canAfford && onPurchase(item)}
-                      disabled={owned || !canAfford}
+                      onClick={() => {
+                        if (owned && (item.type === "theme" || item.type === "song")) {
+                          onActivate(item);
+                        } else if (!owned && canAfford) {
+                          onPurchase(item);
+                        }
+                      }}
+                      disabled={(!owned && !canAfford) || (owned && item.type !== "theme" && item.type !== "song")}
                       className={`card-illustrated p-4 text-left transition-all duration-300 animate-pop-in ${
                         (isActiveTheme || isActiveSong) ? "!border-primary box-glow !bg-primary/8" :
                         owned ? "!opacity-60" :

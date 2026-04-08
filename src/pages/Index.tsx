@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useGameState } from "@/hooks/useGameState";
 import { WORLDS } from "@/lib/gameData";
 import { setSong } from "@/lib/musicEngine";
+import { SHOP_ITEMS } from "@/lib/shopData";
 import AuthScreen from "@/components/game/AuthScreen";
 import TitleScreen from "@/components/game/TitleScreen";
 import ProfileCreation from "@/components/game/ProfileCreation";
@@ -21,7 +22,7 @@ const Index = () => {
   const { user, loading, signUp, signIn, signOut } = useAuth();
   const {
     screen, setScreen,
-    profile,
+    profile, saveProfile,
     setUsername, selectCharacter, selectHouse, selectPet,
     completeLevel, startLevel, resetGame, purchaseItem,
     hasSave, dbLoaded,
@@ -31,6 +32,24 @@ const Index = () => {
   useEffect(() => {
     setSong(profile.activeSong || "default");
   }, [profile.activeSong]);
+
+  // Apply purchased theme colors to CSS variables
+  useEffect(() => {
+    const themeItem = SHOP_ITEMS.find(i => i.id === profile.activeTheme && i.type === "theme");
+    const root = document.documentElement;
+    if (themeItem?.themeColors) {
+      root.style.setProperty("--primary", themeItem.themeColors.primary);
+      root.style.setProperty("--background", themeItem.themeColors.background);
+      root.style.setProperty("--card", themeItem.themeColors.card);
+      root.style.setProperty("--ring", themeItem.themeColors.primary);
+    } else {
+      // Reset to default dark theme
+      root.style.removeProperty("--primary");
+      root.style.removeProperty("--background");
+      root.style.removeProperty("--card");
+      root.style.removeProperty("--ring");
+    }
+  }, [profile.activeTheme]);
 
   if (loading || (user && !dbLoaded)) {
     return (
@@ -106,6 +125,12 @@ const Index = () => {
         <Shop
           profile={profile}
           onPurchase={purchaseItem}
+          onActivate={(item) => {
+            const updates: Partial<typeof profile> = {};
+            if (item.type === "theme") updates.activeTheme = item.id;
+            if (item.type === "song") updates.activeSong = item.id;
+            saveProfile({ ...profile, ...updates });
+          }}
           onBack={() => setScreen("worldmap")}
         />
       );
