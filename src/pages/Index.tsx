@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useGameState } from "@/hooks/useGameState";
 import { WORLDS } from "@/lib/gameData";
 import { setSong } from "@/lib/musicEngine";
+import { SHOP_ITEMS } from "@/lib/shopData";
 import AuthScreen from "@/components/game/AuthScreen";
 import TitleScreen from "@/components/game/TitleScreen";
 import ProfileCreation from "@/components/game/ProfileCreation";
