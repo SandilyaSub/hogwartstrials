@@ -152,6 +152,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let px = startX, py = startY, vx = 0, vy = 0;
     let onGround = false;
     let cameraX = 0;
+    let cameraY = 0;
     let hasRevive = petEffect.type === "revive";
     const particles: Particle[] = [];
     let frameCount = 0;
@@ -448,6 +449,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       } else if (!isBossArena) {
         cameraX += (px - W / 3 - cameraX) * 0.1;
         if (cameraX < 0) cameraX = 0;
+        // Vertical camera: follow player when above center of screen
+        const targetCameraY = Math.min(0, -(py - H / 2.5));
+        cameraY += (targetCameraY - cameraY) * 0.1;
       } else {
         cameraX = 0; // Fixed camera for boss arena
       }
@@ -518,7 +522,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       }
 
       ctx.save();
-      ctx.translate(-cameraX, 0);
+      ctx.translate(-cameraX, cameraY);
 
       // Water for boat level
       if (isBoatLevel) {
