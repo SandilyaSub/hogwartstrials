@@ -311,30 +311,35 @@ function gen_3_3_ForestRun(H: number): LevelData {
 
   platforms.push({ x: 0, y: H - 40, w: 140, h: 40, type: "normal", color: "#2a3a1a" });
 
-  // Forest floor with tree root platforms
-  for (let i = 0; i < 16; i++) {
-    const x = 160 + i * 110;
-    const y = H - 50 - Math.random() * 40 - (i % 3) * 30;
+  // Longer forest floor with tree root platforms
+  for (let i = 0; i < 24; i++) {
+    const x = 160 + i * 100;
+    const y = H - 50 - (i % 4) * 15 - (i % 3) * 20;
     platforms.push({
-      x, y, w: 60 + Math.random() * 30, h: 14,
-      type: "normal", color: "#3a2a1a",
+      x, y, w: 55 + (i % 3) * 15, h: 14,
+      type: i % 7 === 0 ? "disappearing" : "normal",
+      timer: 0, visible: true,
+      color: "#3a2a1a",
+      label: i % 5 === 0 ? "🍄" : "",
     });
   }
 
-  // Tree branch platforms (higher)
-  for (let i = 0; i < 8; i++) {
+  // Tree branch platforms (higher) — more of them
+  for (let i = 0; i < 12; i++) {
     platforms.push({
-      x: 200 + i * 220, y: H - 140 - (i % 2) * 40,
+      x: 200 + i * 200, y: H - 130 - (i % 3) * 30,
       w: 50, h: 10, type: "normal", color: "#4a3a1a", label: "🌿",
     });
   }
 
-  // Spiders and centaurs
-  enemies.push({ x: 400, y: H - 78, w: 22, h: 22, type: "spider", dir: 1, speed: 0.8, range: 60, origX: 400, emoji: "🕷️" });
-  enemies.push({ x: 800, y: H - 78, w: 24, h: 24, type: "centaur", dir: -1, speed: 1.2, range: 80, origX: 800, emoji: "🐴" });
-  enemies.push({ x: 1300, y: H - 78, w: 22, h: 22, type: "spider", dir: 1, speed: 1.0, range: 70, origX: 1300, emoji: "🕷️" });
+  // Spiders, centaurs, and wolves
+  enemies.push({ x: 300, y: H - 78, w: 20, h: 20, type: "spider", dir: 1, speed: 0.7, range: 50, origX: 300, emoji: "🕷️" });
+  enemies.push({ x: 700, y: H - 78, w: 24, h: 24, type: "centaur", dir: -1, speed: 1.0, range: 70, origX: 700, emoji: "🐴" });
+  enemies.push({ x: 1100, y: H - 78, w: 20, h: 20, type: "spider", dir: 1, speed: 0.9, range: 60, origX: 1100, emoji: "🕷️" });
+  enemies.push({ x: 1500, y: H - 150, w: 22, h: 22, type: "spider", dir: -1, speed: 1.1, range: 55, origX: 1500, emoji: "🕷️" });
+  enemies.push({ x: 1900, y: H - 78, w: 24, h: 24, type: "wolf", dir: 1, speed: 1.3, range: 80, origX: 1900, emoji: "🐺" });
 
-  platforms.push({ x: 1940, y: H - 100, w: 80, h: 20, type: "finish", label: "🌙 Clearing" });
+  platforms.push({ x: 2600, y: H - 100, w: 80, h: 20, type: "finish", label: "🌙 Clearing" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
@@ -371,24 +376,36 @@ function gen_4_1_DragonArena(H: number): LevelData {
 
   platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal" });
 
-  // Rocky arena with fire hazards
-  for (let i = 0; i < 14; i++) {
-    const x = 140 + i * 120;
-    const y = H - 70 - (i % 3) * 30 - i * 5;
-    const isFire = i % 5 === 3;
-    platforms.push({
-      x, y, w: 65 + (i % 2) * 15, h: 14,
-      type: isFire ? "hazard" : "normal",
+  // Longer rocky arena with fire hazards and varied terrain
+  for (let i = 0; i < 22; i++) {
+    const x = 140 + i * 110;
+    const y = H - 70 - (i % 3) * 30 - i * 4;
+    const isFire = i % 6 === 3;
+    const isMoving = i % 5 === 2;
+    const p: Platform = {
+      x, y, w: 60 + (i % 2) * 15, h: 14,
+      type: isFire ? "hazard" : isMoving ? "moving" : "normal",
       color: isFire ? "#aa3a0a" : "#5a4a3a",
-      label: isFire ? "🔥" : "",
-    });
+      label: isFire ? "🔥" : isMoving ? "🪨" : "",
+    };
+    if (isMoving) {
+      p.origX = x; p.origY = y;
+      p.moveDir = i % 2 === 0 ? 1 : -1;
+      p.moveRange = 40;
+    }
+    platforms.push(p);
   }
 
-  // Dragon fire breath enemies
-  enemies.push({ x: 500, y: H - 140, w: 28, h: 28, type: "dragon", dir: 1, speed: 0.5, range: 100, origX: 500, emoji: "🐉" });
-  enemies.push({ x: 1100, y: H - 200, w: 28, h: 28, type: "dragon", dir: -1, speed: 0.7, range: 80, origX: 1100, emoji: "🐉" });
+  // Egg nests as bonus platforms
+  platforms.push({ x: 600, y: H - 160, w: 50, h: 12, type: "normal", color: "#6a5a2a", label: "🪹" });
+  platforms.push({ x: 1200, y: H - 200, w: 50, h: 12, type: "normal", color: "#6a5a2a", label: "🪹" });
 
-  platforms.push({ x: 1820, y: H - 200, w: 80, h: 20, type: "finish", label: "🥚 Golden Egg" });
+  // Dragon enemies — spaced out
+  enemies.push({ x: 500, y: H - 150, w: 28, h: 28, type: "dragon", dir: 1, speed: 0.5, range: 90, origX: 500, emoji: "🐉" });
+  enemies.push({ x: 1100, y: H - 200, w: 28, h: 28, type: "dragon", dir: -1, speed: 0.6, range: 80, origX: 1100, emoji: "🐉" });
+  enemies.push({ x: 1800, y: H - 170, w: 26, h: 26, type: "dragon", dir: 1, speed: 0.7, range: 70, origX: 1800, emoji: "🐉" });
+
+  platforms.push({ x: 2550, y: H - 220, w: 80, h: 20, type: "finish", label: "🥚 Golden Egg" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
