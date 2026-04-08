@@ -492,9 +492,69 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + 5);
       });
 
+      // ─── Draw Boss ───
+      if (isBossArena && bossData) {
+        const bossW = 40, bossH = 50;
+        // Boss body
+        ctx.fillStyle = bossHitFlash > 0 ? "#fff" : bossData.color;
+        ctx.fillRect(bossX, bossY, bossW, bossH);
+        // Boss border glow
+        ctx.strokeStyle = bossHitFlash > 0 ? "#ff0" : "rgba(255,255,255,0.3)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(bossX, bossY, bossW, bossH);
+        // Boss emoji
+        ctx.font = "28px serif";
+        ctx.textAlign = "center";
+        ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 8);
+        // Boss name
+        ctx.font = "11px Cinzel";
+        ctx.fillStyle = "#fff";
+        ctx.fillText(bossData.name, bossX + bossW / 2, bossY - 28);
+        // Boss HP bar
+        const hpW = 80, hpH = 6;
+        const hpX = bossX + bossW / 2 - hpW / 2, hpY = bossY - 18;
+        ctx.fillStyle = "#333";
+        ctx.fillRect(hpX, hpY, hpW, hpH);
+        ctx.fillStyle = bossHp > bossData.maxHp * 0.3 ? "#e74c3c" : "#ff4444";
+        ctx.fillRect(hpX, hpY, hpW * (bossHp / bossData.maxHp), hpH);
+        ctx.strokeStyle = "#666";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(hpX, hpY, hpW, hpH);
+      }
+
+      // Draw projectiles
+      projectiles.forEach(proj => {
+        ctx.globalAlpha = Math.min(1, proj.life / 20);
+        ctx.fillStyle = proj.color;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2);
+        ctx.fill();
+        // Glow
+        ctx.globalAlpha = 0.3;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, proj.radius * 2, 0, Math.PI * 2);
+        ctx.fill();
+        // Emoji
+        if (proj.emoji) {
+          ctx.globalAlpha = 1;
+          ctx.font = `${proj.radius * 2 + 4}px serif`;
+          ctx.textAlign = "center";
+          ctx.fillText(proj.emoji, proj.x, proj.y + proj.radius);
+        }
+        ctx.globalAlpha = 1;
+        // Trail particles
+        if (frameCount % 3 === 0) {
+          particles.push({
+            x: proj.x, y: proj.y,
+            vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5,
+            life: 10, color: proj.color,
+          });
+        }
+      });
+
       // Draw player
       const charColor = profile.character?.color || "#c0392b";
-      ctx.fillStyle = charColor;
+      ctx.fillStyle = playerHitFlash > 0 ? "#fff" : charColor;
       ctx.fillRect(px + 4, py, PLAYER_W - 8, PLAYER_H);
       ctx.fillStyle = "#f0d0a0";
       ctx.beginPath();
