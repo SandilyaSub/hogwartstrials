@@ -5,7 +5,7 @@ interface GameOverProps {
 
 const GameOver = ({ onRetry, onWorldMap }: GameOverProps) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 overflow-y-auto">
       <div className="text-center space-y-8 animate-bounce-in">
         <div className="card-illustrated p-10 space-y-6">
           <div className="text-7xl animate-wiggle inline-block">💀</div>

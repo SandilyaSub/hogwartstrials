@@ -17,7 +17,7 @@ const TitleScreen = ({ onNewGame, onContinue, hasSave, onSignOut }: TitleScreenP
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-x-hidden overflow-y-auto">
       <img src={heroBg} alt="Hogwarts Castle" className="absolute inset-0 w-full h-full object-cover opacity-60" width={1920} height={1080} />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
 
