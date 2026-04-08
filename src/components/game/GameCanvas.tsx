@@ -375,12 +375,39 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
     function draw() {
       // Background
-      const [c1, c2] = theme.bgColors;
-      const grad = ctx.createLinearGradient(0, 0, 0, H);
-      grad.addColorStop(0, c1);
-      grad.addColorStop(1, c2);
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
+      if (isFlyingCar) {
+        // Sky gradient for flying
+        const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+        skyGrad.addColorStop(0, "#0a1530");
+        skyGrad.addColorStop(0.4, "#1a2a50");
+        skyGrad.addColorStop(0.7, "#2a3a60");
+        skyGrad.addColorStop(1, "#1a3a2a");
+        ctx.fillStyle = skyGrad;
+        ctx.fillRect(0, 0, W, H);
+        // Moon
+        ctx.fillStyle = "#e8e0c0";
+        ctx.beginPath();
+        ctx.arc(W - 80, 60, 25, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,240,200,0.05)";
+        ctx.beginPath();
+        ctx.arc(W - 80, 60, 50, 0, Math.PI * 2);
+        ctx.fill();
+        // Scrolling ground silhouette
+        ctx.fillStyle = "#0a1a0a";
+        for (let i = -1; i < W / 60 + 2; i++) {
+          const gx = (i * 60 - (cameraX * 0.3) % 60);
+          const gh = 20 + ((i * 37 + 13) % 30);
+          ctx.fillRect(gx, H - gh, 60, gh);
+        }
+      } else {
+        const [c1, c2] = theme.bgColors;
+        const grad = ctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, c1);
+        grad.addColorStop(1, c2);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      }
 
       // Stars
       ctx.fillStyle = "rgba(255,255,255,0.3)";
