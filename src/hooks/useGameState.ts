@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ShopItem } from "@/lib/shopData";
 import type { User } from "@supabase/supabase-js";
 
-export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "playing" | "levelComplete" | "gameOver";
+export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "levelIntro" | "playing" | "levelComplete" | "gameOver";
 
 export interface PlayerProfile {
   username: string;
@@ -148,7 +148,7 @@ export function useGameState(user: User | null) {
 
   const startLevel = useCallback((worldId: number, levelIdx: number) => {
     saveProfile({ ...profile, currentWorld: worldId, currentLevel: levelIdx });
-    setScreen("playing");
+    setScreen("levelIntro");
   }, [profile, saveProfile]);
 
   const purchaseItem = useCallback(async (item: ShopItem) => {
