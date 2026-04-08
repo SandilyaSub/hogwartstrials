@@ -9,6 +9,7 @@ import HouseSelect from "@/components/game/HouseSelect";
 import WorldMap from "@/components/game/WorldMap";
 import PetStore from "@/components/game/PetStore";
 import Shop from "@/components/game/Shop";
+import LevelIntro from "@/components/game/LevelIntro";
 import GameCanvas from "@/components/game/GameCanvas";
 import LevelComplete from "@/components/game/LevelComplete";
 import GameOver from "@/components/game/GameOver";
