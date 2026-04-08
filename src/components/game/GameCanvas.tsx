@@ -348,14 +348,18 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (playerHitFlash > 0) playerHitFlash--;
       }
 
-      // Fall death (into water for boat level, off-screen otherwise)
-      const deathY = isBoatLevel ? H - 45 : H + 100;
-      if (py > deathY) {
-        if (hasRevive) { hasRevive = false; py = startY - 100; vy = 0; px = startX; }
-        else { handleDeath(); return; }
+      // Fall death (into water for boat level, off-screen otherwise) - skip for flying car
+      if (!isFlyingCar) {
+        const deathY = isBoatLevel ? H - 45 : H + 100;
+        if (py > deathY) {
+          if (hasRevive) { hasRevive = false; py = startY - 100; vy = 0; px = startX; }
+          else { handleDeath(); return; }
+        }
       }
 
-      if (!isBossArena) {
+      if (isFlyingCar) {
+        // Camera is auto-scrolled in update above
+      } else if (!isBossArena) {
         cameraX += (px - W / 3 - cameraX) * 0.1;
         if (cameraX < 0) cameraX = 0;
       } else {
