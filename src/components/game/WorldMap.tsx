@@ -1,6 +1,7 @@
 import { WORLDS, MENTOR_QUOTES } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { useState } from "react";
+import { useTheme } from "@/hooks/useTheme";
 
 interface WorldMapProps {
   profile: PlayerProfile;

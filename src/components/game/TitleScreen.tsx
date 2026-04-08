@@ -1,5 +1,6 @@
 import heroBg from "@/assets/hero-bg.jpg";
 import { startMusic, isMusicPlaying } from "@/lib/musicEngine";
+import { useTheme } from "@/hooks/useTheme";
 
 interface TitleScreenProps {
   onNewGame: () => void;
@@ -8,6 +9,7 @@ interface TitleScreenProps {
 }
 
 const TitleScreen = ({ onNewGame, onContinue, hasSave }: TitleScreenProps) => {
+  const { theme, toggleTheme } = useTheme();
   const handleAction = (action: () => void) => {
     if (!isMusicPlaying()) startMusic();
     action();
@@ -17,6 +19,14 @@ const TitleScreen = ({ onNewGame, onContinue, hasSave }: TitleScreenProps) => {
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
       <img src={heroBg} alt="Hogwarts Castle" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+
+      {/* Theme toggle */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-4 right-4 z-20 text-sm px-3 py-1.5 rounded-lg bg-card/80 border border-border font-display text-foreground/70 hover:text-foreground transition-colors"
+      >
+        {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
+      </button>
       
       <div className="relative z-10 text-center space-y-8">
         <div className="space-y-2">
