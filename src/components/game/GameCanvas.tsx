@@ -612,7 +612,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         // Labels for finish, hazards, dock
         if (p.type === "finish") {
           ctx.fillStyle = "#ffd700";
-          ctx.font = "14px Cinzel";
+          ctx.font = "14px Fredoka, sans-serif";
           ctx.textAlign = "center";
           ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 8);
         } else if (p.label && !isBoatPlatform) {
@@ -841,7 +841,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         // Lumos label
         ctx.fillStyle = "#fffae0";
         ctx.globalAlpha = 0.6;
-        ctx.font = "10px Cinzel";
+        ctx.font = "10px Fredoka, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("✨ Lumos", playerScreenX, playerScreenY - 50);
         ctx.globalAlpha = 1;
@@ -850,7 +850,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       // HUD
       ctx.fillStyle = "rgba(0,0,0,0.5)";
       ctx.fillRect(0, 0, W, isBossArena ? 60 : 36);
-      ctx.font = "14px Cinzel";
+      ctx.font = "14px Fredoka, sans-serif";
       ctx.fillStyle = "#c8a020";
       ctx.textAlign = "left";
       ctx.fillText(`World ${worldId}: ${level.name}`, 10, 24);
@@ -858,7 +858,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       if (isBossArena) {
         // Player HP bar
         ctx.fillStyle = "#aaa";
-        ctx.font = "10px Cinzel";
+        ctx.font = "10px Fredoka, sans-serif";
         ctx.fillText("HP", 10, 48);
         ctx.fillStyle = "#333";
         ctx.fillRect(30, 40, 120, 10);
@@ -879,7 +879,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.lineWidth = 1.5;
           ctx.strokeRect(sx, 34, 70, 22);
           ctx.fillStyle = ready ? "#fff" : "#555";
-          ctx.font = "10px Cinzel";
+          ctx.font = "10px Fredoka, sans-serif";
           ctx.fillText(`[${spell.key}] ${spell.emoji} ${spell.name}`, sx + 35, 49);
           // Cooldown overlay
           if (!ready) {
