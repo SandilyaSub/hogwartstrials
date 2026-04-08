@@ -997,7 +997,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       if (isDark) {
         // Create a radial gradient centered on the player (screen space)
         const playerScreenX = px - cameraX + PLAYER_W / 2;
-        const playerScreenY = py + PLAYER_H / 2;
+        const playerScreenY = py + cameraY + PLAYER_H / 2;
         const gradient = ctx.createRadialGradient(playerScreenX, playerScreenY, 30, playerScreenX, playerScreenY, 150);
         gradient.addColorStop(0, "rgba(0,0,0,0)");
         gradient.addColorStop(0.5, "rgba(0,0,0,0.6)");

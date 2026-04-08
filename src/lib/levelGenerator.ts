@@ -283,34 +283,48 @@ function gen_1_2_StaircaseMaze(H: number): LevelData {
 }
 
 function gen_1_3_TrollDungeon(H: number): LevelData {
-  // Dark level with narrow corridors
+  // Dark level with narrow corridors - deterministic layout for reliability
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
+  // Ground start
   platforms.push({ x: 0, y: H - 40, w: 150, h: 40, type: "normal" });
 
-  let lastX = 80, lastY = H - 80;
-  for (let i = 0; i < 14; i++) {
-    const nx = lastX + 60 + Math.random() * 40;
-    const ny = Math.max(80, lastY - 10 - Math.random() * 30 + (i % 3 === 0 ? 40 : 0));
-    const pw = 50 + Math.random() * 40;
+  // Predefined platform positions for a fair, playable level
+  const layout = [
+    { x: 160, y: H - 80, w: 80 },
+    { x: 280, y: H - 70, w: 70 },
+    { x: 390, y: H - 100, w: 75 },
+    { x: 510, y: H - 80, w: 80 },
+    { x: 640, y: H - 110, w: 70, troll: true },
+    { x: 760, y: H - 90, w: 75 },
+    { x: 880, y: H - 120, w: 80 },
+    { x: 1010, y: H - 100, w: 70 },
+    { x: 1140, y: H - 130, w: 75 },
+    { x: 1270, y: H - 110, w: 80, troll: true },
+    { x: 1400, y: H - 140, w: 70 },
+    { x: 1530, y: H - 120, w: 75 },
+    { x: 1660, y: H - 150, w: 80 },
+    { x: 1790, y: H - 130, w: 70 },
+  ];
 
-    platforms.push({ x: nx, y: ny, w: pw, h: 16, type: "normal" });
-
-    // Troll enemies (slow, big)
-    if (i === 4 || i === 9) {
+  layout.forEach(p => {
+    platforms.push({ x: p.x, y: p.y, w: p.w, h: 16, type: "normal" });
+    if (p.troll) {
       enemies.push({
-        x: nx + 10, y: ny - 28, w: 24, h: 24,
-        type: "troll", dir: 1, speed: 0.3, range: pw * 0.5, origX: nx + 10,
+        x: p.x + 10, y: p.y - 28, w: 24, h: 24,
+        type: "troll", dir: 1, speed: 0.3, range: p.w * 0.5, origX: p.x + 10,
         emoji: "🧌",
       });
     }
+  });
 
-    lastX = nx;
-    lastY = ny;
-  }
+  // Hazard puddles between some platforms
+  platforms.push({ x: 350, y: H - 30, w: 60, h: 10, type: "hazard", color: "#2a4a2a", label: "☠️ Sludge" });
+  platforms.push({ x: 850, y: H - 30, w: 60, h: 10, type: "hazard", color: "#2a4a2a", label: "☠️ Sludge" });
+  platforms.push({ x: 1350, y: H - 30, w: 60, h: 10, type: "hazard", color: "#2a4a2a", label: "☠️ Sludge" });
 
-  platforms.push({ x: lastX + 80, y: lastY - 20, w: 80, h: 20, type: "finish" });
+  platforms.push({ x: 1900, y: H - 150, w: 80, h: 20, type: "finish" });
   return { platforms, enemies, startX: 40, startY: H - 80, darkLevel: true };
 }
 
