@@ -612,14 +612,49 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
       // HUD
       ctx.fillStyle = "rgba(0,0,0,0.5)";
-      ctx.fillRect(0, 0, W, 36);
+      ctx.fillRect(0, 0, W, isBossArena ? 60 : 36);
       ctx.font = "14px Cinzel";
       ctx.fillStyle = "#c8a020";
       ctx.textAlign = "left";
       ctx.fillText(`World ${worldId}: ${level.name}`, 10, 24);
-      ctx.textAlign = "right";
-      ctx.fillStyle = hasRevive ? "#4ade80" : "#666";
-      ctx.fillText(hasRevive ? "🔥 Revive Ready" : "", W - 10, 24);
+
+      if (isBossArena) {
+        // Player HP bar
+        ctx.fillStyle = "#aaa";
+        ctx.font = "10px Cinzel";
+        ctx.fillText("HP", 10, 48);
+        ctx.fillStyle = "#333";
+        ctx.fillRect(30, 40, 120, 10);
+        ctx.fillStyle = playerHp > 30 ? "#27ae60" : "#e74c3c";
+        ctx.fillRect(30, 40, 120 * (playerHp / playerMaxHp), 10);
+        ctx.strokeStyle = "#555";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(30, 40, 120, 10);
+
+        // Spell bar
+        ctx.textAlign = "center";
+        spells.forEach((spell, i) => {
+          const sx = 200 + i * 80;
+          const ready = spellCooldowns[i] <= 0;
+          ctx.fillStyle = ready ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.3)";
+          ctx.fillRect(sx, 34, 70, 22);
+          ctx.strokeStyle = ready ? spell.color : "#333";
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(sx, 34, 70, 22);
+          ctx.fillStyle = ready ? "#fff" : "#555";
+          ctx.font = "10px Cinzel";
+          ctx.fillText(`[${spell.key}] ${spell.emoji} ${spell.name}`, sx + 35, 49);
+          // Cooldown overlay
+          if (!ready) {
+            ctx.fillStyle = "rgba(0,0,0,0.5)";
+            ctx.fillRect(sx, 34, 70 * (spellCooldowns[i] / spell.cooldown), 22);
+          }
+        });
+      } else {
+        ctx.textAlign = "right";
+        ctx.fillStyle = hasRevive ? "#4ade80" : "#666";
+        ctx.fillText(hasRevive ? "🔥 Revive Ready" : "", W - 10, 24);
+      }
 
       // Touch controls
       if ('ontouchstart' in window) {
