@@ -12,8 +12,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Cinzel", "serif"],
-        body: ["Crimson Text", "serif"],
+        display: ["Fredoka", "Cinzel", "sans-serif"],
+        body: ["Quicksand", "sans-serif"],
+        classic: ["Cinzel", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
