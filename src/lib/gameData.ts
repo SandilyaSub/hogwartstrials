@@ -88,7 +88,7 @@ export const WORLDS: World[] = [
     levels: [
       { id: "2-1", name: "Diagon Alley Rooftops", description: "Rooftop jumping", isBoss: false, theme: "rooftop" },
       { id: "2-2", name: "Flying Escape", description: "Fly the enchanted car", isBoss: false, theme: "flying" },
-      { id: "2-3", name: "Pipe Balance", description: "Balance through the pipes", isBoss: false, theme: "pipes" },
+      { id: "2-3", name: "Detention with Lockhart", description: "Dodge fan mail & sign letters", isBoss: false, theme: "detention" },
       { id: "2-4", name: "Chamber Doors", description: "Alohomora puzzles", isBoss: false, theme: "dungeon" },
       { id: "2-5", name: "Basilisk Maze", description: "Defeat the Basilisk!", isBoss: true, theme: "boss" },
     ],

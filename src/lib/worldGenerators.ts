@@ -130,35 +130,77 @@ function gen_2_2_FlyingEscape(H: number): LevelData {
   return { platforms, enemies, startX: 60, startY: H / 2, flyingCar: true };
 }
 
-function gen_2_3_PipeBalance(H: number): LevelData {
+function gen_2_3_DetentionLockhart(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  platforms.push({ x: 0, y: H - 40, w: 100, h: 40, type: "normal", color: "#2a3a2a" });
+  // Lockhart's office - warm wooden classroom floor
+  // Continuous floor sections (desks and gaps between them)
+  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#6a5030", label: "🪑 Desk" });
 
-  // Narrow pipes to balance across
-  for (let i = 0; i < 20; i++) {
-    const x = 120 + i * 90;
-    const y = H - 60 - Math.sin(i * 0.5) * 30 - (i * 5);
-    const narrow = 30 + (i % 3) * 10; // Narrow pipes!
+  // Desk platforms across the office - jump between desks stacked with fan mail
+  const desks = [
+    { x: 200, y: H - 50, w: 100, label: "📬 Fan Mail" },
+    { x: 360, y: H - 70, w: 80, label: "✉️ Letters" },
+    { x: 500, y: H - 50, w: 110, label: "📬 Fan Mail" },
+    { x: 670, y: H - 80, w: 90, label: "🖋️ Quills" },
+    { x: 820, y: H - 55, w: 100, label: "📬 Fan Mail" },
+    { x: 980, y: H - 75, w: 80, label: "✉️ Letters" },
+    { x: 1120, y: H - 50, w: 110, label: "📬 Fan Mail" },
+    { x: 1290, y: H - 85, w: 90, label: "🖋️ Quills" },
+    { x: 1440, y: H - 55, w: 100, label: "📬 Fan Mail" },
+    { x: 1600, y: H - 70, w: 80, label: "✉️ Letters" },
+  ];
+
+  desks.forEach(d => {
     platforms.push({
-      x, y, w: narrow, h: 12, type: "normal",
-      color: "#4a5a4a", // green pipe color
+      x: d.x, y: d.y, w: d.w, h: 16, type: "normal",
+      color: "#7a5a30", label: d.label,
     });
+  });
 
-    // Dripping water hazards
-    if (i % 4 === 2) {
-      platforms.push({ x: x + 5, y: y - 40, w: 20, h: 8, type: "hazard", color: "#2a4a6a" });
-    }
-  }
+  // Bookshelves (tall platforms to climb)
+  const shelves = [
+    { x: 300, y: H - 130, w: 60 },
+    { x: 620, y: H - 140, w: 55 },
+    { x: 940, y: H - 135, w: 60 },
+    { x: 1250, y: H - 145, w: 55 },
+    { x: 1550, y: H - 130, w: 60 },
+  ];
+  shelves.forEach(s => {
+    platforms.push({
+      x: s.x, y: s.y, w: s.w, h: 14, type: "normal",
+      color: "#5a3a1a", label: "📚",
+    });
+  });
 
-  // Spiders in the pipes
-  enemies.push({ x: 400, y: H - 120, w: 18, h: 18, type: "spider", dir: 1, speed: 0.6, range: 40, origX: 400, emoji: "🕷️" });
-  enemies.push({ x: 900, y: H - 160, w: 18, h: 18, type: "spider", dir: -1, speed: 0.8, range: 50, origX: 900, emoji: "🕷️" });
-  enemies.push({ x: 1400, y: H - 200, w: 20, h: 20, type: "spider", dir: 1, speed: 1.0, range: 60, origX: 1400, emoji: "🕷️" });
+  // Lockhart portrait platforms (disappearing - they wink and vanish!)
+  platforms.push({ x: 180, y: H - 120, w: 40, h: 10, type: "disappearing", timer: 0, visible: true, color: "#8a6a3a", label: "🖼️" });
+  platforms.push({ x: 750, y: H - 130, w: 40, h: 10, type: "disappearing", timer: 0, visible: true, color: "#8a6a3a", label: "🖼️" });
+  platforms.push({ x: 1150, y: H - 125, w: 40, h: 10, type: "disappearing", timer: 0, visible: true, color: "#8a6a3a", label: "🖼️" });
+  platforms.push({ x: 1500, y: H - 140, w: 40, h: 10, type: "disappearing", timer: 0, visible: true, color: "#8a6a3a", label: "🖼️" });
 
-  platforms.push({ x: 1920, y: H - 180, w: 80, h: 20, type: "finish", label: "🚪 Exit" });
-  return { platforms, enemies, startX: 30, startY: H - 80, darkLevel: true };
+  // Flying envelopes (enemies - fan mail attacking you!)
+  enemies.push({ x: 250, y: H - 90, w: 18, h: 14, type: "fanmail", dir: 1, speed: 1.2, range: 80, origX: 250, emoji: "💌" });
+  enemies.push({ x: 550, y: H - 100, w: 18, h: 14, type: "fanmail", dir: -1, speed: 1.5, range: 90, origX: 550, emoji: "💌" });
+  enemies.push({ x: 870, y: H - 85, w: 18, h: 14, type: "fanmail", dir: 1, speed: 1.0, range: 70, origX: 870, emoji: "💌" });
+  enemies.push({ x: 1100, y: H - 110, w: 20, h: 16, type: "fanmail", dir: -1, speed: 1.8, range: 100, origX: 1100, emoji: "💌" });
+  enemies.push({ x: 1350, y: H - 90, w: 18, h: 14, type: "fanmail", dir: 1, speed: 1.3, range: 80, origX: 1350, emoji: "💌" });
+  enemies.push({ x: 1580, y: H - 105, w: 20, h: 16, type: "fanmail", dir: -1, speed: 1.6, range: 90, origX: 1580, emoji: "💌" });
+
+  // Lockhart himself wandering around (big, slow, annoying)
+  enemies.push({ x: 450, y: H - 78, w: 24, h: 28, type: "lockhart", dir: 1, speed: 0.3, range: 60, origX: 450, emoji: "🧑‍🦱" });
+  enemies.push({ x: 1000, y: H - 78, w: 24, h: 28, type: "lockhart", dir: -1, speed: 0.35, range: 70, origX: 1000, emoji: "🧑‍🦱" });
+
+  // Pixies (from Lockhart's disastrous class) - fast and erratic
+  enemies.push({ x: 380, y: H - 150, w: 16, h: 16, type: "pixie", dir: 1, speed: 2.0, range: 50, origX: 380, emoji: "🧚" });
+  enemies.push({ x: 780, y: H - 160, w: 16, h: 16, type: "pixie", dir: -1, speed: 2.2, range: 55, origX: 780, emoji: "🧚" });
+  enemies.push({ x: 1200, y: H - 155, w: 16, h: 16, type: "pixie", dir: 1, speed: 2.5, range: 60, origX: 1200, emoji: "🧚" });
+
+  // Finish - escape the detention!
+  platforms.push({ x: 1750, y: H - 100, w: 100, h: 20, type: "finish", label: "🚪 Escape!" });
+
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_2_4_ChamberDoors(H: number): LevelData {
@@ -827,7 +869,7 @@ export function getWorldLevelGenerator(worldId: number, levelIdx: number, H: num
   const generators: Record<string, (H: number) => LevelData> = {
     "2-0": gen_2_1_DiagonAlley,
     "2-1": gen_2_2_FlyingEscape,
-    "2-2": gen_2_3_PipeBalance,
+    "2-2": gen_2_3_DetentionLockhart,
     "2-3": gen_2_4_ChamberDoors,
     "3-0": gen_3_1_TimePlatforms,
     "3-1": gen_3_2_ClockTower,
