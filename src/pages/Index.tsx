@@ -125,6 +125,12 @@ const Index = () => {
         <Shop
           profile={profile}
           onPurchase={purchaseItem}
+          onActivate={(item) => {
+            const updates: Partial<typeof profile> = {};
+            if (item.type === "theme") updates.activeTheme = item.id;
+            if (item.type === "song") updates.activeSong = item.id;
+            saveProfile({ ...profile, ...updates });
+          }}
           onBack={() => setScreen("worldmap")}
         />
       );
