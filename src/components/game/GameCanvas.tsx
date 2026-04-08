@@ -58,6 +58,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const { platforms, enemies, startX, startY } = levelData;
     const isDark = levelData.darkLevel || false;
     const isCheckered = levelData.checkered || false;
+    const isBoatLevel = levelData.boatLevel || false;
 
     let px = startX, py = startY, vx = 0, vy = 0;
     let onGround = false;
@@ -171,8 +172,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       }
 
-      // Fall death
-      if (py > H + 100) {
+      // Fall death (into water for boat level, off-screen otherwise)
+      const deathY = isBoatLevel ? H - 45 : H + 100;
+      if (py > deathY) {
         if (hasRevive) { hasRevive = false; py = startY - 100; vy = 0; px = startX; }
         else { handleDeath(); return; }
       }
@@ -220,6 +222,31 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
       ctx.save();
       ctx.translate(-cameraX, 0);
+
+      // Water for boat level
+      if (isBoatLevel) {
+        const waterY = H - 60;
+        // Animated water surface
+        for (let wx = -100; wx < 2200; wx += 4) {
+          const waveH = Math.sin((wx + frameCount * 1.5) * 0.03) * 5 + Math.sin((wx - frameCount) * 0.05) * 3;
+          const depth = H - waterY;
+          const waterGrad = ctx.createLinearGradient(0, waterY + waveH, 0, H);
+          waterGrad.addColorStop(0, "rgba(10, 40, 80, 0.7)");
+          waterGrad.addColorStop(0.4, "rgba(5, 25, 60, 0.85)");
+          waterGrad.addColorStop(1, "rgba(2, 10, 30, 0.95)");
+          ctx.fillStyle = waterGrad;
+          ctx.fillRect(wx, waterY + waveH, 5, depth - waveH);
+        }
+        // Moon reflection shimmer
+        for (let i = 0; i < 15; i++) {
+          const rx = ((i * 137 + frameCount * 0.4) % 2000);
+          const ry = waterY + 8 + Math.sin(frameCount * 0.08 + i) * 4;
+          ctx.globalAlpha = 0.15 + Math.sin(frameCount * 0.06 + i * 2) * 0.1;
+          ctx.fillStyle = "#aaccff";
+          ctx.fillRect(rx, ry, 12 + (i % 3) * 6, 2);
+        }
+        ctx.globalAlpha = 1;
+      }
 
       // Checkered background (Wizard Chess)
       if (isCheckered) {

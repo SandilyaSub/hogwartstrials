@@ -27,6 +27,7 @@ export interface LevelData {
   darkLevel?: boolean;     // Troll Dungeon - limited visibility
   checkered?: boolean;     // Wizard Chess - draw checkered bg
   mirrorBoss?: boolean;    // Mirror of Erised boss
+  boatLevel?: boolean;     // Hogwarts Arrival - water & boats
 }
 
 export interface LevelTheme {
@@ -40,11 +41,11 @@ export interface LevelTheme {
 export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
   if (worldId === 1) {
     switch (levelIdx) {
-      case 0: return { // Hogwarts Arrival - warm castle
-        bgColors: ["#0a0815", "#1a1030"],
-        platformColor: "#5a4a3a",
-        platformHighlight: "#8a7a60",
-        ambientParticles: { color: "hsl(45, 80%, 55%)", count: 8 },
+      case 0: return { // Hogwarts Arrival - boat across Black Lake
+        bgColors: ["#050a14", "#0a1525"],
+        platformColor: "#5a3a1a",
+        platformHighlight: "#8a6a3a",
+        ambientParticles: { color: "hsl(200, 60%, 40%)", count: 6 },
       };
       case 1: return { // Staircase Maze - vertical, grey stone
         bgColors: ["#0d0d15", "#15152a"],
@@ -89,35 +90,58 @@ export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
 // ─── World 1 Level Generators ────────────────────────────
 
 function gen_1_1_HogwartsArrival(H: number): LevelData {
-  // Basic jumps, welcoming, torches implied by particles
+  // Boat ride across the Black Lake to Hogwarts
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
+  const waterY = H - 60; // water surface level
 
-  // Ground start
-  platforms.push({ x: 0, y: H - 40, w: 200, h: 40, type: "normal" });
+  // Dock start - wooden pier
+  platforms.push({ x: 0, y: waterY - 10, w: 120, h: 24, type: "normal", color: "#5a3a1a", label: "🏚️ Dock" });
 
-  // Simple ascending platforms - like castle steps
-  const steps = [
-    { x: 160, y: H - 90, w: 80 },
-    { x: 280, y: H - 130, w: 70 },
-    { x: 400, y: H - 110, w: 90 },
-    { x: 520, y: H - 160, w: 80 },
-    { x: 650, y: H - 130, w: 100 },
-    { x: 780, y: H - 180, w: 70 },
-    { x: 910, y: H - 150, w: 90 },
-    { x: 1050, y: H - 200, w: 80 },
-    { x: 1180, y: H - 170, w: 100 },
-    { x: 1320, y: H - 220, w: 70 },
-    { x: 1450, y: H - 190, w: 90 },
-    { x: 1580, y: H - 240, w: 80 },
+  // Boats floating on the water - gently bobbing (moving platforms)
+  const boats = [
+    { x: 160, w: 100, moving: true },
+    { x: 320, w: 90, moving: true },
+    { x: 470, w: 100, moving: false },
+    { x: 620, w: 85, moving: true },
+    { x: 770, w: 100, moving: true },
+    { x: 930, w: 90, moving: false },
+    { x: 1080, w: 95, moving: true },
+    { x: 1240, w: 100, moving: true },
+    { x: 1400, w: 90, moving: false },
+    { x: 1550, w: 100, moving: true },
   ];
 
-  steps.forEach(s => platforms.push({ ...s, h: 16, type: "normal" }));
+  boats.forEach((b, i) => {
+    const p: Platform = {
+      x: b.x, y: waterY - 14, w: b.w, h: 18,
+      type: b.moving ? "moving" : "normal",
+      color: "#6a4a2a", // dark wood color
+      label: i === 0 ? "⛵" : (i % 3 === 0 ? "🕯️" : ""),
+    };
+    if (b.moving) {
+      p.origX = b.x;
+      p.origY = waterY - 14;
+      p.moveDir = i % 2 === 0 ? 1 : -1;
+      p.moveRange = 15 + (i % 3) * 8; // gentle bobbing
+    }
+    platforms.push(p);
+  });
 
-  // Finish
-  platforms.push({ x: 1720, y: H - 260, w: 80, h: 20, type: "finish" });
+  // Rocky outcrop mid-lake
+  platforms.push({ x: 700, y: waterY - 50, w: 60, h: 14, type: "normal", color: "#4a4a4a", label: "🪨" });
 
-  return { platforms, enemies, startX: 60, startY: H - 80 };
+  // Giant squid tentacle hazard
+  platforms.push({ x: 500, y: waterY - 30, w: 40, h: 12, type: "hazard", color: "#3a2a4a", label: "🦑" });
+  platforms.push({ x: 1100, y: waterY - 25, w: 35, h: 12, type: "hazard", color: "#3a2a4a", label: "🦑" });
+
+  // Hogwarts dock finish
+  platforms.push({
+    x: 1700, y: waterY - 20, w: 100, h: 24,
+    type: "finish", color: "#4a3a2a", label: "🏰 Hogwarts",
+  });
+
+  return { platforms, enemies, startX: 40, startY: waterY - 50, boatLevel: true };
 }
 
 function gen_1_2_StaircaseMaze(H: number): LevelData {
