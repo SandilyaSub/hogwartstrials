@@ -290,50 +290,62 @@ function gen_1_4_WizardChess(H: number): LevelData {
 }
 
 function gen_1_5_MirrorOfErised(H: number): LevelData {
-  // Boss level - hazards, Quirrell enemy, mirror finish
+  // Boss arena - flat ground, fight Quirrell/Voldemort
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal" });
+  // Arena floor
+  platforms.push({ x: 0, y: H - 40, w: 600, h: 40, type: "normal" });
+  // Some elevated platforms for dodging
+  platforms.push({ x: 80, y: H - 120, w: 80, h: 14, type: "normal" });
+  platforms.push({ x: 280, y: H - 140, w: 80, h: 14, type: "normal" });
+  platforms.push({ x: 460, y: H - 110, w: 80, h: 14, type: "normal" });
 
-  // Fire hazard gaps
-  let lastX = 80, lastY = H - 80;
-  for (let i = 0; i < 18; i++) {
-    const nx = lastX + 55 + Math.random() * 45;
-    const ny = Math.max(80, lastY - 15 - Math.random() * 35 + (i % 4 === 0 ? 50 : 0));
-    const pw = 45 + Math.random() * 35;
+  const boss: BossData = {
+    name: "Professor Quirrell",
+    emoji: "🧙",
+    maxHp: 100,
+    attackSpeed: 80,
+    projectileSpeed: 3,
+    color: "#6a1a6a",
+    weakness: "stupefy",
+  };
 
-    const isHazard = i % 5 === 3;
-    const isDisappearing = i % 7 === 4;
+  return { platforms, enemies, startX: 60, startY: H - 80, bossArena: true, boss };
+}
 
-    const p: Platform = {
-      x: nx, y: ny, w: pw, h: 16,
-      type: isHazard ? "hazard" : isDisappearing ? "disappearing" : "normal",
-      visible: true,
-    };
-    if (isDisappearing) p.timer = 0;
-    if (isHazard) p.color = "#6a1a6a"; // purple fire
+// Available spells for boss fights
+export function getBossSpells(worldId: number): SpellDef[] {
+  // Base spells available from world 1
+  const spells: SpellDef[] = [
+    { name: "Stupefy", emoji: "⚡", damage: 12, speed: 7, cooldown: 30, color: "#e74c3c", key: "1" },
+    { name: "Expelliarmus", emoji: "✨", damage: 8, speed: 9, cooldown: 20, color: "#f39c12", key: "2" },
+    { name: "Petrificus", emoji: "❄️", damage: 15, speed: 5, cooldown: 50, color: "#3498db", key: "3" },
+  ];
 
-    platforms.push(p);
-
-    lastX = nx;
-    lastY = ny;
+  // Unlock more spells in later worlds
+  if (worldId >= 3) {
+    spells.push({ name: "Patronus", emoji: "🦌", damage: 20, speed: 6, cooldown: 90, color: "#ecf0f1", key: "4" });
+  }
+  if (worldId >= 5) {
+    spells.push({ name: "Sectumsempra", emoji: "🗡️", damage: 25, speed: 8, cooldown: 70, color: "#8e44ad", key: "5" });
   }
 
-  // Quirrell boss - a large, faster enemy near the end
-  enemies.push({
-    x: lastX - 100, y: lastY - 30, w: 28, h: 28,
-    type: "quirrell", dir: 1, speed: 1.2, range: 120, origX: lastX - 100,
-    emoji: "🧙",
-  });
+  return spells;
+}
 
-  // Mirror finish
-  platforms.push({
-    x: lastX + 80, y: lastY - 20, w: 80, h: 20,
-    type: "finish", label: "🪞 Mirror",
-  });
-
-  return { platforms, enemies, startX: 40, startY: H - 80, mirrorBoss: true };
+// Boss data for each world
+export function getWorldBoss(worldId: number): BossData {
+  const bosses: Record<number, BossData> = {
+    1: { name: "Professor Quirrell", emoji: "🧙", maxHp: 100, attackSpeed: 80, projectileSpeed: 3, color: "#6a1a6a", weakness: "stupefy" },
+    2: { name: "Basilisk", emoji: "🐍", maxHp: 150, attackSpeed: 60, projectileSpeed: 3.5, color: "#1a4a1a", weakness: "expelliarmus" },
+    3: { name: "Dementor Swarm", emoji: "👻", maxHp: 180, attackSpeed: 50, projectileSpeed: 4, color: "#1a1a2a", weakness: "patronus" },
+    4: { name: "Hungarian Horntail", emoji: "🐉", maxHp: 200, attackSpeed: 45, projectileSpeed: 4.5, color: "#4a2a0a", weakness: "stupefy" },
+    5: { name: "Bellatrix", emoji: "🧙‍♀️", maxHp: 220, attackSpeed: 40, projectileSpeed: 5, color: "#2a0a2a", weakness: "expelliarmus" },
+    6: { name: "Inferi Horde", emoji: "💀", maxHp: 250, attackSpeed: 35, projectileSpeed: 4, color: "#0a1a1a", weakness: "stupefy" },
+    7: { name: "Lord Voldemort", emoji: "🐍", maxHp: 350, attackSpeed: 25, projectileSpeed: 6, color: "#1a0a0a", weakness: "expelliarmus" },
+  };
+  return bosses[worldId] || bosses[1];
 }
 
 // ─── Main Generator ────────────────────────────
