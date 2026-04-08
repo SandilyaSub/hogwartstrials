@@ -84,48 +84,44 @@ function gen_2_2_FlyingEscape(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Flying car level - auto-scrolling, dodge obstacles
-  // We place obstacles spread across a long level; the car auto-scrolls right
-  // Player only moves up/down to dodge
-
   // Invisible floor and ceiling boundaries
-  platforms.push({ x: 0, y: H - 30, w: 8000, h: 30, type: "hazard", color: "transparent" });
-  platforms.push({ x: 0, y: 0, w: 8000, h: 10, type: "hazard", color: "transparent" });
+  platforms.push({ x: 0, y: H - 30, w: 10000, h: 30, type: "hazard", color: "transparent" });
+  platforms.push({ x: 0, y: 0, w: 10000, h: 10, type: "hazard", color: "transparent" });
 
-  // Clouds to dodge (hazards placed at various heights)
-  for (let i = 0; i < 40; i++) {
-    const x = 400 + i * 180 + (i % 3) * 50;
-    const y = 40 + ((i * 137) % (H - 120));
-    const w = 50 + (i % 3) * 20;
-    const h = 20 + (i % 2) * 10;
+  // Clouds to dodge — fewer but larger, spaced out more
+  for (let i = 0; i < 30; i++) {
+    const x = 500 + i * 280 + (i % 3) * 60;
+    const y = 50 + ((i * 137) % (H - 130));
+    const w = 60 + (i % 3) * 25;
+    const h = 25 + (i % 2) * 12;
     platforms.push({
       x, y, w, h, type: "hazard",
-      color: "#888", label: "☁️",
+      color: "#c0c0d0", label: "☁️",
     });
   }
 
-  // Birds to dodge
-  for (let i = 0; i < 15; i++) {
-    const x = 600 + i * 450;
+  // Birds to dodge — moderate count
+  for (let i = 0; i < 10; i++) {
+    const x = 800 + i * 700;
     const y = 60 + ((i * 211) % (H - 140));
     enemies.push({
       x, y, w: 22, h: 22, type: "bird",
-      dir: -1, speed: 1.5 + (i % 3) * 0.5, range: 200,
+      dir: -1, speed: 1.5 + (i % 3) * 0.4, range: 180,
       origX: x, emoji: "🦅",
     });
   }
 
-  // Whomping Willow tree tops at intervals
-  for (let i = 0; i < 6; i++) {
-    const x = 800 + i * 1200;
+  // Whomping Willow tree tops
+  for (let i = 0; i < 5; i++) {
+    const x = 1200 + i * 1600;
     platforms.push({
-      x, y: H - 100, w: 60, h: 70, type: "hazard",
+      x, y: H - 100, w: 70, h: 70, type: "hazard",
       color: "#3a5a2a", label: "🌳",
     });
   }
 
-  // Hogwarts castle - the finish line
-  platforms.push({ x: 7600, y: H / 2 - 30, w: 120, h: 60, type: "finish", label: "🏰 Hogwarts" });
+  // Hogwarts castle — the finish
+  platforms.push({ x: 9200, y: H / 2 - 30, w: 120, h: 60, type: "finish", label: "🏰 Hogwarts" });
 
   return { platforms, enemies, startX: 60, startY: H / 2, flyingCar: true };
 }
