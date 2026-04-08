@@ -416,7 +416,11 @@ export function generateLevel(worldId: number, levelIdx: number, canvasW: number
     }
   }
 
-  // Generic generator for worlds 2-7 (to be themed later)
+  // Worlds 2-7 themed generators
+  const themed = getWorldLevelGenerator(worldId, levelIdx, canvasH);
+  if (themed) return themed;
+
+  // Fallback generic generator
   return generateGenericLevel(worldId, levelIdx, canvasW, canvasH);
 }
 
