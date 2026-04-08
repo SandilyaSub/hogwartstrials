@@ -4,6 +4,7 @@ import type { PlayerProfile } from "@/hooks/useGameState";
 interface ShopProps {
   profile: PlayerProfile;
   onPurchase: (item: ShopItem) => void;
+  onActivate: (item: ShopItem) => void;
   onBack: () => void;
 }
 
