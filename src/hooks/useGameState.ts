@@ -159,11 +159,13 @@ export function useGameState(user: User | null) {
     if (profile.coins < item.cost) return;
     const newUpgrades = { ...profile.purchasedUpgrades, [item.id]: true };
     const newTheme = item.type === "theme" ? item.id : profile.activeTheme;
+    const newSong = item.type === "song" ? item.id : profile.activeSong;
     saveProfile({
       ...profile,
       coins: profile.coins - item.cost,
       purchasedUpgrades: newUpgrades,
       activeTheme: newTheme,
+      activeSong: newSong,
     });
 
     if (user) {
@@ -177,7 +179,7 @@ export function useGameState(user: User | null) {
   }, [profile, saveProfile, user]);
 
   const resetGame = useCallback(() => {
-    const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme };
+    const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme, activeSong: profile.activeSong };
     saveProfile(reset);
     setScreen("title");
   }, [saveProfile, profile.purchasedUpgrades, profile.activeTheme]);
