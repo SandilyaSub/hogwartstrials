@@ -307,66 +307,67 @@ function gen_1_3_TrollDungeon(H: number): LevelData {
 }
 
 function gen_1_4_WizardChess(H: number): LevelData {
-  // Checkered platforms with deadly chess piece NPCs
+  // Checkered platforms with deadly chess piece NPCs — balanced, not overwhelming
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Chess board ground - wider board
   const tileSize = 60;
   const rows = 3;
-  const cols = 14;
+  const cols = 18; // Longer board
+
+  // Starting safe zone
+  platforms.push({ x: 0, y: H - 40, w: 80, h: 40, type: "normal", color: "#4a4a5a" });
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const isBlack = (r + c) % 2 === 0;
+      // Gaps in the board for challenge
+      if (r > 0 && (c === 5 || c === 10 || c === 15)) continue;
       platforms.push({
-        x: c * tileSize + 40,
+        x: c * tileSize + 100,
         y: H - 40 - r * (tileSize + 20) + (r > 0 ? -20 : 0),
         w: tileSize - 4, h: 16,
-        type: r === 0 ? "normal" : (c % 3 === 0 ? "moving" : "normal"),
+        type: r === 0 ? "normal" : (c % 5 === 0 ? "moving" : "normal"),
         color: isBlack ? "#1a1a1a" : "#d0d0d0",
-        origX: c * tileSize + 40,
+        origX: c * tileSize + 100,
         origY: H - 40 - r * (tileSize + 20) + (r > 0 ? -20 : 0),
         moveDir: c % 2 === 0 ? 1 : -1,
-        moveRange: r > 0 ? 25 : 0,
+        moveRange: r > 0 ? 20 : 0,
       });
     }
   }
 
-  // Chess piece enemies - deadly on contact!
-  // Pawns - slow, lots of them
-  for (let c = 1; c < cols; c += 2) {
+  // Fewer chess pieces — strategic placement, not a wall of death
+  // Pawns — only a few
+  for (let c = 2; c < cols; c += 4) {
     enemies.push({
-      x: c * tileSize + 50, y: H - 68, w: 20, h: 20,
+      x: c * tileSize + 110, y: H - 68, w: 18, h: 18,
       type: "chess", dir: 1, speed: 0.4,
-      range: tileSize * 0.8, origX: c * tileSize + 50,
+      range: tileSize * 0.7, origX: c * tileSize + 110,
       emoji: "♟",
     });
   }
 
-  // Knights - fast, jump-like movement
-  enemies.push({ x: 2 * tileSize + 50, y: H - 128, w: 24, h: 24, type: "chess", dir: 1, speed: 2.0, range: tileSize * 2, origX: 2 * tileSize + 50, emoji: "♞" });
-  enemies.push({ x: 9 * tileSize + 50, y: H - 128, w: 24, h: 24, type: "chess", dir: -1, speed: 2.0, range: tileSize * 2, origX: 9 * tileSize + 50, emoji: "♞" });
+  // One knight patrolling mid-section
+  enemies.push({ x: 6 * tileSize + 110, y: H - 128, w: 22, h: 22, type: "chess", dir: 1, speed: 1.5, range: tileSize * 2, origX: 6 * tileSize + 110, emoji: "♞" });
 
-  // Rooks - slow but wide patrol
-  enemies.push({ x: 4 * tileSize + 50, y: H - 68, w: 24, h: 24, type: "chess", dir: 1, speed: 0.5, range: tileSize * 3, origX: 4 * tileSize + 50, emoji: "♜" });
-  enemies.push({ x: 11 * tileSize + 50, y: H - 68, w: 24, h: 24, type: "chess", dir: -1, speed: 0.5, range: tileSize * 3, origX: 11 * tileSize + 50, emoji: "♜" });
+  // One rook with wide patrol in later section
+  enemies.push({ x: 11 * tileSize + 110, y: H - 68, w: 22, h: 22, type: "chess", dir: -1, speed: 0.5, range: tileSize * 2.5, origX: 11 * tileSize + 110, emoji: "♜" });
 
-  // Bishops - medium speed, diagonal feel
-  enemies.push({ x: 6 * tileSize + 50, y: H - 128, w: 22, h: 22, type: "chess", dir: 1, speed: 1.0, range: tileSize * 1.5, origX: 6 * tileSize + 50, emoji: "♝" });
+  // Bishop in upper tier
+  enemies.push({ x: 9 * tileSize + 110, y: H - 128, w: 20, h: 20, type: "chess", dir: 1, speed: 0.8, range: tileSize * 1.5, origX: 9 * tileSize + 110, emoji: "♝" });
 
-  // Queen - fast and wide range
-  enemies.push({ x: 8 * tileSize + 50, y: H - 68, w: 26, h: 26, type: "chess", dir: 1, speed: 1.5, range: tileSize * 2.5, origX: 8 * tileSize + 50, emoji: "♛" });
+  // Queen guards near the end — fast but contained
+  enemies.push({ x: 14 * tileSize + 110, y: H - 68, w: 24, h: 24, type: "chess", dir: 1, speed: 1.2, range: tileSize * 2, origX: 14 * tileSize + 110, emoji: "♛" });
 
-  // King at the end (stationary)
-  enemies.push({ x: 12 * tileSize + 50, y: H - 128, w: 26, h: 26, type: "chess", dir: 1, speed: 0.2, range: tileSize * 0.5, origX: 12 * tileSize + 50, emoji: "♚" });
+  // King at end (slow, mostly decorative)
+  enemies.push({ x: 16 * tileSize + 110, y: H - 128, w: 24, h: 24, type: "chess", dir: 1, speed: 0.2, range: tileSize * 0.4, origX: 16 * tileSize + 110, emoji: "♚" });
 
-  // Upper path to finish
-  platforms.push({ x: cols * tileSize + 60, y: H - 120, w: 70, h: 16, type: "normal" });
-  platforms.push({ x: cols * tileSize + 160, y: H - 160, w: 70, h: 16, type: "normal" });
-  platforms.push({ x: cols * tileSize + 260, y: H - 140, w: 80, h: 20, type: "finish" });
+  // Path to finish
+  platforms.push({ x: cols * tileSize + 130, y: H - 100, w: 70, h: 16, type: "normal" });
+  platforms.push({ x: cols * tileSize + 230, y: H - 140, w: 80, h: 20, type: "finish", label: "♔ Victory" });
 
-  return { platforms, enemies, startX: 60, startY: H - 60, checkered: true };
+  return { platforms, enemies, startX: 30, startY: H - 60, checkered: true };
 }
 
 function gen_1_5_MirrorOfErised(H: number): LevelData {
