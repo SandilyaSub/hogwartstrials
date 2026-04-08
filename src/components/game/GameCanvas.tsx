@@ -522,7 +522,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       }
 
       ctx.save();
-      ctx.translate(-cameraX, 0);
+      ctx.translate(-cameraX, cameraY);
 
       // Water for boat level
       if (isBoatLevel) {
