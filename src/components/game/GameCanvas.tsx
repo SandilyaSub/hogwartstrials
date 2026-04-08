@@ -537,27 +537,76 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             ctx.textAlign = "center";
             ctx.fillText(p.label, bx + bw / 2, by - 4);
           }
-        } else {
-          // Default rectangular platform drawing
-          if (p.color) {
-            ctx.fillStyle = p.color;
-          } else {
-            const colors: Record<string, string> = {
-              normal: theme.platformColor,
-              moving: "#3a4a6a",
-              disappearing: p.timer && p.timer > 20 ? `rgba(100,80,60,${1 - (p.timer - 20) / 20})` : "#645040",
-              hazard: p.color || "#8a2020",
-              finish: "#c8a020",
-              chess: p.color || "#3a3a3a",
-              ice: "#8ac8e8",
-            };
-            ctx.fillStyle = colors[p.type] || theme.platformColor;
-          }
-          ctx.fillRect(p.x, p.y, p.w, p.h);
-
+        } else if (isFlyingCar && p.type === "hazard" && p.color !== "transparent") {
+          // Cloud-shaped hazards for flying car level
+          const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+          ctx.save();
+          ctx.globalAlpha = 0.85 + Math.sin(frameCount * 0.04 + p.x * 0.01) * 0.1;
+          ctx.fillStyle = "#c8c8d8";
+          // Main cloud puff
+          ctx.beginPath();
+          ctx.arc(cx, cy, p.w * 0.35, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx - p.w * 0.22, cy + 3, p.w * 0.25, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx + p.w * 0.22, cy + 2, p.w * 0.28, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx - p.w * 0.1, cy - p.h * 0.4, p.w * 0.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx + p.w * 0.12, cy - p.h * 0.35, p.w * 0.22, 0, Math.PI * 2);
+          ctx.fill();
           // Highlight
+          ctx.fillStyle = "#e8e8f0";
+          ctx.beginPath();
+          ctx.arc(cx - p.w * 0.05, cy - p.h * 0.2, p.w * 0.15, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        } else {
+          // Improved platform rendering with rounded corners and gradients
+          const colors: Record<string, string> = {
+            normal: theme.platformColor,
+            moving: "#3a4a6a",
+            disappearing: p.timer && p.timer > 20 ? `rgba(100,80,60,${1 - (p.timer - 20) / 20})` : "#645040",
+            hazard: p.color || "#8a2020",
+            finish: "#c8a020",
+            chess: p.color || "#3a3a3a",
+            ice: "#8ac8e8",
+          };
+          const baseColor = p.color || colors[p.type] || theme.platformColor;
+          const radius = Math.min(6, p.h / 2, p.w / 4);
+
+          // Platform body with rounded rect
+          ctx.beginPath();
+          ctx.roundRect(p.x, p.y, p.w, p.h, radius);
+          ctx.fillStyle = baseColor;
+          ctx.fill();
+
+          // Top highlight (subtle gradient feel)
+          ctx.beginPath();
+          ctx.roundRect(p.x, p.y, p.w, Math.min(4, p.h / 2), [radius, radius, 0, 0]);
           ctx.fillStyle = p.type === "finish" ? "#ffd700" : p.type === "hazard" ? "#ff4040" : theme.platformHighlight;
-          ctx.fillRect(p.x, p.y, p.w, 3);
+          ctx.globalAlpha = 0.6;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+
+          // Subtle border
+          if (p.type === "finish") {
+            ctx.strokeStyle = "#ffd700";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(p.x, p.y, p.w, p.h, radius);
+            ctx.stroke();
+            // Glow
+            ctx.shadowColor = "#ffd700";
+            ctx.shadowBlur = 12;
+            ctx.strokeStyle = "rgba(255,215,0,0.3)";
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+          }
         }
 
         // Labels for finish, hazards, dock
@@ -573,16 +622,25 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
-      // Draw enemies
+      // Draw enemies — emoji only, no boxes
       enemies.forEach(e => {
         if (e.y < -50) return;
         const defaultEmojis: Record<string, string> = { spider: "🕷️", dementor: "👻", deathEater: "💀", troll: "🧌", chess: "♟", quirrell: "🧙" };
         const emoji = e.emoji || defaultEmojis[e.type] || "👾";
-        ctx.fillStyle = "#222";
-        ctx.fillRect(e.x, e.y, e.w, e.h);
-        ctx.font = `${Math.max(14, e.w - 4)}px serif`;
+        const emojiSize = Math.max(18, e.w + 4);
+        // Subtle shadow/glow under enemy
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        ctx.fillStyle = e.type === "dementor" ? "#6a4aaa" : e.type === "chess" ? "#888" : "#ff4040";
+        ctx.beginPath();
+        ctx.ellipse(e.x + e.w / 2, e.y + e.h, e.w * 0.6, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Bobbing animation
+        const bob = Math.sin(frameCount * 0.06 + e.origX * 0.1) * 2;
+        ctx.font = `${emojiSize}px serif`;
         ctx.textAlign = "center";
-        ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + 5);
+        ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + emojiSize * 0.35 + bob);
       });
 
       // ─── Draw Boss ───
