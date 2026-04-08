@@ -13,6 +13,92 @@ interface GameCanvasProps {
   onBack: () => void;
 }
 
+function shadeColor(hex: string, amount: number): string {
+  const num = parseInt(hex.replace("#", ""), 16);
+  const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+  const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+  return `rgb(${r},${g},${b})`;
+}
+
+function getHairColor(charId: string): string {
+  const hairColors: Record<string, string> = {
+    harry: "#1a1a1a", hermione: "#6a3a1a", ron: "#c44a00",
+    luna: "#d4b870", ginny: "#b83000", neville: "#4a3520",
+    draco: "#e0d8b0", cedric: "#5a3a1a", cho: "#0a0a0a",
+  };
+  return hairColors[charId] || "#3a2a1a";
+}
+
+function drawCharacterDetails(ctx: CanvasRenderingContext2D, cx: number, cy: number, charId: string, pw: number, flash: boolean) {
+  switch (charId) {
+    case "harry":
+      // Lightning scar
+      ctx.strokeStyle = flash ? "#ddd" : "#c0392b";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx + pw / 2 - 1, cy - 1);
+      ctx.lineTo(cx + pw / 2 + 1, cy + 1);
+      ctx.lineTo(cx + pw / 2 - 1, cy + 3);
+      ctx.stroke();
+      // Glasses
+      ctx.strokeStyle = flash ? "#aaa" : "#333";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cx + 9, cy + 5.5, 3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx + 15, cy + 5.5, 3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx + 12, cy + 5.5);
+      ctx.lineTo(cx + 12, cy + 5.5);
+      ctx.stroke();
+      break;
+    case "hermione":
+      // Bushy hair puffs
+      ctx.fillStyle = flash ? "#ddd" : "#6a3a1a";
+      ctx.beginPath(); ctx.arc(cx + 4, cy + 3, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + pw - 4, cy + 3, 4, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "ron":
+      // Freckles
+      ctx.fillStyle = flash ? "#ccc" : "#c08060";
+      ctx.fillRect(cx + 7, cy + 7, 1, 1);
+      ctx.fillRect(cx + 10, cy + 8, 1, 1);
+      ctx.fillRect(cx + 15, cy + 7, 1, 1);
+      break;
+    case "luna":
+      // Radish earrings
+      ctx.fillStyle = flash ? "#ddd" : "#e74c3c";
+      ctx.beginPath(); ctx.arc(cx + 4, cy + 9, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + pw - 4, cy + 9, 2, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "draco":
+      // Slicked-back hair point
+      ctx.fillStyle = flash ? "#ddd" : "#e0d8b0";
+      ctx.beginPath();
+      ctx.moveTo(cx + pw / 2 - 5, cy - 2);
+      ctx.lineTo(cx + pw / 2, cy - 5);
+      ctx.lineTo(cx + pw / 2 + 5, cy - 2);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case "neville":
+      // Rounder cheeks
+      ctx.fillStyle = flash ? "#fdd" : "#f0b0a0";
+      ctx.beginPath(); ctx.arc(cx + 6, cy + 7, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + pw - 6, cy + 7, 2, 0, Math.PI * 2); ctx.fill();
+      break;
+    case "ginny":
+      // Long flowing hair
+      ctx.fillStyle = flash ? "#ddd" : "#b83000";
+      ctx.fillRect(cx + 3, cy + 2, 3, 12);
+      ctx.fillRect(cx + pw - 6, cy + 2, 3, 12);
+      break;
+  }
+}
+
 const GRAVITY = 0.6;
 const BASE_JUMP = -12;
 const BASE_SPEED = 5;
@@ -773,29 +859,96 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.textAlign = "center";
         ctx.fillText(profile.character?.emoji || "⚡", cx + carW / 2, cy + carH / 2 + 4);
       } else {
+        const charId = profile.character?.id || "harry";
         const charColor = profile.character?.color || "#c0392b";
-        // Player shadow
+        const flash = playerHitFlash > 0;
+        const facingLeft = vx < -0.3;
+        const walking = Math.abs(vx) > 0.5;
+        const walkCycle = walking ? Math.floor(frameCount / 6) % 4 : 0;
+        const cx = px, cy = py;
+
+        // Shadow
         ctx.save();
         ctx.globalAlpha = 0.2;
         ctx.fillStyle = "#000";
         ctx.beginPath();
-        ctx.ellipse(px + PLAYER_W / 2, py + PLAYER_H + 2, PLAYER_W * 0.5, 4, 0, 0, Math.PI * 2);
+        ctx.ellipse(cx + PLAYER_W / 2, cy + PLAYER_H + 2, PLAYER_W * 0.5, 4, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
-        // Body (rounded)
-        ctx.fillStyle = playerHitFlash > 0 ? "#fff" : charColor;
+
+        ctx.save();
+        if (facingLeft) {
+          ctx.translate(cx + PLAYER_W, 0);
+          ctx.scale(-1, 1);
+          ctx.translate(-cx, 0);
+        }
+
+        // ─── Character-Specific Pixel Art ───
+        const skinColor = flash ? "#fff" : "#f0d0a0";
+        const robeColor = flash ? "#fff" : charColor;
+        const darkRobe = flash ? "#ddd" : shadeColor(charColor, -30);
+
+        // Robe / Body
+        ctx.fillStyle = robeColor;
         ctx.beginPath();
-        ctx.roundRect(px + 3, py + 6, PLAYER_W - 6, PLAYER_H - 6, 4);
+        ctx.moveTo(cx + 4, cy + 10);
+        ctx.lineTo(cx + PLAYER_W - 4, cy + 10);
+        ctx.lineTo(cx + PLAYER_W - 2, cy + PLAYER_H - 4);
+        ctx.lineTo(cx + 2, cy + PLAYER_H - 4);
+        ctx.closePath();
         ctx.fill();
+
+        // Robe shading (side fold)
+        ctx.fillStyle = darkRobe;
+        ctx.fillRect(cx + PLAYER_W - 8, cy + 14, 3, PLAYER_H - 20);
+
+        // Belt/sash
+        ctx.fillStyle = flash ? "#ccc" : "#5a4020";
+        ctx.fillRect(cx + 4, cy + 18, PLAYER_W - 8, 2);
+
         // Head
-        ctx.fillStyle = "#f0d0a0";
+        ctx.fillStyle = skinColor;
         ctx.beginPath();
-        ctx.arc(px + PLAYER_W / 2, py + 2, 9, 0, Math.PI * 2);
+        ctx.arc(cx + PLAYER_W / 2, cy + 6, 7, 0, Math.PI * 2);
         ctx.fill();
-        // Character emoji above
-        ctx.font = "12px serif";
-        ctx.textAlign = "center";
-        ctx.fillText(profile.character?.emoji || "⚡", px + PLAYER_W / 2, py - 10);
+
+        // Hair — unique per character
+        const hairColor = getHairColor(charId);
+        ctx.fillStyle = flash ? "#ddd" : hairColor;
+        ctx.beginPath();
+        ctx.arc(cx + PLAYER_W / 2, cy + 4, 7, Math.PI, 0);
+        ctx.fill();
+
+        // Extra hair details per character
+        drawCharacterDetails(ctx, cx, cy, charId, PLAYER_W, flash);
+
+        // Eyes
+        ctx.fillStyle = "#222";
+        ctx.fillRect(cx + 8, cy + 5, 2, 2);
+        ctx.fillRect(cx + 14, cy + 5, 2, 2);
+
+        // Feet (walking animation)
+        ctx.fillStyle = flash ? "#ccc" : "#3a2a1a";
+        const footOffset = walkCycle === 1 ? 2 : walkCycle === 3 ? -2 : 0;
+        ctx.fillRect(cx + 4 + footOffset, cy + PLAYER_H - 4, 6, 4);
+        ctx.fillRect(cx + PLAYER_W - 10 - footOffset, cy + PLAYER_H - 4, 6, 4);
+
+        // Wand in hand
+        ctx.fillStyle = flash ? "#fff" : "#8B6914";
+        ctx.save();
+        ctx.translate(cx + PLAYER_W - 4, cy + 16);
+        ctx.rotate(0.3 + Math.sin(frameCount * 0.08) * 0.1);
+        ctx.fillRect(0, -1, 10, 2);
+        // Wand tip glow
+        ctx.fillStyle = charColor;
+        ctx.globalAlpha = 0.6 + Math.sin(frameCount * 0.15) * 0.3;
+        ctx.beginPath();
+        ctx.arc(10, 0, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.restore();
+
+        ctx.restore();
       }
 
       // Pet

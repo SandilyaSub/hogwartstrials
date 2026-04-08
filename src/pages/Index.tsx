@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useGameState } from "@/hooks/useGameState";
 import { WORLDS } from "@/lib/gameData";
+import { setSong } from "@/lib/musicEngine";
 import AuthScreen from "@/components/game/AuthScreen";
 import TitleScreen from "@/components/game/TitleScreen";
 import ProfileCreation from "@/components/game/ProfileCreation";
@@ -9,6 +11,7 @@ import HouseSelect from "@/components/game/HouseSelect";
 import WorldMap from "@/components/game/WorldMap";
 import PetStore from "@/components/game/PetStore";
 import Shop from "@/components/game/Shop";
+import Feedback from "@/components/game/Feedback";
 import LevelIntro from "@/components/game/LevelIntro";
 import GameCanvas from "@/components/game/GameCanvas";
 import LevelComplete from "@/components/game/LevelComplete";
@@ -23,6 +26,11 @@ const Index = () => {
     completeLevel, startLevel, resetGame, purchaseItem,
     hasSave, dbLoaded,
   } = useGameState(user);
+
+  // Sync active song with music engine
+  useEffect(() => {
+    setSong(profile.activeSong || "default");
+  }, [profile.activeSong]);
 
   if (loading || (user && !dbLoaded)) {
     return (
@@ -79,6 +87,7 @@ const Index = () => {
           onStartLevel={startLevel}
           onOpenPetStore={() => setScreen("petstore")}
           onOpenShop={() => setScreen("shop")}
+          onOpenFeedback={() => setScreen("feedback")}
           onResetGame={resetGame}
         />
       );
@@ -97,6 +106,15 @@ const Index = () => {
         <Shop
           profile={profile}
           onPurchase={purchaseItem}
+          onBack={() => setScreen("worldmap")}
+        />
+      );
+
+    case "feedback":
+      return (
+        <Feedback
+          userId={user?.id || ""}
+          username={profile.username}
           onBack={() => setScreen("worldmap")}
         />
       );

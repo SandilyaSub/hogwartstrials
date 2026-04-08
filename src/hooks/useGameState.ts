@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ShopItem } from "@/lib/shopData";
 import type { User } from "@supabase/supabase-js";
 
-export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "levelIntro" | "playing" | "levelComplete" | "gameOver";
+export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "feedback" | "levelIntro" | "playing" | "levelComplete" | "gameOver";
 
 export interface PlayerProfile {
   username: string;
@@ -19,6 +19,7 @@ export interface PlayerProfile {
   lives: number;
   purchasedUpgrades: Record<string, boolean>;
   activeTheme: string;
+  activeSong: string;
 }
 
 const DEFAULT_PROFILE: PlayerProfile = {
@@ -34,6 +35,7 @@ const DEFAULT_PROFILE: PlayerProfile = {
   lives: 3,
   purchasedUpgrades: {},
   activeTheme: "dark",
+  activeSong: "default",
 };
 
 export function useGameState(user: User | null) {
@@ -75,6 +77,7 @@ export function useGameState(user: User | null) {
           lives: data.lives || 3,
           purchasedUpgrades: (data.purchased_upgrades as Record<string, boolean>) || {},
           activeTheme: data.active_theme || "dark",
+          activeSong: (data as any).active_song || "default",
         });
       }
       setDbLoaded(true);
@@ -102,7 +105,8 @@ export function useGameState(user: User | null) {
       lives: p.lives,
       purchased_upgrades: p.purchasedUpgrades,
       active_theme: p.activeTheme,
-    }).eq("user_id", user.id);
+      active_song: p.activeSong,
+    } as any).eq("user_id", user.id);
   }, [user]);
 
   const setUsername = useCallback((username: string) => {
@@ -155,11 +159,13 @@ export function useGameState(user: User | null) {
     if (profile.coins < item.cost) return;
     const newUpgrades = { ...profile.purchasedUpgrades, [item.id]: true };
     const newTheme = item.type === "theme" ? item.id : profile.activeTheme;
+    const newSong = item.type === "song" ? item.id : profile.activeSong;
     saveProfile({
       ...profile,
       coins: profile.coins - item.cost,
       purchasedUpgrades: newUpgrades,
       activeTheme: newTheme,
+      activeSong: newSong,
     });
 
     if (user) {
@@ -173,7 +179,7 @@ export function useGameState(user: User | null) {
   }, [profile, saveProfile, user]);
 
   const resetGame = useCallback(() => {
-    const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme };
+    const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme, activeSong: profile.activeSong };
     saveProfile(reset);
     setScreen("title");
   }, [saveProfile, profile.purchasedUpgrades, profile.activeTheme]);

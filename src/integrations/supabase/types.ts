@@ -14,8 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      feedback: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          rating: number
+          user_id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          rating?: number
+          user_id: string
+          username?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          rating?: number
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
       game_profiles: {
         Row: {
+          active_song: string
           active_theme: string
           character_id: string | null
           coins: number
@@ -34,6 +62,7 @@ export type Database = {
           username: string
         }
         Insert: {
+          active_song?: string
           active_theme?: string
           character_id?: string | null
           coins?: number
@@ -52,6 +81,7 @@ export type Database = {
           username?: string
         }
         Update: {
+          active_song?: string
           active_theme?: string
           character_id?: string | null
           coins?: number

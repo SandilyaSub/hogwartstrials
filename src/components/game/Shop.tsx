@@ -9,7 +9,7 @@ interface ShopProps {
 
 const Shop = ({ profile, onPurchase, onBack }: ShopProps) => {
   const purchased = profile.purchasedUpgrades || {};
-  const categories = ["upgrade", "consumable", "theme"] as const;
+  const categories = ["upgrade", "consumable", "theme", "song"] as const;
 
   return (
     <div className="min-h-screen bg-background p-4 overflow-y-auto">
@@ -19,7 +19,7 @@ const Shop = ({ profile, onPurchase, onBack }: ShopProps) => {
           <button onClick={onBack} className="text-muted-foreground hover:text-foreground font-display transition-colors text-lg">←</button>
           <div className="flex-1">
             <h2 className="font-display text-2xl font-semibold text-primary text-glow">🏪 Magical Shop</h2>
-            <p className="text-sm text-muted-foreground font-body">Spend your coins on upgrades & themes</p>
+            <p className="text-sm text-muted-foreground font-body">Spend your coins on upgrades, themes & music</p>
           </div>
           <div className="text-right">
             <p className="font-display text-xl font-bold text-primary">🪙 {profile.coins}</p>
@@ -37,9 +37,11 @@ const Shop = ({ profile, onPurchase, onBack }: ShopProps) => {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {items.map((item, i) => {
-                  const owned = purchased[item.id] === true;
+                  const isDefault = item.id === "song_default";
+                  const owned = isDefault || purchased[item.id] === true;
                   const canAfford = profile.coins >= item.cost;
                   const isActiveTheme = item.type === "theme" && profile.activeTheme === item.id;
+                  const isActiveSong = item.type === "song" && profile.activeSong === item.id;
 
                   return (
                     <button
@@ -47,7 +49,7 @@ const Shop = ({ profile, onPurchase, onBack }: ShopProps) => {
                       onClick={() => !owned && canAfford && onPurchase(item)}
                       disabled={owned || !canAfford}
                       className={`card-illustrated p-4 text-left transition-all duration-300 animate-pop-in ${
-                        isActiveTheme ? "!border-primary box-glow !bg-primary/8" :
+                        (isActiveTheme || isActiveSong) ? "!border-primary box-glow !bg-primary/8" :
                         owned ? "!opacity-60" :
                         canAfford ? "hover:border-primary/30 hover:scale-[1.02]" :
                         "!opacity-40 cursor-not-allowed"
@@ -63,7 +65,7 @@ const Shop = ({ profile, onPurchase, onBack }: ShopProps) => {
                         <div className="text-right">
                           {owned ? (
                             <span className="text-xs font-display font-semibold text-primary px-2 py-1 rounded-full bg-primary/12">
-                              {isActiveTheme ? "ACTIVE" : "OWNED"}
+                              {isActiveTheme || isActiveSong ? "ACTIVE" : isDefault ? "DEFAULT" : "OWNED"}
                             </span>
                           ) : (
                             <span className={`text-sm font-display font-bold ${canAfford ? "text-primary" : "text-muted-foreground"}`}>
