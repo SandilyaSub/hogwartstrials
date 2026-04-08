@@ -59,6 +59,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const isDark = levelData.darkLevel || false;
     const isCheckered = levelData.checkered || false;
     const isBoatLevel = levelData.boatLevel || false;
+    const isBossArena = levelData.bossArena || false;
+    const bossData = levelData.boss;
 
     let px = startX, py = startY, vx = 0, vy = 0;
     let onGround = false;
@@ -66,6 +68,20 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let hasRevive = petEffect.type === "revive";
     const particles: Particle[] = [];
     let frameCount = 0;
+
+    // Boss fight state
+    let bossHp = bossData?.maxHp || 0;
+    let bossX = isBossArena ? 450 : 0;
+    let bossY = isBossArena ? H - 100 : 0;
+    let bossDir = -1;
+    let bossAttackTimer = 0;
+    let bossHitFlash = 0;
+    let playerHp = 100;
+    let playerMaxHp = 100;
+    let playerHitFlash = 0;
+    const projectiles: Projectile[] = [];
+    const spells: SpellDef[] = isBossArena ? getBossSpells(worldId) : [];
+    const spellCooldowns: number[] = spells.map(() => 0);
 
     const keys = keysRef.current;
 
