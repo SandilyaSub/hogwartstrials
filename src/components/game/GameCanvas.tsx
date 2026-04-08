@@ -184,6 +184,34 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       });
 
       // Collision
+      if (isFlyingCar) {
+        // Flying car: check collision with hazards and finish
+        for (const p of platforms) {
+          if (p.type === "finish") {
+            if (px + PLAYER_W > p.x && px < p.x + p.w && py + PLAYER_H > p.y && py < p.y + p.h) {
+              handleComplete(); return;
+            }
+            continue;
+          }
+          if (p.type === "hazard" && p.color !== "transparent") {
+            if (px + PLAYER_W > p.x && px < p.x + p.w && py + PLAYER_H > p.y && py < p.y + p.h) {
+              if (carInvincible <= 0) {
+                if (hasRevive) { hasRevive = false; carInvincible = 60; }
+                else { handleDeath(); return; }
+              }
+            }
+          }
+        }
+        // Enemy collision in flying car
+        for (const e of enemies) {
+          if (px + PLAYER_W > e.x && px < e.x + e.w && py + PLAYER_H > e.y && py < e.y + e.h) {
+            if (carInvincible <= 0) {
+              if (hasRevive) { hasRevive = false; carInvincible = 60; }
+              else { handleDeath(); return; }
+            }
+          }
+        }
+      } else {
       onGround = false;
       for (const p of platforms) {
         if (!p.visible && p.type === "disappearing") continue;
@@ -219,6 +247,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             else { handleDeath(); return; }
           }
         }
+      }
       }
 
       // ─── Boss Fight Logic ───
