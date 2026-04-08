@@ -7,10 +7,11 @@ interface WorldMapProps {
   profile: PlayerProfile;
   onStartLevel: (worldId: number, levelIdx: number) => void;
   onOpenPetStore: () => void;
+  onOpenShop?: () => void;
   onResetGame: () => void;
 }
 
-const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onResetGame }: WorldMapProps) => {
+const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onResetGame }: WorldMapProps) => {
   const [expandedWorld, setExpandedWorld] = useState<number | null>(null);
   const [showMentor, setShowMentor] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -52,6 +53,11 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onResetGame }: WorldM
               <button onClick={onOpenPetStore} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
                 🐾
               </button>
+              {onOpenShop && (
+                <button onClick={onOpenShop} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
+                  🏪
+                </button>
+              )}
               <button onClick={() => setShowMentor(true)} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
                 🧙
               </button>
