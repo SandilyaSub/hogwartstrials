@@ -119,22 +119,52 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       const left = keys.has("ArrowLeft") || keys.has("a") || touchLeft;
       const right = keys.has("ArrowRight") || keys.has("d") || touchRight;
       const jump = keys.has("ArrowUp") || keys.has("w") || keys.has(" ") || touchJump;
+      const down = keys.has("ArrowDown") || keys.has("s");
 
-      if (left) vx = -speed;
-      else if (right) vx = speed;
-      else vx *= 0.8;
+      if (isFlyingCar) {
+        // Flying car mode: auto-scroll right, player moves up/down freely
+        cameraX += flyingCarSpeed;
+        px = cameraX + 80; // lock player near left side of screen
 
-      if (jump && onGround) {
-        vy = jumpPower;
-        onGround = false;
-        for (let i = 0; i < 5; i++) {
-          particles.push({ x: px + PLAYER_W / 2, y: py + PLAYER_H, vx: (Math.random() - 0.5) * 3, vy: Math.random() * -2, life: 20, color: "hsl(45, 80%, 55%)" });
+        // Up/down movement (no gravity)
+        const carSpeed = 4;
+        if (jump || keys.has("ArrowUp") || keys.has("w")) vy = -carSpeed;
+        else if (down) vy = carSpeed;
+        else vy *= 0.85;
+
+        // Small left/right wiggle allowed
+        if (left) vx = -2;
+        else if (right) vx = 2;
+        else vx *= 0.8;
+
+        px += vx;
+        py += vy;
+
+        // Clamp to screen bounds
+        if (py < 20) py = 20;
+        if (py > H - 60) py = H - 60;
+
+        if (carInvincible > 0) carInvincible--;
+
+        // Increase speed over time
+        flyingCarSpeed = 3 + frameCount * 0.0005;
+      } else {
+        if (left) vx = -speed;
+        else if (right) vx = speed;
+        else vx *= 0.8;
+
+        if (jump && onGround) {
+          vy = jumpPower;
+          onGround = false;
+          for (let i = 0; i < 5; i++) {
+            particles.push({ x: px + PLAYER_W / 2, y: py + PLAYER_H, vx: (Math.random() - 0.5) * 3, vy: Math.random() * -2, life: 20, color: "hsl(45, 80%, 55%)" });
+          }
         }
-      }
 
-      vy += GRAVITY;
-      px += vx;
-      py += vy;
+        vy += GRAVITY;
+        px += vx;
+        py += vy;
+      }
 
       // Update moving platforms
       platforms.forEach(p => {
