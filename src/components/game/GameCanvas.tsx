@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import { WORLDS } from "@/lib/gameData";
-import { generateLevel, getLevelTheme, type Platform, type Enemy, type Particle, type LevelData } from "@/lib/levelGenerator";
+import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef } from "@/lib/levelGenerator";
 import { toggleMusic, isMusicPlaying, startMusic } from "@/lib/musicEngine";
 import type { PlayerProfile } from "@/hooks/useGameState";
 
@@ -59,6 +59,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const isDark = levelData.darkLevel || false;
     const isCheckered = levelData.checkered || false;
     const isBoatLevel = levelData.boatLevel || false;
+    const isBossArena = levelData.bossArena || false;
+    const bossData = levelData.boss;
 
     let px = startX, py = startY, vx = 0, vy = 0;
     let onGround = false;
@@ -66,6 +68,20 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let hasRevive = petEffect.type === "revive";
     const particles: Particle[] = [];
     let frameCount = 0;
+
+    // Boss fight state
+    let bossHp = bossData?.maxHp || 0;
+    let bossX = isBossArena ? 450 : 0;
+    let bossY = isBossArena ? H - 100 : 0;
+    let bossDir = -1;
+    let bossAttackTimer = 0;
+    let bossHitFlash = 0;
+    let playerHp = 100;
+    let playerMaxHp = 100;
+    let playerHitFlash = 0;
+    const projectiles: Projectile[] = [];
+    const spells: SpellDef[] = isBossArena ? getBossSpells(worldId) : [];
+    const spellCooldowns: number[] = spells.map(() => 0);
 
     const keys = keysRef.current;
 
@@ -172,6 +188,104 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       }
 
+      // ─── Boss Fight Logic ───
+      if (isBossArena && bossData) {
+        // Fire spells with number keys
+        spells.forEach((spell, i) => {
+          if (keys.has(spell.key) && spellCooldowns[i] <= 0) {
+            const dirX = bossX > px ? 1 : -1;
+            const dirY = (bossY - py) / (Math.abs(bossX - px) || 1);
+            projectiles.push({
+              x: px + PLAYER_W / 2, y: py + PLAYER_H / 2,
+              vx: spell.speed * dirX, vy: dirY * spell.speed * 0.3,
+              damage: spell.damage, color: spell.color, radius: 5,
+              fromPlayer: true, life: 120, emoji: spell.emoji,
+            });
+            spellCooldowns[i] = spell.cooldown;
+            // Muzzle flash particles
+            for (let p = 0; p < 4; p++) {
+              particles.push({
+                x: px + PLAYER_W / 2, y: py + PLAYER_H / 2,
+                vx: (Math.random() - 0.5) * 4 + dirX * 3,
+                vy: (Math.random() - 0.5) * 4,
+                life: 15, color: spell.color,
+              });
+            }
+          }
+        });
+        // Tick cooldowns
+        spellCooldowns.forEach((cd, i) => { if (cd > 0) spellCooldowns[i]--; });
+
+        // Boss movement - paces back and forth
+        bossX += bossDir * 1.5;
+        if (bossX < 300 || bossX > 520) bossDir *= -1;
+
+        // Boss attacks - fires projectiles at player
+        bossAttackTimer++;
+        if (bossAttackTimer >= bossData.attackSpeed) {
+          bossAttackTimer = 0;
+          const dx = px - bossX, dy = py - bossY;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          projectiles.push({
+            x: bossX + 20, y: bossY + 20,
+            vx: (dx / dist) * bossData.projectileSpeed,
+            vy: (dy / dist) * bossData.projectileSpeed,
+            damage: 10 + worldId * 2, color: bossData.color, radius: 6,
+            fromPlayer: false, life: 180, emoji: "💀",
+          });
+          // Extra projectiles for harder bosses
+          if (worldId >= 4) {
+            projectiles.push({
+              x: bossX + 20, y: bossY + 20,
+              vx: (dx / dist) * bossData.projectileSpeed * 0.8 + 1,
+              vy: (dy / dist) * bossData.projectileSpeed * 0.8 - 1,
+              damage: 8 + worldId, color: bossData.color, radius: 4,
+              fromPlayer: false, life: 150,
+            });
+          }
+        }
+
+        // Update projectiles
+        for (let i = projectiles.length - 1; i >= 0; i--) {
+          const proj = projectiles[i];
+          proj.x += proj.vx;
+          proj.y += proj.vy;
+          proj.life--;
+
+          if (proj.life <= 0) { projectiles.splice(i, 1); continue; }
+
+          // Player spell hits boss
+          if (proj.fromPlayer) {
+            const bossW = 40, bossH = 50;
+            if (proj.x > bossX && proj.x < bossX + bossW && proj.y > bossY && proj.y < bossY + bossH) {
+              bossHp -= proj.damage;
+              bossHitFlash = 10;
+              projectiles.splice(i, 1);
+              // Hit particles
+              for (let p = 0; p < 6; p++) {
+                particles.push({
+                  x: proj.x, y: proj.y,
+                  vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+                  life: 20, color: proj.color,
+                });
+              }
+              if (bossHp <= 0) { handleComplete(); return; }
+            }
+          } else {
+            // Boss projectile hits player
+            if (proj.x > px && proj.x < px + PLAYER_W && proj.y > py && proj.y < py + PLAYER_H) {
+              playerHp -= proj.damage;
+              playerHitFlash = 8;
+              projectiles.splice(i, 1);
+              if (playerHp <= 0) { handleDeath(); return; }
+            }
+          }
+        }
+
+        if (bossHitFlash > 0) bossHitFlash--;
+        if (playerHitFlash > 0) playerHitFlash--;
+      }
+
       // Fall death (into water for boat level, off-screen otherwise)
       const deathY = isBoatLevel ? H - 45 : H + 100;
       if (py > deathY) {
@@ -179,8 +293,12 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         else { handleDeath(); return; }
       }
 
-      cameraX += (px - W / 3 - cameraX) * 0.1;
-      if (cameraX < 0) cameraX = 0;
+      if (!isBossArena) {
+        cameraX += (px - W / 3 - cameraX) * 0.1;
+        if (cameraX < 0) cameraX = 0;
+      } else {
+        cameraX = 0; // Fixed camera for boss arena
+      }
 
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
@@ -374,9 +492,69 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + 5);
       });
 
+      // ─── Draw Boss ───
+      if (isBossArena && bossData) {
+        const bossW = 40, bossH = 50;
+        // Boss body
+        ctx.fillStyle = bossHitFlash > 0 ? "#fff" : bossData.color;
+        ctx.fillRect(bossX, bossY, bossW, bossH);
+        // Boss border glow
+        ctx.strokeStyle = bossHitFlash > 0 ? "#ff0" : "rgba(255,255,255,0.3)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(bossX, bossY, bossW, bossH);
+        // Boss emoji
+        ctx.font = "28px serif";
+        ctx.textAlign = "center";
+        ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 8);
+        // Boss name
+        ctx.font = "11px Cinzel";
+        ctx.fillStyle = "#fff";
+        ctx.fillText(bossData.name, bossX + bossW / 2, bossY - 28);
+        // Boss HP bar
+        const hpW = 80, hpH = 6;
+        const hpX = bossX + bossW / 2 - hpW / 2, hpY = bossY - 18;
+        ctx.fillStyle = "#333";
+        ctx.fillRect(hpX, hpY, hpW, hpH);
+        ctx.fillStyle = bossHp > bossData.maxHp * 0.3 ? "#e74c3c" : "#ff4444";
+        ctx.fillRect(hpX, hpY, hpW * (bossHp / bossData.maxHp), hpH);
+        ctx.strokeStyle = "#666";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(hpX, hpY, hpW, hpH);
+      }
+
+      // Draw projectiles
+      projectiles.forEach(proj => {
+        ctx.globalAlpha = Math.min(1, proj.life / 20);
+        ctx.fillStyle = proj.color;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, proj.radius, 0, Math.PI * 2);
+        ctx.fill();
+        // Glow
+        ctx.globalAlpha = 0.3;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, proj.radius * 2, 0, Math.PI * 2);
+        ctx.fill();
+        // Emoji
+        if (proj.emoji) {
+          ctx.globalAlpha = 1;
+          ctx.font = `${proj.radius * 2 + 4}px serif`;
+          ctx.textAlign = "center";
+          ctx.fillText(proj.emoji, proj.x, proj.y + proj.radius);
+        }
+        ctx.globalAlpha = 1;
+        // Trail particles
+        if (frameCount % 3 === 0) {
+          particles.push({
+            x: proj.x, y: proj.y,
+            vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5,
+            life: 10, color: proj.color,
+          });
+        }
+      });
+
       // Draw player
       const charColor = profile.character?.color || "#c0392b";
-      ctx.fillStyle = charColor;
+      ctx.fillStyle = playerHitFlash > 0 ? "#fff" : charColor;
       ctx.fillRect(px + 4, py, PLAYER_W - 8, PLAYER_H);
       ctx.fillStyle = "#f0d0a0";
       ctx.beginPath();
@@ -434,14 +612,49 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
       // HUD
       ctx.fillStyle = "rgba(0,0,0,0.5)";
-      ctx.fillRect(0, 0, W, 36);
+      ctx.fillRect(0, 0, W, isBossArena ? 60 : 36);
       ctx.font = "14px Cinzel";
       ctx.fillStyle = "#c8a020";
       ctx.textAlign = "left";
       ctx.fillText(`World ${worldId}: ${level.name}`, 10, 24);
-      ctx.textAlign = "right";
-      ctx.fillStyle = hasRevive ? "#4ade80" : "#666";
-      ctx.fillText(hasRevive ? "🔥 Revive Ready" : "", W - 10, 24);
+
+      if (isBossArena) {
+        // Player HP bar
+        ctx.fillStyle = "#aaa";
+        ctx.font = "10px Cinzel";
+        ctx.fillText("HP", 10, 48);
+        ctx.fillStyle = "#333";
+        ctx.fillRect(30, 40, 120, 10);
+        ctx.fillStyle = playerHp > 30 ? "#27ae60" : "#e74c3c";
+        ctx.fillRect(30, 40, 120 * (playerHp / playerMaxHp), 10);
+        ctx.strokeStyle = "#555";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(30, 40, 120, 10);
+
+        // Spell bar
+        ctx.textAlign = "center";
+        spells.forEach((spell, i) => {
+          const sx = 200 + i * 80;
+          const ready = spellCooldowns[i] <= 0;
+          ctx.fillStyle = ready ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.3)";
+          ctx.fillRect(sx, 34, 70, 22);
+          ctx.strokeStyle = ready ? spell.color : "#333";
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(sx, 34, 70, 22);
+          ctx.fillStyle = ready ? "#fff" : "#555";
+          ctx.font = "10px Cinzel";
+          ctx.fillText(`[${spell.key}] ${spell.emoji} ${spell.name}`, sx + 35, 49);
+          // Cooldown overlay
+          if (!ready) {
+            ctx.fillStyle = "rgba(0,0,0,0.5)";
+            ctx.fillRect(sx, 34, 70 * (spellCooldowns[i] / spell.cooldown), 22);
+          }
+        });
+      } else {
+        ctx.textAlign = "right";
+        ctx.fillStyle = hasRevive ? "#4ade80" : "#666";
+        ctx.fillText(hasRevive ? "🔥 Revive Ready" : "", W - 10, 24);
+      }
 
       // Touch controls
       if ('ontouchstart' in window) {
@@ -500,7 +713,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       </div>
 
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-foreground/30 font-display">
-        Arrow Keys / WASD to move · Space to jump
+        {levelIdx === 4
+          ? "Arrow Keys / WASD to move · Space to jump · 1/2/3 to cast spells"
+          : "Arrow Keys / WASD to move · Space to jump"}
       </div>
     </div>
   );
