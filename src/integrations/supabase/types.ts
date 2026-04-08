@@ -14,7 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      game_profiles: {
+        Row: {
+          active_theme: string
+          character_id: string | null
+          coins: number
+          completed_levels: string[]
+          created_at: string
+          current_level: number
+          current_world: number
+          house_id: string | null
+          id: string
+          lives: number
+          pet_id: string | null
+          purchased_upgrades: Json
+          unlocked_pets: string[]
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          active_theme?: string
+          character_id?: string | null
+          coins?: number
+          completed_levels?: string[]
+          created_at?: string
+          current_level?: number
+          current_world?: number
+          house_id?: string | null
+          id?: string
+          lives?: number
+          pet_id?: string | null
+          purchased_upgrades?: Json
+          unlocked_pets?: string[]
+          updated_at?: string
+          user_id: string
+          username?: string
+        }
+        Update: {
+          active_theme?: string
+          character_id?: string | null
+          coins?: number
+          completed_levels?: string[]
+          created_at?: string
+          current_level?: number
+          current_world?: number
+          house_id?: string | null
+          id?: string
+          lives?: number
+          pet_id?: string | null
+          purchased_upgrades?: Json
+          unlocked_pets?: string[]
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      shop_purchases: {
+        Row: {
+          cost: number
+          id: string
+          item_id: string
+          item_type: string
+          purchased_at: string
+          user_id: string
+        }
+        Insert: {
+          cost?: number
+          id?: string
+          item_id: string
+          item_type: string
+          purchased_at?: string
+          user_id: string
+        }
+        Update: {
+          cost?: number
+          id?: string
+          item_id?: string
+          item_type?: string
+          purchased_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
