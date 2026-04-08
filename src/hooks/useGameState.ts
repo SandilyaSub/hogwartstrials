@@ -1,7 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { CHARACTERS, HOUSES, PETS, WORLDS, type Character, type House, type Pet } from "@/lib/gameData";
+import { supabase } from "@/integrations/supabase/client";
+import type { ShopItem } from "@/lib/shopData";
+import type { User } from "@supabase/supabase-js";
 
-export type GameScreen = "title" | "profile" | "character" | "house" | "worldmap" | "petstore" | "playing" | "levelComplete" | "gameOver";
+export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "playing" | "levelComplete" | "gameOver";
 
 export interface PlayerProfile {
   username: string;
@@ -14,6 +17,8 @@ export interface PlayerProfile {
   completedLevels: string[];
   coins: number;
   lives: number;
+  purchasedUpgrades: Record<string, boolean>;
+  activeTheme: string;
 }
 
 const DEFAULT_PROFILE: PlayerProfile = {
@@ -27,23 +32,78 @@ const DEFAULT_PROFILE: PlayerProfile = {
   completedLevels: [],
   coins: 0,
   lives: 3,
+  purchasedUpgrades: {},
+  activeTheme: "dark",
 };
 
-export function useGameState() {
-  const [screen, setScreen] = useState<GameScreen>("title");
-  const [profile, setProfile] = useState<PlayerProfile>(() => {
-    const saved = localStorage.getItem("hp_obby_profile");
-    if (saved) {
-      try { return JSON.parse(saved); } catch { return DEFAULT_PROFILE; }
-    }
-    return DEFAULT_PROFILE;
-  });
-  const [mentorMessage, setMentorMessage] = useState<string | null>(null);
+export function useGameState(user: User | null) {
+  const [screen, setScreen] = useState<GameScreen>(user ? "title" : "auth");
+  const [profile, setProfile] = useState<PlayerProfile>(DEFAULT_PROFILE);
+  const [dbLoaded, setDbLoaded] = useState(false);
 
-  const saveProfile = useCallback((p: PlayerProfile) => {
+  // Load profile from DB when user signs in
+  useEffect(() => {
+    if (!user) {
+      setProfile(DEFAULT_PROFILE);
+      setScreen("auth");
+      setDbLoaded(false);
+      return;
+    }
+
+    const loadProfile = async () => {
+      const { data, error } = await supabase
+        .from("game_profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (data && !error) {
+        const char = data.character_id ? CHARACTERS.find(c => c.id === data.character_id) || null : null;
+        const house = data.house_id ? HOUSES.find(h => h.id === data.house_id) || null : null;
+        const pet = data.pet_id ? PETS.find(p => p.id === data.pet_id) || null : null;
+
+        setProfile({
+          username: data.username || "",
+          character: char,
+          house: house,
+          pet: pet,
+          unlockedPets: data.unlocked_pets || ["owl", "cat"],
+          currentWorld: data.current_world || 1,
+          currentLevel: data.current_level || 0,
+          completedLevels: data.completed_levels || [],
+          coins: data.coins || 0,
+          lives: data.lives || 3,
+          purchasedUpgrades: (data.purchased_upgrades as Record<string, boolean>) || {},
+          activeTheme: data.active_theme || "dark",
+        });
+      }
+      setDbLoaded(true);
+      setScreen("title");
+    };
+
+    loadProfile();
+  }, [user]);
+
+  // Save to DB
+  const saveProfile = useCallback(async (p: PlayerProfile) => {
     setProfile(p);
-    localStorage.setItem("hp_obby_profile", JSON.stringify(p));
-  }, []);
+    if (!user) return;
+
+    await supabase.from("game_profiles").update({
+      username: p.username,
+      character_id: p.character?.id || null,
+      house_id: p.house?.id || null,
+      pet_id: p.pet?.id || null,
+      unlocked_pets: p.unlockedPets,
+      current_world: p.currentWorld,
+      current_level: p.currentLevel,
+      completed_levels: p.completedLevels,
+      coins: p.coins,
+      lives: p.lives,
+      purchased_upgrades: p.purchasedUpgrades,
+      active_theme: p.activeTheme,
+    }).eq("user_id", user.id);
+  }, [user]);
 
   const setUsername = useCallback((username: string) => {
     saveProfile({ ...profile, username });
@@ -69,8 +129,7 @@ export function useGameState() {
     const world = WORLDS.find(w => w.levels.some(l => l.id === levelId));
     const levelIdx = world?.levels.findIndex(l => l.id === levelId) ?? -1;
     const newPets = [...profile.unlockedPets];
-    
-    // Unlock pets based on world completion
+
     if (world && levelIdx === 4) {
       PETS.forEach(p => {
         if (p.unlockWorld <= world.id && !newPets.includes(p.id)) {
@@ -92,10 +151,32 @@ export function useGameState() {
     setScreen("playing");
   }, [profile, saveProfile]);
 
+  const purchaseItem = useCallback(async (item: ShopItem) => {
+    if (profile.coins < item.cost) return;
+    const newUpgrades = { ...profile.purchasedUpgrades, [item.id]: true };
+    const newTheme = item.type === "theme" ? item.id : profile.activeTheme;
+    saveProfile({
+      ...profile,
+      coins: profile.coins - item.cost,
+      purchasedUpgrades: newUpgrades,
+      activeTheme: newTheme,
+    });
+
+    if (user) {
+      await supabase.from("shop_purchases").insert({
+        user_id: user.id,
+        item_id: item.id,
+        item_type: item.type,
+        cost: item.cost,
+      });
+    }
+  }, [profile, saveProfile, user]);
+
   const resetGame = useCallback(() => {
-    saveProfile(DEFAULT_PROFILE);
+    const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme };
+    saveProfile(reset);
     setScreen("title");
-  }, [saveProfile]);
+  }, [saveProfile, profile.purchasedUpgrades, profile.activeTheme]);
 
   const hasSave = profile.username.length > 0;
 
@@ -103,8 +184,7 @@ export function useGameState() {
     screen, setScreen,
     profile, saveProfile,
     setUsername, selectCharacter, selectHouse, selectPet,
-    completeLevel, startLevel, resetGame,
-    mentorMessage, setMentorMessage,
-    hasSave,
+    completeLevel, startLevel, resetGame, purchaseItem,
+    hasSave, dbLoaded,
   };
 }
