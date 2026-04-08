@@ -3,6 +3,7 @@ import { WORLDS } from "@/lib/gameData";
 import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef } from "@/lib/levelGenerator";
 import { toggleMusic, isMusicPlaying, startMusic } from "@/lib/musicEngine";
 import type { PlayerProfile } from "@/hooks/useGameState";
+import dementorImg from "@/assets/dementor.png";
 
 interface GameCanvasProps {
   profile: PlayerProfile;
@@ -713,11 +714,16 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       });
 
       // Draw enemies — emoji only, no boxes
+      // Load dementor image once
+      if (!(window as any).__dementorImage) {
+        const img = new Image();
+        img.src = dementorImg;
+        (window as any).__dementorImage = img;
+      }
+      const dementorImageEl = (window as any).__dementorImage as HTMLImageElement;
+
       enemies.forEach(e => {
         if (e.y < -50) return;
-        const defaultEmojis: Record<string, string> = { spider: "🕷️", dementor: "👻", deathEater: "💀", troll: "🧌", chess: "♟", quirrell: "🧙" };
-        const emoji = e.emoji || defaultEmojis[e.type] || "👾";
-        const emojiSize = Math.max(18, e.w + 4);
         // Subtle shadow/glow under enemy
         ctx.save();
         ctx.globalAlpha = 0.25;
@@ -728,9 +734,22 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.restore();
         // Bobbing animation
         const bob = Math.sin(frameCount * 0.06 + e.origX * 0.1) * 2;
-        ctx.font = `${emojiSize}px serif`;
-        ctx.textAlign = "center";
-        ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + emojiSize * 0.35 + bob);
+
+        if (e.type === "dementor" && dementorImageEl.complete) {
+          const imgW = e.w * 2.2;
+          const imgH = e.h * 2.2;
+          ctx.save();
+          ctx.globalAlpha = 0.85;
+          ctx.drawImage(dementorImageEl, e.x + e.w / 2 - imgW / 2, e.y + e.h / 2 - imgH / 2 + bob, imgW, imgH);
+          ctx.restore();
+        } else {
+          const defaultEmojis: Record<string, string> = { spider: "🕷️", deathEater: "💀", troll: "🧌", chess: "♟", quirrell: "🧙" };
+          const emoji = e.emoji || defaultEmojis[e.type] || "👾";
+          const emojiSize = Math.max(18, e.w + 4);
+          ctx.font = `${emojiSize}px serif`;
+          ctx.textAlign = "center";
+          ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + emojiSize * 0.35 + bob);
+        }
       });
 
       // ─── Draw Boss ───
