@@ -69,6 +69,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let hasRevive = petEffect.type === "revive";
     const particles: Particle[] = [];
     let frameCount = 0;
+    let flyingCarSpeed = 3; // auto-scroll speed for flying car mode
+    let carInvincible = 0; // invincibility frames after hit
 
     // Boss fight state
     let bossHp = bossData?.maxHp || 0;
