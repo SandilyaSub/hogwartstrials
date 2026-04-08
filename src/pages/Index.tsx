@@ -38,16 +38,27 @@ const Index = () => {
     const themeItem = SHOP_ITEMS.find(i => i.id === profile.activeTheme && i.type === "theme");
     const root = document.documentElement;
     if (themeItem?.themeColors) {
-      root.style.setProperty("--primary", themeItem.themeColors.primary);
-      root.style.setProperty("--background", themeItem.themeColors.background);
-      root.style.setProperty("--card", themeItem.themeColors.card);
-      root.style.setProperty("--ring", themeItem.themeColors.primary);
+      const { primary, background, card } = themeItem.themeColors;
+      root.style.setProperty("--primary", primary);
+      root.style.setProperty("--primary-foreground", background);
+      root.style.setProperty("--background", background);
+      root.style.setProperty("--foreground", "50 40% 92%");
+      root.style.setProperty("--card", card);
+      root.style.setProperty("--card-foreground", "50 40% 92%");
+      root.style.setProperty("--popover", card);
+      root.style.setProperty("--popover-foreground", "50 40% 92%");
+      root.style.setProperty("--ring", primary);
+      root.style.setProperty("--border", card);
+      root.style.setProperty("--input", card);
+      root.style.setProperty("--muted", card);
+      root.style.setProperty("--secondary", card);
+      root.style.setProperty("--accent", primary);
+      root.style.setProperty("--sidebar-background", background);
+      root.style.setProperty("--sidebar-primary", primary);
     } else {
-      // Reset to default dark theme
-      root.style.removeProperty("--primary");
-      root.style.removeProperty("--background");
-      root.style.removeProperty("--card");
-      root.style.removeProperty("--ring");
+      // Reset to defaults by removing all overrides
+      const vars = ["--primary","--primary-foreground","--background","--foreground","--card","--card-foreground","--popover","--popover-foreground","--ring","--border","--input","--muted","--secondary","--accent","--sidebar-background","--sidebar-primary"];
+      vars.forEach(v => root.style.removeProperty(v));
     }
   }, [profile.activeTheme]);
 
