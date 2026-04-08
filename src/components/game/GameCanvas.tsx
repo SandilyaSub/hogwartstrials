@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import { WORLDS } from "@/lib/gameData";
-import { generateLevel, getLevelTheme, type Platform, type Enemy, type Particle, type LevelData } from "@/lib/levelGenerator";
+import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef } from "@/lib/levelGenerator";
 import { toggleMusic, isMusicPlaying, startMusic } from "@/lib/musicEngine";
 import type { PlayerProfile } from "@/hooks/useGameState";
 
