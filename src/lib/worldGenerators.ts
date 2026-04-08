@@ -757,27 +757,35 @@ function gen_7_1_EscapeRun(H: number): LevelData {
 
   platforms.push({ x: 0, y: H - 40, w: 100, h: 40, type: "normal" });
 
-  // Fast-paced escape with narrow platforms and many enemies
-  for (let i = 0; i < 22; i++) {
+  // Longer, more intense escape with varied platform types
+  for (let i = 0; i < 30; i++) {
     const x = 110 + i * 80;
-    const y = H - 60 - (i % 4) * 20 - i * 3;
+    const y = H - 60 - (i % 4) * 18 - i * 3;
+    const roll = i % 5;
     platforms.push({
-      x, y, w: 40 + (i % 2) * 15, h: 12,
-      type: i % 3 === 0 ? "disappearing" : "normal",
+      x, y, w: 42 + (i % 2) * 15, h: 12,
+      type: roll === 0 ? "disappearing" : roll === 3 ? "moving" : "normal",
       timer: 0, visible: true,
       color: "#3a2a2a",
+      origX: x, origY: y,
+      moveDir: i % 2 === 0 ? 1 : -1,
+      moveRange: roll === 3 ? 30 : 0,
     });
   }
 
-  // Death Eaters chasing
-  for (let i = 0; i < 5; i++) {
+  // Death Eaters chasing — staggered
+  for (let i = 0; i < 4; i++) {
     enemies.push({
-      x: 200 + i * 350, y: H - 90 - i * 10, w: 22, h: 22,
-      type: "deathEater", dir: 1, speed: 1.0 + i * 0.2, range: 80, origX: 200 + i * 350, emoji: "💀",
+      x: 300 + i * 500, y: H - 90 - i * 10, w: 22, h: 22,
+      type: "deathEater", dir: 1, speed: 1.0 + i * 0.15, range: 70, origX: 300 + i * 500, emoji: "💀",
     });
   }
 
-  platforms.push({ x: 1880, y: H - 160, w: 80, h: 20, type: "finish", label: "🏠 Safe House" });
+  // Fire hazards from the battle
+  platforms.push({ x: 600, y: H - 130, w: 25, h: 8, type: "hazard", color: "#8a2a0a", label: "🔥" });
+  platforms.push({ x: 1400, y: H - 150, w: 25, h: 8, type: "hazard", color: "#8a2a0a", label: "🔥" });
+
+  platforms.push({ x: 2500, y: H - 180, w: 80, h: 20, type: "finish", label: "🏠 Safe House" });
   return { platforms, enemies, startX: 30, startY: H - 80 };
 }
 
