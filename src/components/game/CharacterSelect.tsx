@@ -10,26 +10,28 @@ const CharacterSelect = ({ onSelect }: CharacterSelectProps) => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-      <div className="max-w-3xl w-full space-y-6 text-center">
+      <div className="max-w-3xl w-full space-y-8 text-center animate-slide-up">
         <div>
+          <div className="text-5xl mb-3 animate-wiggle inline-block">🧙</div>
           <h2 className="font-display text-3xl font-bold text-primary text-glow">Choose Your Wizard</h2>
-          <p className="text-foreground/60 mt-1">Select your character for this adventure</p>
+          <p className="text-foreground/55 mt-2 font-body text-lg">Select your character for this adventure</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          {CHARACTERS.map((char) => (
+        <div className="grid grid-cols-3 gap-4">
+          {CHARACTERS.map((char, i) => (
             <button
               key={char.id}
               onClick={() => setSelected(char.id)}
-              className={`p-4 rounded-lg border-2 transition-all text-center ${
+              className={`card-illustrated p-5 transition-all duration-300 text-center hover:scale-[1.03] animate-pop-in ${
                 selected === char.id
-                  ? "border-primary box-glow bg-primary/10"
-                  : "border-border hover:border-primary/30 bg-card"
+                  ? "!border-primary box-glow !bg-primary/10"
+                  : "hover:border-primary/30"
               }`}
+              style={{ animationDelay: `${i * 0.08}s` }}
             >
-              <span className="text-3xl block mb-1">{char.emoji}</span>
-              <span className="font-display text-sm text-foreground block">{char.name}</span>
-              <span className="text-xs text-muted-foreground">{char.description}</span>
+              <span className="text-4xl block mb-2">{char.emoji}</span>
+              <span className="font-display font-semibold text-sm text-foreground block">{char.name}</span>
+              <span className="text-xs text-muted-foreground font-body mt-1 block">{char.description}</span>
             </button>
           ))}
         </div>
@@ -37,9 +39,9 @@ const CharacterSelect = ({ onSelect }: CharacterSelectProps) => {
         <button
           onClick={() => selected && onSelect(selected)}
           disabled={!selected}
-          className="font-display text-lg px-10 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-30 disabled:cursor-not-allowed transition-all tracking-wider"
+          className="btn-storybook text-lg px-12 py-4 bg-primary text-primary-foreground disabled:opacity-25 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
         >
-          Select
+          ✨ Select
         </button>
       </div>
     </div>

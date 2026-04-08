@@ -22,34 +22,54 @@ const ProfileCreation = ({ onSubmit }: ProfileCreationProps) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="max-w-md w-full space-y-8 text-center">
-        <div>
-          <p className="text-6xl mb-4">📜</p>
-          <h2 className="font-display text-3xl font-bold text-primary text-glow">
-            The Sorting Begins
-          </h2>
-          <p className="text-foreground/60 mt-2">Enter your name, young wizard</p>
-        </div>
-
-        <div className="space-y-4">
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => { setUsername(e.target.value); setError(""); }}
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            placeholder="Your wizard name..."
-            maxLength={20}
-            className="w-full px-6 py-4 rounded-lg bg-card border-2 border-border text-foreground text-center font-display text-xl placeholder:text-muted-foreground/40 focus:border-primary focus:outline-none transition-colors"
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-primary/10 animate-float"
+            style={{
+              width: `${40 + i * 20}px`,
+              height: `${40 + i * 20}px`,
+              left: `${10 + (i * 13) % 80}%`,
+              top: `${10 + (i * 17) % 80}%`,
+              animationDelay: `${i * 0.5}s`,
+              filter: "blur(20px)",
+            }}
           />
-          {error && <p className="text-destructive text-sm">{error}</p>}
-          
-          <button
-            onClick={handleSubmit}
-            disabled={username.trim().length < 2}
-            className="w-full font-display text-lg px-8 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-30 disabled:cursor-not-allowed transition-all tracking-wider"
-          >
-            Continue
-          </button>
+        ))}
+      </div>
+
+      <div className="relative max-w-md w-full space-y-8 text-center animate-slide-up">
+        <div className="card-illustrated p-8 space-y-8">
+          <div>
+            <div className="text-6xl mb-4 animate-wiggle inline-block">📜</div>
+            <h2 className="font-display text-3xl font-bold text-primary text-glow">
+              The Sorting Begins
+            </h2>
+            <p className="text-foreground/55 mt-2 font-body text-lg">Enter your name, young wizard</p>
+          </div>
+
+          <div className="space-y-4">
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => { setUsername(e.target.value); setError(""); }}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              placeholder="Your wizard name..."
+              maxLength={20}
+              className="w-full px-6 py-4 rounded-2xl bg-secondary/50 border-2 border-border text-foreground text-center font-display text-xl placeholder:text-muted-foreground/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+            />
+            {error && <p className="text-destructive text-sm font-medium animate-pop-in">{error}</p>}
+            
+            <button
+              onClick={handleSubmit}
+              disabled={username.trim().length < 2}
+              className="w-full btn-storybook text-lg px-8 py-4 bg-primary text-primary-foreground disabled:opacity-25 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
+            >
+              ✨ Continue
+            </button>
+          </div>
         </div>
       </div>
     </div>
