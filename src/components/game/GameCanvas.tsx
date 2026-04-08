@@ -646,31 +646,55 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       // ─── Draw Boss ───
       if (isBossArena && bossData) {
         const bossW = 40, bossH = 50;
-        // Boss body
-        ctx.fillStyle = bossHitFlash > 0 ? "#fff" : bossData.color;
-        ctx.fillRect(bossX, bossY, bossW, bossH);
-        // Boss border glow
-        ctx.strokeStyle = bossHitFlash > 0 ? "#ff0" : "rgba(255,255,255,0.3)";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(bossX, bossY, bossW, bossH);
-        // Boss emoji
-        ctx.font = "28px serif";
+        // Boss shadow
+        ctx.save();
+        ctx.globalAlpha = 0.3;
+        ctx.fillStyle = bossData.color;
+        ctx.beginPath();
+        ctx.ellipse(bossX + bossW / 2, bossY + bossH + 4, bossW * 0.6, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Boss glow aura
+        ctx.save();
+        ctx.globalAlpha = 0.15 + Math.sin(frameCount * 0.05) * 0.05;
+        ctx.fillStyle = bossData.color;
+        ctx.beginPath();
+        ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Boss emoji (large, no box)
+        if (bossHitFlash > 0) {
+          ctx.save();
+          ctx.globalAlpha = 0.6;
+          ctx.fillStyle = "#fff";
+          ctx.beginPath();
+          ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+        ctx.font = "36px serif";
         ctx.textAlign = "center";
-        ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 8);
+        ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 12);
         // Boss name
-        ctx.font = "11px Cinzel";
+        ctx.font = "11px Fredoka, sans-serif";
         ctx.fillStyle = "#fff";
         ctx.fillText(bossData.name, bossX + bossW / 2, bossY - 28);
-        // Boss HP bar
+        // Boss HP bar (rounded)
         const hpW = 80, hpH = 6;
         const hpX = bossX + bossW / 2 - hpW / 2, hpY = bossY - 18;
+        ctx.beginPath();
+        ctx.roundRect(hpX, hpY, hpW, hpH, 3);
         ctx.fillStyle = "#333";
-        ctx.fillRect(hpX, hpY, hpW, hpH);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.roundRect(hpX, hpY, hpW * (bossHp / bossData.maxHp), hpH, 3);
         ctx.fillStyle = bossHp > bossData.maxHp * 0.3 ? "#e74c3c" : "#ff4444";
-        ctx.fillRect(hpX, hpY, hpW * (bossHp / bossData.maxHp), hpH);
-        ctx.strokeStyle = "#666";
+        ctx.fill();
+        ctx.strokeStyle = "#555";
         ctx.lineWidth = 1;
-        ctx.strokeRect(hpX, hpY, hpW, hpH);
+        ctx.beginPath();
+        ctx.roundRect(hpX, hpY, hpW, hpH, 3);
+        ctx.stroke();
       }
 
       // Draw projectiles
