@@ -12,7 +12,7 @@ const Shop = ({ profile, onPurchase, onBack }: ShopProps) => {
   const categories = ["upgrade", "consumable", "theme", "song"] as const;
 
   return (
-    <div className="min-h-screen bg-background p-4 overflow-y-auto">
+    <div className="h-screen bg-background p-4 overflow-y-auto">
       <div className="max-w-2xl mx-auto space-y-6 animate-slide-up">
         {/* Header */}
         <div className="card-illustrated p-5 flex items-center gap-4">
