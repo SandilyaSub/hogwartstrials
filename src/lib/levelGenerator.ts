@@ -367,14 +367,20 @@ export function generateLevel(worldId: number, levelIdx: number, canvasW: number
 }
 
 function generateGenericLevel(worldId: number, levelIdx: number, canvasW: number, canvasH: number): LevelData {
+  const isBoss = levelIdx === 4;
+
+  // Boss levels get an arena with spell combat
+  if (isBoss) {
+    return generateBossArena(worldId, canvasH);
+  }
+
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
   const difficulty = (worldId - 1) * 5 + levelIdx;
-  const isBoss = levelIdx === 4;
 
   platforms.push({ x: 0, y: canvasH - 40, w: 150, h: 40, type: "normal" });
 
-  const totalPlatforms = 12 + difficulty * 2 + (isBoss ? 8 : 0);
+  const totalPlatforms = 12 + difficulty * 2;
   let lastX = 80, lastY = canvasH - 80;
 
   for (let i = 0; i < totalPlatforms; i++) {
@@ -413,4 +419,25 @@ function generateGenericLevel(worldId: number, levelIdx: number, canvasW: number
 
   platforms.push({ x: lastX + 80, y: lastY - 20, w: 80, h: 20, type: "finish" });
   return { platforms, enemies, startX: 60, startY: canvasH - 80 };
+}
+
+function generateBossArena(worldId: number, H: number): LevelData {
+  const platforms: Platform[] = [];
+  const enemies: Enemy[] = [];
+  const boss = getWorldBoss(worldId);
+
+  // Arena floor
+  platforms.push({ x: 0, y: H - 40, w: 600, h: 40, type: "normal" });
+
+  // Dodge platforms - more for harder worlds
+  const numPlatforms = 2 + Math.min(worldId, 4);
+  for (let i = 0; i < numPlatforms; i++) {
+    platforms.push({
+      x: 60 + i * (480 / numPlatforms),
+      y: H - 100 - (i % 2) * 40,
+      w: 70, h: 14, type: "normal",
+    });
+  }
+
+  return { platforms, enemies, startX: 60, startY: H - 80, bossArena: true, boss };
 }
