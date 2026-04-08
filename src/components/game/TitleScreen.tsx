@@ -1,4 +1,5 @@
 import heroBg from "@/assets/hero-bg.jpg";
+import { startMusic, isMusicPlaying } from "@/lib/musicEngine";
 
 interface TitleScreenProps {
   onNewGame: () => void;
@@ -7,6 +8,11 @@ interface TitleScreenProps {
 }
 
 const TitleScreen = ({ onNewGame, onContinue, hasSave }: TitleScreenProps) => {
+  const handleAction = (action: () => void) => {
+    if (!isMusicPlaying()) startMusic();
+    action();
+  };
+
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
       <img src={heroBg} alt="Hogwarts Castle" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
@@ -25,14 +31,14 @@ const TitleScreen = ({ onNewGame, onContinue, hasSave }: TitleScreenProps) => {
         <div className="flex flex-col items-center gap-3 pt-4">
           {hasSave && (
             <button
-              onClick={onContinue}
+              onClick={() => handleAction(onContinue)}
               className="font-display text-lg px-10 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all animate-magic-pulse tracking-wider"
             >
               Continue Adventure
             </button>
           )}
           <button
-            onClick={onNewGame}
+            onClick={() => handleAction(onNewGame)}
             className="font-display text-lg px-10 py-3 rounded-lg border-2 border-primary/50 text-primary hover:bg-primary/10 transition-all tracking-wider"
           >
             New Game
