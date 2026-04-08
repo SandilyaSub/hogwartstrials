@@ -774,15 +774,28 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillText(profile.character?.emoji || "⚡", cx + carW / 2, cy + carH / 2 + 4);
       } else {
         const charColor = profile.character?.color || "#c0392b";
+        // Player shadow
+        ctx.save();
+        ctx.globalAlpha = 0.2;
+        ctx.fillStyle = "#000";
+        ctx.beginPath();
+        ctx.ellipse(px + PLAYER_W / 2, py + PLAYER_H + 2, PLAYER_W * 0.5, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Body (rounded)
         ctx.fillStyle = playerHitFlash > 0 ? "#fff" : charColor;
-        ctx.fillRect(px + 4, py, PLAYER_W - 8, PLAYER_H);
+        ctx.beginPath();
+        ctx.roundRect(px + 3, py + 6, PLAYER_W - 6, PLAYER_H - 6, 4);
+        ctx.fill();
+        // Head
         ctx.fillStyle = "#f0d0a0";
         ctx.beginPath();
-        ctx.arc(px + PLAYER_W / 2, py - 2, 8, 0, Math.PI * 2);
+        ctx.arc(px + PLAYER_W / 2, py + 2, 9, 0, Math.PI * 2);
         ctx.fill();
-        ctx.font = "10px serif";
+        // Character emoji above
+        ctx.font = "12px serif";
         ctx.textAlign = "center";
-        ctx.fillText(profile.character?.emoji || "⚡", px + PLAYER_W / 2, py - 12);
+        ctx.fillText(profile.character?.emoji || "⚡", px + PLAYER_W / 2, py - 10);
       }
 
       // Pet
@@ -792,11 +805,13 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillText(profile.pet.emoji, px + PLAYER_W + 8, py - 4 + Math.sin(frameCount * 0.1) * 3);
       }
 
-      // Particles
+      // Particles (rounded)
       particles.forEach(p => {
         ctx.globalAlpha = p.life / 20;
         ctx.fillStyle = p.color;
-        ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
       });
       ctx.globalAlpha = 1;
 
