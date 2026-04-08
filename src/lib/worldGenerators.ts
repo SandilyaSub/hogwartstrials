@@ -869,7 +869,7 @@ export function getWorldLevelGenerator(worldId: number, levelIdx: number, H: num
   const generators: Record<string, (H: number) => LevelData> = {
     "2-0": gen_2_1_DiagonAlley,
     "2-1": gen_2_2_FlyingEscape,
-    "2-2": gen_2_3_PipeBalance,
+    "2-2": gen_2_3_DetentionLockhart,
     "2-3": gen_2_4_ChamberDoors,
     "3-0": gen_3_1_TimePlatforms,
     "3-1": gen_3_2_ClockTower,
