@@ -172,8 +172,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       }
 
-      // Fall death
-      if (py > H + 100) {
+      // Fall death (into water for boat level, off-screen otherwise)
+      const deathY = isBoatLevel ? H - 45 : H + 100;
+      if (py > deathY) {
         if (hasRevive) { hasRevive = false; py = startY - 100; vy = 0; px = startX; }
         else { handleDeath(); return; }
       }
