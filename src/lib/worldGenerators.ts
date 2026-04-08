@@ -240,24 +240,34 @@ function gen_3_1_TimePlatforms(H: number): LevelData {
 
   platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal" });
 
-  // Disappearing/reappearing platforms (time-shifted)
-  for (let i = 0; i < 18; i++) {
-    const x = 140 + i * 100;
-    const y = H - 80 - Math.sin(i * 0.6) * 50 - i * 6;
-    const isTimeShift = i % 3 === 0;
-    platforms.push({
-      x, y, w: 60 + (i % 2) * 20, h: 14,
-      type: isTimeShift ? "disappearing" : "normal",
+  // Longer time-shifting level with more variety
+  for (let i = 0; i < 26; i++) {
+    const x = 140 + i * 95;
+    const y = H - 80 - Math.sin(i * 0.5) * 50 - i * 5;
+    const isTimeShift = i % 4 === 0;
+    const isMoving = i % 6 === 3;
+    const p: Platform = {
+      x, y, w: 55 + (i % 2) * 20, h: 14,
+      type: isTimeShift ? "disappearing" : isMoving ? "moving" : "normal",
       timer: 0, visible: true,
-      color: isTimeShift ? "#8a6aaa" : undefined,
-      label: isTimeShift ? "⏳" : "",
-    });
+      color: isTimeShift ? "#8a6aaa" : isMoving ? "#6a6a9a" : undefined,
+      label: isTimeShift ? "⏳" : isMoving ? "⚙️" : "",
+    };
+    if (isMoving) {
+      p.origX = x; p.origY = y;
+      p.moveDir = i % 2 === 0 ? 1 : -1;
+      p.moveRange = 35;
+    }
+    platforms.push(p);
   }
 
-  enemies.push({ x: 500, y: H - 160, w: 20, h: 20, type: "dementor", dir: 1, speed: 0.5, range: 80, origX: 500, emoji: "👻" });
-  enemies.push({ x: 1200, y: H - 220, w: 20, h: 20, type: "dementor", dir: -1, speed: 0.7, range: 60, origX: 1200, emoji: "👻" });
+  // More dementors spread throughout
+  enemies.push({ x: 400, y: H - 140, w: 20, h: 20, type: "dementor", dir: 1, speed: 0.5, range: 70, origX: 400, emoji: "👻" });
+  enemies.push({ x: 900, y: H - 200, w: 20, h: 20, type: "dementor", dir: -1, speed: 0.6, range: 60, origX: 900, emoji: "👻" });
+  enemies.push({ x: 1500, y: H - 250, w: 22, h: 22, type: "dementor", dir: 1, speed: 0.7, range: 80, origX: 1500, emoji: "👻" });
+  enemies.push({ x: 2000, y: H - 180, w: 20, h: 20, type: "dementor", dir: -1, speed: 0.5, range: 65, origX: 2000, emoji: "👻" });
 
-  platforms.push({ x: 1940, y: H - 240, w: 80, h: 20, type: "finish", label: "⏰ Time Turner" });
+  platforms.push({ x: 2600, y: H - 280, w: 80, h: 20, type: "finish", label: "⏰ Time Turner" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
