@@ -33,7 +33,23 @@ const Index = () => {
     setSong(profile.activeSong || "default");
   }, [profile.activeSong]);
 
-  if (loading || (user && !dbLoaded)) {
+  // Apply purchased theme colors to CSS variables
+  useEffect(() => {
+    const themeItem = SHOP_ITEMS.find(i => i.id === profile.activeTheme && i.type === "theme");
+    const root = document.documentElement;
+    if (themeItem?.themeColors) {
+      root.style.setProperty("--primary", themeItem.themeColors.primary);
+      root.style.setProperty("--background", themeItem.themeColors.background);
+      root.style.setProperty("--card", themeItem.themeColors.card);
+      root.style.setProperty("--ring", themeItem.themeColors.primary);
+    } else {
+      // Reset to default dark theme
+      root.style.removeProperty("--primary");
+      root.style.removeProperty("--background");
+      root.style.removeProperty("--card");
+      root.style.removeProperty("--ring");
+    }
+  }, [profile.activeTheme]);
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center animate-pulse">
