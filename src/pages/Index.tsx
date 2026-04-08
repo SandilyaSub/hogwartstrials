@@ -22,7 +22,7 @@ const Index = () => {
   const { user, loading, signUp, signIn, signOut } = useAuth();
   const {
     screen, setScreen,
-    profile,
+    profile, saveProfile,
     setUsername, selectCharacter, selectHouse, selectPet,
     completeLevel, startLevel, resetGame, purchaseItem,
     hasSave, dbLoaded,
