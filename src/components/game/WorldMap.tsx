@@ -1,6 +1,7 @@
 import { WORLDS, MENTOR_QUOTES } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { useState } from "react";
+import { useTheme } from "@/hooks/useTheme";
 
 interface WorldMapProps {
   profile: PlayerProfile;
@@ -12,6 +13,7 @@ interface WorldMapProps {
 const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onResetGame }: WorldMapProps) => {
   const [expandedWorld, setExpandedWorld] = useState<number | null>(null);
   const [showMentor, setShowMentor] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const isLevelUnlocked = (worldId: number, levelIdx: number) => {
     if (worldId === 1 && levelIdx === 0) return true;
@@ -38,6 +40,9 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onResetGame }: WorldM
             </p>
           </div>
           <div className="flex gap-2">
+            <button onClick={toggleTheme} className="text-sm px-3 py-1.5 rounded bg-card border border-border hover:border-primary/30 font-display text-foreground/70">
+              {theme === "dark" ? "☀️" : "🌙"}
+            </button>
             <button onClick={onOpenPetStore} className="text-sm px-3 py-1.5 rounded bg-card border border-border hover:border-primary/30 font-display text-foreground/70">
               🐾 Pets
             </button>
