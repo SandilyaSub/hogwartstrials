@@ -713,7 +713,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       </div>
 
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs text-foreground/30 font-display">
-        Arrow Keys / WASD to move · Space to jump
+        {levelIdx === 4
+          ? "Arrow Keys / WASD to move · Space to jump · 1/2/3 to cast spells"
+          : "Arrow Keys / WASD to move · Space to jump"}
       </div>
     </div>
   );
