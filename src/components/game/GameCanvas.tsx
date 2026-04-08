@@ -152,6 +152,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let px = startX, py = startY, vx = 0, vy = 0;
     let onGround = false;
     let cameraX = 0;
+    let cameraY = 0;
     let hasRevive = petEffect.type === "revive";
     const particles: Particle[] = [];
     let frameCount = 0;
