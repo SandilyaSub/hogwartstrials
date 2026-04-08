@@ -263,32 +263,102 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       platforms.forEach(p => {
         if (p.type === "disappearing" && !p.visible) return;
 
-        // Use custom color or theme color
-        if (p.color) {
-          ctx.fillStyle = p.color;
+        // Boat-shaped rendering for boat level (non-dock, non-hazard, non-finish platforms)
+        const isBoatPlatform = isBoatLevel && p.color === "#6a4a2a";
+        
+        if (isBoatPlatform) {
+          // Draw a proper boat hull shape
+          const bx = p.x, by = p.y, bw = p.w, bh = p.h;
+          const hullDepth = 14;
+          
+          // Hull (curved bottom)
+          ctx.beginPath();
+          ctx.moveTo(bx + 8, by);                    // top-left (inset)
+          ctx.lineTo(bx + bw - 8, by);               // top-right (inset)
+          ctx.lineTo(bx + bw - 2, by + hullDepth * 0.4); // right curve
+          ctx.quadraticCurveTo(bx + bw * 0.75, by + hullDepth + 4, bx + bw * 0.5, by + hullDepth + 5); // bottom right curve
+          ctx.quadraticCurveTo(bx + bw * 0.25, by + hullDepth + 4, bx + 2, by + hullDepth * 0.4);      // bottom left curve
+          ctx.closePath();
+          ctx.fillStyle = "#5a3518";
+          ctx.fill();
+          ctx.strokeStyle = "#3a2008";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          
+          // Deck (flat top)
+          ctx.fillStyle = "#7a5a30";
+          ctx.fillRect(bx + 6, by, bw - 12, 4);
+          
+          // Wood plank lines
+          ctx.strokeStyle = "rgba(0,0,0,0.2)";
+          ctx.lineWidth = 0.5;
+          for (let lx = bx + 18; lx < bx + bw - 18; lx += 12) {
+            ctx.beginPath();
+            ctx.moveTo(lx, by + 1);
+            ctx.lineTo(lx, by + 3);
+            ctx.stroke();
+          }
+          
+          // Gunwale (rim)
+          ctx.strokeStyle = "#8a6a3a";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(bx + 8, by);
+          ctx.lineTo(bx + bw - 8, by);
+          ctx.stroke();
+          
+          // Bow ornament (small pointed front)
+          ctx.fillStyle = "#8a6a3a";
+          ctx.beginPath();
+          ctx.moveTo(bx + bw - 8, by);
+          ctx.lineTo(bx + bw + 2, by + 4);
+          ctx.lineTo(bx + bw - 8, by + 6);
+          ctx.closePath();
+          ctx.fill();
+          
+          // Lantern glow on some boats
+          if (p.label === "🕯️" || p.label === "⛵") {
+            ctx.fillStyle = "rgba(255, 200, 80, 0.15)";
+            ctx.beginPath();
+            ctx.arc(bx + bw / 2, by - 6, 18, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.font = "10px serif";
+            ctx.textAlign = "center";
+            ctx.fillText(p.label, bx + bw / 2, by - 4);
+          }
         } else {
-          const colors: Record<string, string> = {
-            normal: theme.platformColor,
-            moving: "#3a4a6a",
-            disappearing: p.timer && p.timer > 20 ? `rgba(100,80,60,${1 - (p.timer - 20) / 20})` : "#645040",
-            hazard: p.color || "#8a2020",
-            finish: "#c8a020",
-            chess: p.color || "#3a3a3a",
-            ice: "#8ac8e8",
-          };
-          ctx.fillStyle = colors[p.type] || theme.platformColor;
+          // Default rectangular platform drawing
+          if (p.color) {
+            ctx.fillStyle = p.color;
+          } else {
+            const colors: Record<string, string> = {
+              normal: theme.platformColor,
+              moving: "#3a4a6a",
+              disappearing: p.timer && p.timer > 20 ? `rgba(100,80,60,${1 - (p.timer - 20) / 20})` : "#645040",
+              hazard: p.color || "#8a2020",
+              finish: "#c8a020",
+              chess: p.color || "#3a3a3a",
+              ice: "#8ac8e8",
+            };
+            ctx.fillStyle = colors[p.type] || theme.platformColor;
+          }
+          ctx.fillRect(p.x, p.y, p.w, p.h);
+
+          // Highlight
+          ctx.fillStyle = p.type === "finish" ? "#ffd700" : p.type === "hazard" ? "#ff4040" : theme.platformHighlight;
+          ctx.fillRect(p.x, p.y, p.w, 3);
         }
-        ctx.fillRect(p.x, p.y, p.w, p.h);
 
-        // Highlight
-        ctx.fillStyle = p.type === "finish" ? "#ffd700" : p.type === "hazard" ? "#ff4040" : theme.platformHighlight;
-        ctx.fillRect(p.x, p.y, p.w, 3);
-
+        // Labels for finish, hazards, dock
         if (p.type === "finish") {
           ctx.fillStyle = "#ffd700";
           ctx.font = "14px Cinzel";
           ctx.textAlign = "center";
           ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 8);
+        } else if (p.label && !isBoatPlatform) {
+          ctx.font = "11px serif";
+          ctx.textAlign = "center";
+          ctx.fillText(p.label, p.x + p.w / 2, p.y - 4);
         }
       });
 
