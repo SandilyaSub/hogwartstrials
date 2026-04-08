@@ -101,6 +101,15 @@ const Index = () => {
         />
       );
 
+    case "levelIntro":
+      return (
+        <LevelIntro
+          worldId={profile.currentWorld}
+          levelIdx={profile.currentLevel}
+          onStart={() => setScreen("playing")}
+        />
+      );
+
     case "playing":
       return (
         <GameCanvas
