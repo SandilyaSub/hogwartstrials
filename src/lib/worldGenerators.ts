@@ -903,7 +903,7 @@ function gen_2_5_WhompingWillow(H: number): LevelData {
   // Willow branches - swinging platforms
   for (let i = 0; i < 12; i++) {
     const y = H - 120 - i * 60;
-    platforms.push({ x: 60 + (i % 3) * 140, y, w: 70, h: 14, type: "moving", moveRange: 80, moveSpeed: 1.5 + i * 0.2, color: "#5a4a2a", label: i === 0 ? "🌳 Dodge the branches!" : undefined });
+    platforms.push({ x: 60 + (i % 3) * 140, y, w: 70, h: 14, type: "moving", moveRange: 80 + i * 0.2, color: "#5a4a2a", label: i === 0 ? "🌳 Dodge the branches!" : undefined });
   }
   for (let i = 0; i < 3; i++) enemies.push({ x: 150 + i * 120, y: H - 300 - i * 120, w: 30, h: 30, type: "troll", dir: 1, speed: 1.2, range: 60, origX: 150 + i * 120, emoji: "🌿" });
   platforms.push({ x: 180, y: H - 850, w: 100, h: 20, type: "finish", label: "🚗 Flying Car Escape" });
@@ -976,7 +976,7 @@ function gen_3_5_HippogriffFlight(H: number): LevelData {
   // Sky-high platforms - flight path
   for (let i = 0; i < 18; i++) {
     const y = H - 80 - i * 50;
-    platforms.push({ x: 20 + ((i * 73) % 350), y, w: 55, h: 12, type: "moving", moveRange: 60, moveSpeed: 1.0 + i * 0.1, color: "#6699cc" });
+    platforms.push({ x: 20 + ((i * 73) % 350), y, w: 55, h: 12, type: "moving", moveRange: 60 + i * 0.1, color: "#6699cc" });
   }
   for (let i = 0; i < 3; i++) enemies.push({ x: 100 + i * 130, y: H - 300 - i * 150, w: 20, h: 20, type: "bird", dir: 1, speed: 1.5, range: 80, origX: 100 + i * 130, emoji: "🦅" });
   platforms.push({ x: 170, y: H - 960, w: 100, h: 20, type: "finish", label: "🦅 Safe Landing" });
@@ -1047,7 +1047,7 @@ function gen_4_5_YuleBall(H: number): LevelData {
   // Dance floor - bouncy and moving platforms
   for (let i = 0; i < 12; i++) {
     const y = H - 120 - i * 60;
-    platforms.push({ x: 40 + ((i * 91) % 320), y, w: 65, h: 12, type: i % 2 === 0 ? "bouncy" : "moving", moveRange: 50, moveSpeed: 1.0, color: i % 2 === 0 ? "#cc88ff" : "#8866aa" });
+    platforms.push({ x: 40 + ((i * 91) % 320), y, w: 65, h: 12, type: i % 2 === 0 ? "bouncy" : "moving", moveRange: 50, color: i % 2 === 0 ? "#cc88ff" : "#8866aa" });
   }
   platforms.push({ x: 160, y: H - 860, w: 100, h: 20, type: "finish", label: "💃 Grand Finale" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
@@ -1147,7 +1147,7 @@ function gen_5_7_ThestralFlight(H: number): LevelData {
   // High altitude - moving cloud platforms
   for (let i = 0; i < 16; i++) {
     const y = H - 80 - i * 55;
-    platforms.push({ x: 30 + ((i * 89) % 340), y, w: 55, h: 12, type: "moving", moveRange: 70, moveSpeed: 1.2 + i * 0.1, color: "#6a6a8a" });
+    platforms.push({ x: 30 + ((i * 89) % 340), y, w: 55, h: 12, type: "moving", moveRange: 70 + i * 0.1, color: "#6a6a8a" });
   }
   platforms.push({ x: 160, y: H - 960, w: 100, h: 20, type: "finish", label: "🦇 Ministry Arrival" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
@@ -1190,7 +1190,7 @@ function gen_6_5_SlugClubParty(H: number): LevelData {
   // Party platforms with chandeliers
   for (let i = 0; i < 12; i++) {
     const y = H - 120 - i * 62;
-    platforms.push({ x: 40 + ((i * 87) % 320), y, w: 65, h: 12, type: i % 3 === 0 ? "moving" : "normal", moveRange: 40, moveSpeed: 0.8, color: "#8a7a3a" });
+    platforms.push({ x: 40 + ((i * 87) % 320), y, w: 65, h: 12, type: i % 3 === 0 ? "moving" : "normal", moveRange: 40, color: "#8a7a3a" });
   }
   platforms.push({ x: 150, y: H - 870, w: 100, h: 20, type: "finish", label: "🥂 Party Over" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
@@ -1216,7 +1216,7 @@ function gen_6_7_PensieveMemories(H: number): LevelData {
   // Floating memory fragments
   for (let i = 0; i < 16; i++) {
     const y = H - 80 - i * 54;
-    platforms.push({ x: 30 + ((i * 71) % 330), y, w: 55, h: 12, type: "moving", moveRange: 50, moveSpeed: 0.7 + i * 0.1, color: "#8888cc" });
+    platforms.push({ x: 30 + ((i * 71) % 330), y, w: 55, h: 12, type: "moving", moveRange: 50 + i * 0.1, color: "#8888cc" });
   }
   platforms.push({ x: 150, y: H - 940, w: 100, h: 20, type: "finish", label: "💭 Memory Found" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
@@ -1301,7 +1301,7 @@ function gen_7_8_ElderWandChase(H: number): LevelData {
   // Fast-paced chase - many moving platforms
   for (let i = 0; i < 16; i++) {
     const y = H - 80 - i * 54;
-    platforms.push({ x: 30 + ((i * 79) % 330), y, w: 50, h: 12, type: "moving", moveRange: 80, moveSpeed: 1.5 + i * 0.15, color: "#5a5a5a" });
+    platforms.push({ x: 30 + ((i * 79) % 330), y, w: 50, h: 12, type: "moving", moveRange: 80 + i * 0.15, color: "#5a5a5a" });
   }
   enemies.push({ x: 180, y: H - 500, w: 24, h: 24, type: "deathEater", dir: -1, speed: 1.8, range: 100, origX: 180, emoji: "💀" });
   platforms.push({ x: 150, y: H - 940, w: 100, h: 20, type: "finish", label: "🪄 Elder Wand" });
@@ -1317,7 +1317,7 @@ function gen_7_9_BattleOfHogwarts(H: number): LevelData {
     const y = H - 100 - i * 52;
     const types: Array<Platform["type"]> = ["normal", "moving", "disappearing", "bouncy", "ice"];
     const t = types[i % 5];
-    platforms.push({ x: 20 + ((i * 67) % 340), y, w: 55, h: 12, type: t, moveRange: 60, moveSpeed: 1.2, timer: 0, visible: true, color: "#5a4a3a" });
+    platforms.push({ x: 20 + ((i * 67) % 340), y, w: 55, h: 12, type: t, moveRange: 60, timer: 0, visible: true, color: "#5a4a3a" });
   }
   for (let i = 0; i < 6; i++) enemies.push({ x: 50 + i * 60, y: H - 200 - i * 110, w: 20, h: 20, type: "deathEater", dir: i % 2 === 0 ? 1 : -1, speed: 1.0 + i * 0.2, range: 60, origX: 50 + i * 60, emoji: "💀" });
   platforms.push({ x: 150, y: H - 1020, w: 100, h: 20, type: "finish", label: "⚡ Victory!" });
