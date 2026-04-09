@@ -77,6 +77,7 @@ const TitleScreen = ({ onNewGame, onContinue, hasSave, onSignOut }: TitleScreenP
             Sign Out
           </button>
         )}
+        <p className="text-xs text-foreground/30 font-body mt-4">© 2026 Hogwarts Trials. All rights reserved.</p>
       </div>
 
       {/* Floating particles */}
