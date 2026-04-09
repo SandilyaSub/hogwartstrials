@@ -245,91 +245,91 @@ export function generateTutorialLevel(): LevelData3D {
   const enemies: Enemy3D[] = [];
   const coins: Coin3D[] = [];
 
-  // Section 1: Welcome area - wide safe platform
+  // Section 1: Welcome area - extra wide safe platform
   platforms.push({
-    id: uid(), position: [0, 0, 0], size: [8, 1, 8],
+    id: uid(), position: [0, 0, 0], size: [12, 1, 12],
     type: "normal", color: "#5a4a3a", label: "Welcome to Hogwarts!",
   });
 
-  // Section 2: Movement practice - straight path
-  for (let i = 0; i < 5; i++) {
+  // Section 2: Movement practice - wide connected path, very close together
+  for (let i = 0; i < 4; i++) {
     platforms.push({
-      id: uid(), position: [0, 0, -(8 + i * 4)], size: [3, 0.5, 3],
+      id: uid(), position: [0, 0, -(10 + i * 5)], size: [5, 0.5, 5],
       type: "normal", color: "#4a4a5a",
     });
   }
 
-  // Section 3: Jump practice - gaps between platforms
-  const jumpStart = -30;
-  for (let i = 0; i < 4; i++) {
+  // Section 3: Jump practice - easy gaps, wide platforms, no height change
+  const jumpStart = -32;
+  for (let i = 0; i < 3; i++) {
     platforms.push({
-      id: uid(), position: [(i % 2) * 3, i * 0.5, jumpStart - i * 5], size: [2.5, 0.5, 2.5],
+      id: uid(), position: [(i % 2) * 2, 0, jumpStart - i * 4], size: [4, 0.5, 4],
       type: "normal", color: "#5a5a3a",
     });
   }
 
-  // Section 4: Coins to collect
-  const coinSection = jumpStart - 25;
+  // Section 4: Coins to collect - huge platform
+  const coinSection = jumpStart - 16;
   platforms.push({
-    id: uid(), position: [0, 2, coinSection], size: [6, 1, 8],
+    id: uid(), position: [0, 0, coinSection], size: [10, 1, 10],
     type: "normal", color: "#4a3a2a",
   });
   for (let i = 0; i < 5; i++) {
     coins.push({
       id: uid(),
-      position: [-2 + i, 4, coinSection - 1 + (i % 2)],
+      position: [-2 + i, 2, coinSection],
       collected: false,
     });
   }
 
-  // Section 5: Moving platform
-  const movingSection = coinSection - 12;
+  // Section 5: Moving platform - slow, wide, short gap
+  const movingSection = coinSection - 10;
   platforms.push({
-    id: uid(), position: [0, 2, movingSection], size: [3, 0.5, 3],
-    type: "moving", moveAxis: "x", moveRange: 3, moveSpeed: 1,
+    id: uid(), position: [0, 0, movingSection], size: [5, 0.5, 5],
+    type: "moving", moveAxis: "x", moveRange: 2, moveSpeed: 0.5,
     color: "#3a4a6a",
   });
   platforms.push({
-    id: uid(), position: [0, 2, movingSection - 6], size: [3, 0.5, 3],
+    id: uid(), position: [0, 0, movingSection - 5], size: [5, 0.5, 5],
     type: "normal",
   });
 
-  // Section 6: Enemy - a slow spider to practice avoiding
-  const enemySection = movingSection - 16;
+  // Section 6: Enemy - very slow spider on a huge platform
+  const enemySection = movingSection - 14;
   platforms.push({
-    id: uid(), position: [0, 2, enemySection], size: [8, 1, 8],
+    id: uid(), position: [0, 0, enemySection], size: [12, 1, 12],
     type: "normal", color: "#3a3a2a",
   });
   enemies.push({
     id: uid(),
-    position: [0, 3.5, enemySection],
+    position: [0, 1.5, enemySection],
     size: [1, 1, 1],
     type: "spider",
     emoji: "🕷️",
     moveAxis: "x",
-    speed: 0.5,
-    range: 3,
-    origPos: [0, 3.5, enemySection],
+    speed: 0.3,
+    range: 2,
+    origPos: [0, 1.5, enemySection],
   });
 
-  // Section 7: Disappearing platform
+  // Section 7: Disappearing platforms - wide and close
   const disappearSection = enemySection - 12;
   platforms.push({
-    id: uid(), position: [-2, 2, disappearSection], size: [2, 0.5, 2],
+    id: uid(), position: [0, 0, disappearSection], size: [4, 0.5, 4],
     type: "disappearing", color: "#8a6aaa", timer: 0, visible: true,
   });
   platforms.push({
-    id: uid(), position: [2, 2, disappearSection - 4], size: [2, 0.5, 2],
+    id: uid(), position: [0, 0, disappearSection - 5], size: [4, 0.5, 4],
     type: "disappearing", color: "#8a6aaa", timer: 0, visible: true,
   });
   platforms.push({
-    id: uid(), position: [0, 2, disappearSection - 8], size: [3, 0.5, 3],
+    id: uid(), position: [0, 0, disappearSection - 10], size: [5, 0.5, 5],
     type: "normal",
   });
 
   // Section 8: Finish
   platforms.push({
-    id: uid(), position: [0, 2, disappearSection - 16], size: [6, 1, 6],
+    id: uid(), position: [0, 0, disappearSection - 18], size: [10, 1, 10],
     type: "finish", color: "#c8a020", label: "⭐ Tutorial Complete!",
   });
 
