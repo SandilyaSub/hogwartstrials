@@ -56,7 +56,7 @@ export interface HouseToken {
 export interface LevelData {
   platforms: Platform[];
   enemies: Enemy[];
-  houseTokens: HouseToken[];
+  houseTokens?: HouseToken[];
   startX: number;
   startY: number;
   darkLevel?: boolean;
