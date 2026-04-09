@@ -39,26 +39,39 @@ const Index = () => {
     const root = document.documentElement;
     if (themeItem?.themeColors) {
       const { primary, background, card } = themeItem.themeColors;
-      root.style.setProperty("--primary", primary);
-      root.style.setProperty("--primary-foreground", background);
-      root.style.setProperty("--background", background);
-      root.style.setProperty("--foreground", "50 40% 92%");
-      root.style.setProperty("--card", card);
-      root.style.setProperty("--card-foreground", "50 40% 92%");
-      root.style.setProperty("--popover", card);
-      root.style.setProperty("--popover-foreground", "50 40% 92%");
-      root.style.setProperty("--ring", primary);
-      root.style.setProperty("--border", card);
-      root.style.setProperty("--input", card);
-      root.style.setProperty("--muted", card);
-      root.style.setProperty("--secondary", card);
-      root.style.setProperty("--accent", primary);
-      root.style.setProperty("--sidebar-background", background);
-      root.style.setProperty("--sidebar-primary", primary);
+      // Add a custom class that overrides both :root and .light
+      let styleEl = document.getElementById("custom-theme-style");
+      if (!styleEl) {
+        styleEl = document.createElement("style");
+        styleEl.id = "custom-theme-style";
+        document.head.appendChild(styleEl);
+      }
+      styleEl.textContent = `
+        :root, :root.light {
+          --primary: ${primary} !important;
+          --primary-foreground: ${background} !important;
+          --background: ${background} !important;
+          --foreground: 50 40% 92% !important;
+          --card: ${card} !important;
+          --card-foreground: 50 40% 92% !important;
+          --popover: ${card} !important;
+          --popover-foreground: 50 40% 92% !important;
+          --ring: ${primary} !important;
+          --border: ${card} !important;
+          --input: ${card} !important;
+          --muted: ${card} !important;
+          --muted-foreground: 50 20% 50% !important;
+          --secondary: ${card} !important;
+          --secondary-foreground: 50 40% 92% !important;
+          --accent: ${primary} !important;
+          --accent-foreground: 50 40% 92% !important;
+          --sidebar-background: ${background} !important;
+          --sidebar-primary: ${primary} !important;
+        }
+      `;
     } else {
-      // Reset to defaults by removing all overrides
-      const vars = ["--primary","--primary-foreground","--background","--foreground","--card","--card-foreground","--popover","--popover-foreground","--ring","--border","--input","--muted","--secondary","--accent","--sidebar-background","--sidebar-primary"];
-      vars.forEach(v => root.style.removeProperty(v));
+      const styleEl = document.getElementById("custom-theme-style");
+      if (styleEl) styleEl.textContent = "";
     }
   }, [profile.activeTheme]);
 
