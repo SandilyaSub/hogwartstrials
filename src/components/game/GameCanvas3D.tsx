@@ -317,16 +317,14 @@ function Player({
     }
     meshRef.current.rotation.y = state.facing;
 
-    // Third-person camera
-    const camDist = 8;
-    const camHeight = 5;
-    const camTarget = new THREE.Vector3(...state.position);
+    // Fixed third-person camera - always behind and above, looking forward (negative Z)
+    const camTarget = new THREE.Vector3(state.position[0], state.position[1] + 1, state.position[2]);
     const camPos = new THREE.Vector3(
-      state.position[0] + Math.sin(state.facing + Math.PI) * camDist,
-      state.position[1] + camHeight,
-      state.position[2] + Math.cos(state.facing + Math.PI) * camDist,
+      state.position[0],
+      state.position[1] + 7,
+      state.position[2] + 12,
     );
-    camera.position.lerp(camPos, 0.08);
+    camera.position.lerp(camPos, 0.06);
     camera.lookAt(camTarget);
   });
 

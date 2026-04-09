@@ -198,11 +198,11 @@ function TutorialPlayer({
     // Report position
     onPositionChange(pos[2]);
 
-    // Camera follow
-    const facing = (mx !== 0 || mz !== 0) ? Math.atan2(mx, mz) : 0;
-    const camPos = new THREE.Vector3(pos[0], pos[1] + 5, pos[2] + 8);
-    camera.position.lerp(camPos, 0.08);
-    camera.lookAt(new THREE.Vector3(...pos));
+    // Fixed camera follow - always behind and above
+    const camTarget = new THREE.Vector3(pos[0], pos[1] + 1, pos[2]);
+    const camPos = new THREE.Vector3(pos[0], pos[1] + 7, pos[2] + 12);
+    camera.position.lerp(camPos, 0.06);
+    camera.lookAt(camTarget);
   });
 
   return (
