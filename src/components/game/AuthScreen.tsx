@@ -15,7 +15,22 @@ const AuthScreen = ({ onAuth }: AuthScreenProps) => {
   const [success, setSuccess] = useState("");
 
   const handleSubmit = async () => {
-    if (!email.trim() || !password.trim()) {
+    if (!email.trim()) {
+      setError("Please enter your email");
+      return;
+    }
+    if (forgotMode) {
+      setLoading(true);
+      setError("");
+      const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      setLoading(false);
+      if (err) setError(err.message);
+      else setSuccess("Password reset email sent! Check your inbox.");
+      return;
+    }
+    if (!password.trim()) {
       setError("Please fill in both fields");
       return;
     }
