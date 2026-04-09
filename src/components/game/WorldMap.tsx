@@ -1,7 +1,8 @@
 import { WORLDS, MENTOR_QUOTES } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTheme } from "@/hooks/useTheme";
+import { SHOP_ITEMS } from "@/lib/shopData";
 
 interface WorldMapProps {
   profile: PlayerProfile;
@@ -10,12 +11,30 @@ interface WorldMapProps {
   onOpenShop?: () => void;
   onOpenFeedback?: () => void;
   onResetGame: () => void;
+  onActivateTheme?: (themeId: string) => void;
 }
 
-const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onResetGame }: WorldMapProps) => {
+const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onResetGame, onActivateTheme }: WorldMapProps) => {
   const [expandedWorld, setExpandedWorld] = useState<number | null>(null);
   const [showMentor, setShowMentor] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const themeMenuRef = useRef<HTMLDivElement>(null);
   const { theme, toggleTheme } = useTheme();
+
+  // Close theme menu on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (themeMenuRef.current && !themeMenuRef.current.contains(e.target as Node)) {
+        setShowThemeMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const purchasedThemes = SHOP_ITEMS.filter(
+    i => i.type === "theme" && profile.purchasedUpgrades?.[i.id]
+  );
 
   const isLevelUnlocked = (worldId: number, levelIdx: number) => {
     if (worldId === 1 && levelIdx === 0) return true;
@@ -48,9 +67,50 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={toggleTheme} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground">
-                {theme === "dark" ? "☀️" : "🌙"}
-              </button>
+              <div className="relative" ref={themeMenuRef}>
+                <button
+                  onClick={() => setShowThemeMenu(v => !v)}
+                  className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground"
+                >
+                  🎨
+                </button>
+                {showThemeMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-card border border-border shadow-lg z-50 p-2 space-y-1 animate-pop-in">
+                    <p className="text-xs text-muted-foreground font-display px-2 py-1">Mode</p>
+                    <button
+                      onClick={() => { toggleTheme(); }}
+                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-2 text-sm font-body text-foreground"
+                    >
+                      {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+                    </button>
+                    {purchasedThemes.length > 0 && (
+                      <>
+                        <div className="border-t border-border my-1" />
+                        <p className="text-xs text-muted-foreground font-display px-2 py-1">Color Themes</p>
+                        <button
+                          onClick={() => { onActivateTheme?.(""); setShowThemeMenu(false); }}
+                          className={`w-full text-left px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-2 text-sm font-body ${
+                            !profile.activeTheme ? "text-primary font-semibold bg-primary/8" : "text-foreground"
+                          }`}
+                        >
+                          🌑 Default
+                        </button>
+                        {purchasedThemes.map(t => (
+                          <button
+                            key={t.id}
+                            onClick={() => { onActivateTheme?.(t.id); setShowThemeMenu(false); }}
+                            className={`w-full text-left px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-2 text-sm font-body ${
+                              profile.activeTheme === t.id ? "text-primary font-semibold bg-primary/8" : "text-foreground"
+                            }`}
+                          >
+                            {t.emoji} {t.name}
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
               <button onClick={onOpenPetStore} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
                 🐾
               </button>
