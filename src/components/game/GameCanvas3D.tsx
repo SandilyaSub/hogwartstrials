@@ -7,6 +7,7 @@ import { generateLevel3D } from "@/lib/engine3d/levelGenerator3D";
 import type { Platform3D, Enemy3D, Coin3D, LevelData3D, PlayerState3D } from "@/lib/engine3d/types";
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { toggleMusic, isMusicPlaying } from "@/lib/musicEngine";
+import TouchControls from "./TouchControls";
 
 interface GameCanvas3DProps {
   profile: PlayerProfile;
@@ -124,14 +125,17 @@ function Player({
   profile,
   onComplete,
   onDeath,
+  externalKeys,
 }: {
   levelData: LevelData3D;
   profile: PlayerProfile;
   onComplete: () => void;
   onDeath: () => void;
+  externalKeys?: React.MutableRefObject<Set<string>>;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const keys = useKeyboard();
+  const internalKeys = useKeyboard();
+  const keys = externalKeys || internalKeys;
   const { camera } = useThree();
   const stateRef = useRef<PlayerState3D>({
     position: [...levelData.startPos],
@@ -354,11 +358,13 @@ function Scene({
   profile,
   onComplete,
   onDeath,
+  externalKeys,
 }: {
   levelData: LevelData3D;
   profile: PlayerProfile;
   onComplete: () => void;
   onDeath: () => void;
+  externalKeys?: React.MutableRefObject<Set<string>>;
 }) {
   const timeRef = useRef(0);
   const [time, setTime] = useState(0);
@@ -410,6 +416,7 @@ function Scene({
         profile={profile}
         onComplete={onComplete}
         onDeath={onDeath}
+        externalKeys={externalKeys}
       />
     </>
   );
@@ -419,6 +426,8 @@ function Scene({
 const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }: GameCanvas3DProps) => {
   const [paused, setPaused] = useState(false);
   const [musicOn, setMusicOn] = useState(isMusicPlaying());
+  const [touchMode, setTouchMode] = useState(false);
+  const sharedKeys = useRef(new Set<string>());
 
   const levelData = useMemo(() => generateLevel3D(worldId, levelIdx), [worldId, levelIdx]);
 
@@ -428,9 +437,12 @@ const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") setPaused(p => !p);
+      sharedKeys.current.add(e.key.toLowerCase());
     };
+    const up = (e: KeyboardEvent) => sharedKeys.current.delete(e.key.toLowerCase());
     window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener("keyup", up);
+    return () => { window.removeEventListener("keydown", handler); window.removeEventListener("keyup", up); };
   }, []);
 
   return (
@@ -447,9 +459,13 @@ const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack 
             profile={profile}
             onComplete={onComplete}
             onDeath={onDeath}
+            externalKeys={touchMode ? sharedKeys : undefined}
           />
         )}
       </Canvas>
+
+      {/* Touch controls overlay */}
+      {touchMode && !paused && <TouchControls keysRef={sharedKeys} />}
 
       {/* HUD */}
       <div className="absolute top-4 left-4 flex items-center gap-3 z-10">
@@ -466,6 +482,13 @@ const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack 
 
       <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
         <button
+          onClick={() => setTouchMode(t => !t)}
+          className="px-3 py-1.5 bg-black/60 text-white rounded-lg text-sm hover:bg-black/80"
+          title="Toggle touch controls"
+        >
+          {touchMode ? "⌨️" : "👆"}
+        </button>
+        <button
           onClick={() => { toggleMusic(); setMusicOn(isMusicPlaying()); }}
           className="px-3 py-1.5 bg-black/60 text-white rounded-lg text-sm hover:bg-black/80"
         >
@@ -480,9 +503,11 @@ const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack 
       </div>
 
       {/* Controls hint */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white/70 px-4 py-2 rounded-lg text-xs font-body z-10">
-        WASD / Arrows to move • Space to jump • ESC to pause
-      </div>
+      {!touchMode && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white/70 px-4 py-2 rounded-lg text-xs font-body z-10">
+          WASD / Arrows to move • Space to jump • ESC to pause
+        </div>
+      )}
 
       {/* Paused overlay */}
       {paused && (
