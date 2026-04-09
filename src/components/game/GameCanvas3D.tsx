@@ -358,11 +358,13 @@ function Scene({
   profile,
   onComplete,
   onDeath,
+  externalKeys,
 }: {
   levelData: LevelData3D;
   profile: PlayerProfile;
   onComplete: () => void;
   onDeath: () => void;
+  externalKeys?: React.MutableRefObject<Set<string>>;
 }) {
   const timeRef = useRef(0);
   const [time, setTime] = useState(0);
