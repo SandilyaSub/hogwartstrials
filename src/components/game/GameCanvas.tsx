@@ -113,6 +113,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
   const gameLoopRef = useRef<number>(0);
   const [paused, setPaused] = useState(false);
   const [musicOn, setMusicOn] = useState(isMusicPlaying());
+  const tokenPointsRef = useRef(0);
 
   const world = WORLDS[worldId - 1];
   const level = world.levels[levelIdx];
