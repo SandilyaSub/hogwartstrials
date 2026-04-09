@@ -1430,6 +1430,15 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       ctx.textAlign = "left";
       ctx.fillText(`World ${worldId}: ${level.name}`, 10, 24);
 
+      // House token counter
+      const totalTokens = houseTokens.length;
+      const collected = houseTokens.filter(t => t.collected).length;
+      if (totalTokens > 0) {
+        ctx.fillStyle = houseColor;
+        ctx.textAlign = "center";
+        ctx.fillText(`🪙 ${collected}/${totalTokens}  (+${collectedTokenPoints} pts)`, W / 2, 24);
+      }
+
       if (isBossArena) {
         // Player HP bar
         ctx.fillStyle = "#aaa";
