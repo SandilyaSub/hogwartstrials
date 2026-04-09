@@ -104,6 +104,36 @@ export type Database = {
         }
         Relationships: []
       }
+      house_leaderboard: {
+        Row: {
+          house_color: string
+          house_emoji: string
+          house_id: string
+          house_name: string
+          id: string
+          total_points: number
+          updated_at: string
+        }
+        Insert: {
+          house_color?: string
+          house_emoji?: string
+          house_id: string
+          house_name: string
+          id?: string
+          total_points?: number
+          updated_at?: string
+        }
+        Update: {
+          house_color?: string
+          house_emoji?: string
+          house_id?: string
+          house_name?: string
+          id?: string
+          total_points?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       shop_purchases: {
         Row: {
           cost: number
@@ -136,7 +166,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_house_points: {
+        Args: { p_house_id: string; p_points: number }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
