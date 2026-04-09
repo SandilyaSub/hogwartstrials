@@ -170,7 +170,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let onGround = false;
     let cameraX = 0;
     let cameraY = 0;
-    let hasRevive = petEffect.type === "revive";
+    let hasRevive = petEffect.type === "revive" || shopHasShield;
     const particles: Particle[] = [];
     let frameCount = 0;
     let flyingCarSpeed = 3; // auto-scroll speed for flying car mode
