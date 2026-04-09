@@ -121,8 +121,14 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
   const handleComplete = useCallback(() => {
     cancelAnimationFrame(gameLoopRef.current);
+    // Submit house points
+    const pts = tokenPointsRef.current;
+    if (pts > 0 && profile.house?.id) {
+      supabase.rpc("add_house_points", { p_house_id: profile.house.id, p_points: pts }).then(() => {});
+    }
+    tokenPointsRef.current = 0;
     onComplete();
-  }, [onComplete]);
+  }, [onComplete, profile.house?.id]);
 
   const handleDeath = useCallback(() => {
     cancelAnimationFrame(gameLoopRef.current);
