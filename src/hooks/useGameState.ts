@@ -146,7 +146,7 @@ export function useGameState(user: User | null) {
       ...profile,
       completedLevels: completed,
       unlockedPets: newPets,
-      coins: profile.coins + (levelIdx === 4 ? 50 : 20),
+      coins: profile.coins + (levelIdx === 4 ? 50 : 20) * (profile.purchasedUpgrades?.["double_coins"] ? 2 : 1),
     });
   }, [profile, saveProfile]);
 
