@@ -35,7 +35,7 @@ const Index = () => {
 
   // Apply purchased theme colors to CSS variables
   useEffect(() => {
-    const themeItem = SHOP_ITEMS.find(i => i.id === profile.activeTheme && i.type === "theme");
+    const themeItem = SHOP_ITEMS.find(i => i.id === profile.activeTheme && i.type === "theme" && i.id !== "dark");
     const root = document.documentElement;
     if (themeItem?.themeColors) {
       const { primary, background, card } = themeItem.themeColors;

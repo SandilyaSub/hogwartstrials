@@ -88,9 +88,9 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
                         <div className="border-t border-border my-1" />
                         <p className="text-xs text-muted-foreground font-display px-2 py-1">Color Themes</p>
                         <button
-                          onClick={() => { onActivateTheme?.(""); setShowThemeMenu(false); }}
+                          onClick={() => { onActivateTheme?.("dark"); setShowThemeMenu(false); }}
                           className={`w-full text-left px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-2 text-sm font-body ${
-                            !profile.activeTheme ? "text-primary font-semibold bg-primary/8" : "text-foreground"
+                            (!profile.activeTheme || profile.activeTheme === "dark") ? "text-primary font-semibold bg-primary/8" : "text-foreground"
                           }`}
                         >
                           🌑 Default
