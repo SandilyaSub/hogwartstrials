@@ -13,6 +13,7 @@ import WorldMap from "@/components/game/WorldMap";
 import PetStore from "@/components/game/PetStore";
 import Shop from "@/components/game/Shop";
 import Feedback from "@/components/game/Feedback";
+import SettingsScreen from "@/components/game/SettingsScreen";
 import LevelIntro from "@/components/game/LevelIntro";
 import GameCanvas from "@/components/game/GameCanvas";
 import LevelComplete from "@/components/game/LevelComplete";
@@ -131,10 +132,22 @@ const Index = () => {
           onOpenPetStore={() => setScreen("petstore")}
           onOpenShop={() => setScreen("shop")}
           onOpenFeedback={() => setScreen("feedback")}
+          onOpenSettings={() => setScreen("settings")}
           onResetGame={resetGame}
+        />
+      );
+
+    case "settings":
+      return (
+        <SettingsScreen
+          profile={profile}
           onActivateTheme={(themeId) => {
             saveProfile({ ...profile, activeTheme: themeId });
           }}
+          onActivateSong={(songId) => {
+            saveProfile({ ...profile, activeSong: songId });
+          }}
+          onBack={() => setScreen("worldmap")}
         />
       );
 
