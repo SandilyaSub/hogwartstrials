@@ -409,6 +409,164 @@ function gen_1_4_WizardChess(H: number): LevelData {
   return { platforms, enemies, startX: 30, startY: H - 60, checkered: true };
 }
 
+function gen_1_6_DevilsSnare(H: number): LevelData {
+  const platforms: Platform[] = [];
+  const enemies: Enemy[] = [];
+
+  // Start platform — you've just dropped through the trapdoor
+  platforms.push({ x: 0, y: H - 40, w: 140, h: 40, type: "normal", color: "#2a3a1a", label: "🕳️ Trapdoor" });
+
+  // Vine-covered walls — hazard platforms lining bottom (the snare itself)
+  for (let i = 0; i < 25; i++) {
+    platforms.push({
+      x: 160 + i * 90, y: H - 20, w: 85, h: 20, type: "hazard",
+      color: "#1a3a0a", label: i % 3 === 0 ? "🌿" : "🍃",
+    });
+  }
+
+  // Vine tendrils reaching up from below — hazard pillars
+  const tendrils = [200, 450, 700, 1000, 1300, 1600, 1900];
+  tendrils.forEach((x, i) => {
+    const tendrilH = 60 + (i % 3) * 30;
+    platforms.push({
+      x, y: H - tendrilH, w: 20, h: tendrilH - 20, type: "hazard",
+      color: "#1a4a0a", label: "🌱",
+    });
+  });
+
+  // Safe platforms — roots and rocky ledges to escape upward
+  const safePlatforms = [
+    { x: 80, y: H - 90, w: 70, label: "🪨" },
+    { x: 220, y: H - 120, w: 60, label: "🪵" },
+    { x: 370, y: H - 85, w: 65, label: "🪨" },
+    { x: 500, y: H - 130, w: 70, label: "🪵" },
+    { x: 640, y: H - 100, w: 55, label: "🪨" },
+    { x: 780, y: H - 140, w: 65, label: "🪵" },
+    { x: 920, y: H - 110, w: 60, label: "🪨" },
+    { x: 1060, y: H - 150, w: 70, label: "🪵" },
+    { x: 1200, y: H - 120, w: 55, label: "🪨" },
+    { x: 1350, y: H - 160, w: 65, label: "🪵" },
+    { x: 1500, y: H - 130, w: 60, label: "🪨" },
+    { x: 1650, y: H - 170, w: 70, label: "🪵" },
+    { x: 1800, y: H - 140, w: 55, label: "🪨" },
+    { x: 1950, y: H - 180, w: 65, label: "🪵" },
+  ];
+  safePlatforms.forEach(p => {
+    platforms.push({ x: p.x, y: p.y, w: p.w, h: 14, type: "normal", color: "#4a3a1a", label: p.label });
+  });
+
+  // Higher escape route — light beams (bright platforms you must reach)
+  const lightBeams = [
+    { x: 300, y: H - 200 },
+    { x: 600, y: H - 220 },
+    { x: 900, y: H - 210 },
+    { x: 1250, y: H - 230 },
+    { x: 1550, y: H - 220 },
+    { x: 1850, y: H - 240 },
+  ];
+  lightBeams.forEach(lb => {
+    platforms.push({ x: lb.x, y: lb.y, w: 50, h: 12, type: "normal", color: "#e0d080", label: "☀️" });
+  });
+
+  // Disappearing vine bridges — they crumble as you step
+  platforms.push({ x: 160, y: H - 70, w: 50, h: 10, type: "disappearing", timer: 0, visible: true, color: "#2a5a1a", label: "🌿" });
+  platforms.push({ x: 550, y: H - 75, w: 50, h: 10, type: "disappearing", timer: 0, visible: true, color: "#2a5a1a", label: "🌿" });
+  platforms.push({ x: 850, y: H - 80, w: 50, h: 10, type: "disappearing", timer: 0, visible: true, color: "#2a5a1a", label: "🌿" });
+  platforms.push({ x: 1150, y: H - 85, w: 50, h: 10, type: "disappearing", timer: 0, visible: true, color: "#2a5a1a", label: "🌿" });
+  platforms.push({ x: 1450, y: H - 80, w: 50, h: 10, type: "disappearing", timer: 0, visible: true, color: "#2a5a1a", label: "🌿" });
+  platforms.push({ x: 1750, y: H - 75, w: 50, h: 10, type: "disappearing", timer: 0, visible: true, color: "#2a5a1a", label: "🌿" });
+
+  // Animated vine enemies — they swing back and forth grabbing at you
+  enemies.push({ x: 300, y: H - 100, w: 22, h: 22, type: "vine", dir: 1, speed: 0.6, range: 50, origX: 300, emoji: "🌿" });
+  enemies.push({ x: 600, y: H - 110, w: 22, h: 22, type: "vine", dir: -1, speed: 0.8, range: 60, origX: 600, emoji: "🌿" });
+  enemies.push({ x: 900, y: H - 90, w: 24, h: 24, type: "vine", dir: 1, speed: 0.7, range: 55, origX: 900, emoji: "🌿" });
+  enemies.push({ x: 1200, y: H - 120, w: 22, h: 22, type: "vine", dir: -1, speed: 0.9, range: 65, origX: 1200, emoji: "🌿" });
+  enemies.push({ x: 1500, y: H - 100, w: 24, h: 24, type: "vine", dir: 1, speed: 1.0, range: 50, origX: 1500, emoji: "🌿" });
+  enemies.push({ x: 1850, y: H - 130, w: 24, h: 24, type: "vine", dir: -1, speed: 0.8, range: 70, origX: 1850, emoji: "🌿" });
+
+  // Finish — escape into the light!
+  platforms.push({ x: 2100, y: H - 200, w: 100, h: 20, type: "finish", label: "☀️ Escape!" });
+
+  return { platforms, enemies, startX: 40, startY: H - 80 };
+}
+
+function gen_1_7_FlyingKeys(H: number): LevelData {
+  const platforms: Platform[] = [];
+  const enemies: Enemy[] = [];
+
+  // Grand chamber floor — you start here before mounting a broom
+  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#4a3a5a", label: "🏰 Chamber" });
+
+  // Scattered stone ledges and columns throughout the tall chamber
+  const ledges = [
+    { x: 200, y: H - 80, w: 70 },
+    { x: 350, y: H - 130, w: 60 },
+    { x: 500, y: H - 180, w: 70 },
+    { x: 650, y: H - 100, w: 55 },
+    { x: 800, y: H - 150, w: 65 },
+    { x: 950, y: H - 200, w: 60 },
+    { x: 1100, y: H - 120, w: 70 },
+    { x: 1250, y: H - 170, w: 55 },
+    { x: 1400, y: H - 220, w: 65 },
+    { x: 1550, y: H - 140, w: 60 },
+    { x: 1700, y: H - 190, w: 70 },
+    { x: 1850, y: H - 240, w: 55 },
+    { x: 2000, y: H - 160, w: 65 },
+    { x: 2150, y: H - 210, w: 60 },
+    { x: 2300, y: H - 260, w: 70 },
+  ];
+  ledges.forEach((l, i) => {
+    platforms.push({
+      x: l.x, y: l.y, w: l.w, h: 14, type: "normal",
+      color: i % 2 === 0 ? "#5a4a6a" : "#4a3a5a",
+      label: i % 4 === 0 ? "🏛️" : "",
+    });
+  });
+
+  // Moving key-shaped platforms — these flutter up and down like the keys
+  const keyPlatforms = [
+    { x: 280, y: H - 160, range: 40 },
+    { x: 580, y: H - 220, range: 50 },
+    { x: 880, y: H - 180, range: 35 },
+    { x: 1180, y: H - 250, range: 45 },
+    { x: 1480, y: H - 200, range: 40 },
+    { x: 1780, y: H - 270, range: 50 },
+    { x: 2080, y: H - 230, range: 35 },
+  ];
+  keyPlatforms.forEach((kp, i) => {
+    const p: Platform = {
+      x: kp.x, y: kp.y, w: 45, h: 12, type: "moving",
+      color: "#c0a040", label: "🔑",
+      origX: kp.x, origY: kp.y,
+      moveDir: i % 2 === 0 ? 1 : -1, moveRange: kp.range,
+    };
+    platforms.push(p);
+  });
+
+  // Hazard platforms — old rusty keys that hurt if touched
+  platforms.push({ x: 450, y: H - 110, w: 35, h: 10, type: "hazard", color: "#8a4a2a", label: "🗝️" });
+  platforms.push({ x: 750, y: H - 160, w: 35, h: 10, type: "hazard", color: "#8a4a2a", label: "🗝️" });
+  platforms.push({ x: 1050, y: H - 200, w: 35, h: 10, type: "hazard", color: "#8a4a2a", label: "🗝️" });
+  platforms.push({ x: 1350, y: H - 150, w: 35, h: 10, type: "hazard", color: "#8a4a2a", label: "🗝️" });
+  platforms.push({ x: 1650, y: H - 230, w: 35, h: 10, type: "hazard", color: "#8a4a2a", label: "🗝️" });
+  platforms.push({ x: 1950, y: H - 180, w: 35, h: 10, type: "hazard", color: "#8a4a2a", label: "🗝️" });
+
+  // Flying key enemies — they swarm and dive at you
+  enemies.push({ x: 300, y: H - 200, w: 18, h: 18, type: "key", dir: 1, speed: 1.5, range: 80, origX: 300, emoji: "🔑" });
+  enemies.push({ x: 550, y: H - 250, w: 18, h: 18, type: "key", dir: -1, speed: 1.8, range: 90, origX: 550, emoji: "🔑" });
+  enemies.push({ x: 800, y: H - 180, w: 20, h: 20, type: "key", dir: 1, speed: 1.3, range: 70, origX: 800, emoji: "🔑" });
+  enemies.push({ x: 1050, y: H - 230, w: 18, h: 18, type: "key", dir: -1, speed: 2.0, range: 100, origX: 1050, emoji: "🔑" });
+  enemies.push({ x: 1300, y: H - 200, w: 20, h: 20, type: "key", dir: 1, speed: 1.6, range: 85, origX: 1300, emoji: "🔑" });
+  enemies.push({ x: 1600, y: H - 260, w: 18, h: 18, type: "key", dir: -1, speed: 1.9, range: 95, origX: 1600, emoji: "🔑" });
+  enemies.push({ x: 1900, y: H - 220, w: 20, h: 20, type: "key", dir: 1, speed: 1.4, range: 75, origX: 1900, emoji: "🔑" });
+  enemies.push({ x: 2200, y: H - 280, w: 22, h: 22, type: "key", dir: -1, speed: 2.2, range: 110, origX: 2200, emoji: "🔑" });
+
+  // The door with the correct key — finish
+  platforms.push({ x: 2450, y: H - 250, w: 100, h: 20, type: "finish", label: "🚪 The Door" });
+
+  return { platforms, enemies, startX: 40, startY: H - 80 };
+}
+
 function gen_1_5_MirrorOfErised(H: number): LevelData {
   // Boss arena - flat ground, fight Quirrell/Voldemort
   const platforms: Platform[] = [];
