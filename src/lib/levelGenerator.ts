@@ -47,9 +47,16 @@ export interface Projectile {
   fromPlayer: boolean; life: number; emoji?: string;
 }
 
+export interface HouseToken {
+  x: number; y: number;
+  collected: boolean;
+  points: number; // typically 5-15
+}
+
 export interface LevelData {
   platforms: Platform[];
   enemies: Enemy[];
+  houseTokens: HouseToken[];
   startX: number;
   startY: number;
   darkLevel?: boolean;
