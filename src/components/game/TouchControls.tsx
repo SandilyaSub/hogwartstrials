@@ -69,7 +69,8 @@ const TouchControls = ({ keysRef }: TouchControlsProps) => {
     setJumping(true);
   }, [keysRef]);
 
-  const handleJumpEnd = useCallback(() => {
+  const handleJumpEnd = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
     keysRef.current.delete(" ");
     setJumping(false);
   }, [keysRef]);
