@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const ResetPassword = () => {
@@ -7,6 +7,27 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY" || (session && event === "SIGNED_IN")) {
+        setSessionReady(true);
+        setChecking(false);
+      }
+    });
+
+    // Also check if session already exists (user may have landed with tokens already processed)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setSessionReady(true);
+      }
+      setChecking(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleReset = async () => {
     if (password.length < 6) {
@@ -50,30 +71,38 @@ const ResetPassword = () => {
         <h2 className="font-display text-2xl font-bold text-primary text-glow">Set New Password</h2>
         <p className="text-muted-foreground font-body text-sm">Enter your new password below.</p>
 
-        <div className="space-y-4">
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => { setPassword(e.target.value); setError(""); }}
-            placeholder="New password..."
-            className="w-full px-5 py-3.5 rounded-2xl bg-secondary/50 border-2 border-border text-foreground font-body placeholder:text-muted-foreground/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-          />
-          <input
-            type="password"
-            value={confirm}
-            onChange={(e) => { setConfirm(e.target.value); setError(""); }}
-            placeholder="Confirm password..."
-            className="w-full px-5 py-3.5 rounded-2xl bg-secondary/50 border-2 border-border text-foreground font-body placeholder:text-muted-foreground/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-          />
-          {error && <p className="text-destructive text-sm font-medium animate-pop-in">{error}</p>}
-          <button
-            onClick={handleReset}
-            disabled={loading || !password || !confirm}
-            className="w-full btn-storybook text-lg px-8 py-4 bg-primary text-primary-foreground disabled:opacity-25 disabled:cursor-not-allowed"
-          >
-            {loading ? "✨ Updating..." : "✨ Update Password"}
-          </button>
-        </div>
+        {checking ? (
+          <p className="text-muted-foreground text-sm animate-pulse">Verifying recovery link...</p>
+        ) : !sessionReady ? (
+          <p className="text-destructive text-sm font-medium">
+            Invalid or expired recovery link. Please request a new password reset.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(""); }}
+              placeholder="New password..."
+              className="w-full px-5 py-3.5 rounded-2xl bg-secondary/50 border-2 border-border text-foreground font-body placeholder:text-muted-foreground/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            />
+            <input
+              type="password"
+              value={confirm}
+              onChange={(e) => { setConfirm(e.target.value); setError(""); }}
+              placeholder="Confirm password..."
+              className="w-full px-5 py-3.5 rounded-2xl bg-secondary/50 border-2 border-border text-foreground font-body placeholder:text-muted-foreground/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            />
+            {error && <p className="text-destructive text-sm font-medium animate-pop-in">{error}</p>}
+            <button
+              onClick={handleReset}
+              disabled={loading || !password || !confirm}
+              className="w-full btn-storybook text-lg px-8 py-4 bg-primary text-primary-foreground disabled:opacity-25 disabled:cursor-not-allowed"
+            >
+              {loading ? "✨ Updating..." : "✨ Update Password"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
