@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ShopItem } from "@/lib/shopData";
 import type { User } from "@supabase/supabase-js";
 
-export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "feedback" | "levelIntro" | "playing" | "levelComplete" | "gameOver";
+export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "feedback" | "settings" | "levelIntro" | "playing" | "levelComplete" | "gameOver";
 
 export interface PlayerProfile {
   username: string;
