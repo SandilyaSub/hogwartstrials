@@ -252,6 +252,14 @@ const Index = () => {
         />
       );
 
+    case "leaderboard":
+      return (
+        <HouseLeaderboard
+          playerHouseId={profile.house?.id}
+          onBack={() => setScreen("worldmap")}
+        />
+      );
+
     default:
       return null;
   }
