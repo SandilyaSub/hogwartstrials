@@ -416,6 +416,7 @@ function Scene({
         profile={profile}
         onComplete={onComplete}
         onDeath={onDeath}
+        externalKeys={externalKeys}
       />
     </>
   );
