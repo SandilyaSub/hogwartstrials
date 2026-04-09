@@ -21,7 +21,10 @@ const CharacterSelect = ({ onSelect }: CharacterSelectProps) => {
           {CHARACTERS.map((char, i) => (
             <button
               key={char.id}
-              onClick={() => setSelected(char.id)}
+              onClick={() => {
+                setSelected(char.id);
+                onSelect(char.id);
+              }}
               className={`card-illustrated p-5 transition-all duration-300 text-center hover:scale-[1.03] animate-pop-in ${
                 selected === char.id
                   ? "!border-primary box-glow !bg-primary/10"
@@ -35,14 +38,6 @@ const CharacterSelect = ({ onSelect }: CharacterSelectProps) => {
             </button>
           ))}
         </div>
-
-        <button
-          onClick={() => selected && onSelect(selected)}
-          disabled={!selected}
-          className="btn-storybook text-lg px-12 py-4 bg-primary text-primary-foreground disabled:opacity-25 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
-        >
-          ✨ Select
-        </button>
       </div>
     </div>
   );

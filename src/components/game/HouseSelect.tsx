@@ -28,7 +28,10 @@ const HouseSelect = ({ onSelect }: HouseSelectProps) => {
           {HOUSES.map((house, i) => (
             <button
               key={house.id}
-              onClick={() => setSelected(house.id)}
+              onClick={() => {
+                setSelected(house.id);
+                onSelect(house.id);
+              }}
               className={`card-illustrated p-6 text-left transition-all duration-300 hover:scale-[1.02] animate-pop-in ${
                 selected === house.id ? "" : "hover:border-primary/30"
               }`}
@@ -57,14 +60,6 @@ const HouseSelect = ({ onSelect }: HouseSelectProps) => {
             </button>
           ))}
         </div>
-
-        <button
-          onClick={() => selected && onSelect(selected)}
-          disabled={!selected}
-          className="btn-storybook text-lg px-12 py-4 bg-primary text-primary-foreground disabled:opacity-25 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
-        >
-          🏰 Join House
-        </button>
       </div>
     </div>
   );
