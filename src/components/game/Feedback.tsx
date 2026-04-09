@@ -40,7 +40,7 @@ const Feedback = ({ userId, username, onBack }: FeedbackProps) => {
     setSubmitting(true);
     await supabase.from("feedback").insert({
       user_id: userId,
-      username: username || "Anonymous Wizard",
+      username: "Anonymous Wizard",
       message: message.trim(),
       rating,
     });
