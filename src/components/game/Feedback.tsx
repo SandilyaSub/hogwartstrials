@@ -109,11 +109,11 @@ const Feedback = ({ userId, username, onBack }: FeedbackProps) => {
         {/* Feedback list */}
         <div className="space-y-3">
           <h3 className="font-display text-lg font-semibold text-foreground/80 px-1">
-            Community Reviews ({entries.length})
+            Your Reviews ({entries.length})
           </h3>
           {entries.length === 0 ? (
             <div className="card-illustrated p-8 text-center">
-              <p className="text-muted-foreground font-body">No feedback yet — be the first!</p>
+              <p className="text-muted-foreground font-body">You haven't submitted any feedback yet.</p>
             </div>
           ) : (
             entries.map((entry, i) => (
