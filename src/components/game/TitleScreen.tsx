@@ -69,7 +69,7 @@ const TitleScreen = ({ onNewGame, onContinue, hasSave, onSignOut }: TitleScreenP
         {/* Stats */}
         <div className="flex gap-8 justify-center text-foreground/40 text-sm font-display animate-slide-up" style={{ animationDelay: "0.4s" }}>
           <span className="flex items-center gap-1.5">⚡ <span className="text-foreground/60">7 Worlds</span></span>
-          <span className="flex items-center gap-1.5">🏰 <span className="text-foreground/60">35 Levels</span></span>
+          <span className="flex items-center gap-1.5">🏰 <span className="text-foreground/60">70 Levels</span></span>
           <span className="flex items-center gap-1.5">🐾 <span className="text-foreground/60">7 Pets</span></span>
         </div>
         {onSignOut && (
