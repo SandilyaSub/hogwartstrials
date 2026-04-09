@@ -114,12 +114,24 @@ const AuthScreen = ({ onAuth }: AuthScreenProps) => {
             </button>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
+            {!forgotMode && !isSignUp && (
+              <button
+                onClick={() => { setForgotMode(true); setError(""); setSuccess(""); }}
+                className="text-sm text-muted-foreground hover:text-primary font-body transition-colors block mx-auto"
+              >
+                Forgot password?
+              </button>
+            )}
             <button
-              onClick={() => { setIsSignUp(!isSignUp); setError(""); setSuccess(""); }}
+              onClick={() => { 
+                if (forgotMode) { setForgotMode(false); }
+                else { setIsSignUp(!isSignUp); }
+                setError(""); setSuccess(""); 
+              }}
               className="text-sm text-muted-foreground hover:text-primary font-body transition-colors"
             >
-              {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
+              {forgotMode ? "← Back to sign in" : isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
             </button>
           </div>
         </div>
