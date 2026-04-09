@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ShopItem } from "@/lib/shopData";
 import type { User } from "@supabase/supabase-js";
 
-export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "feedback" | "settings" | "levelIntro" | "playing" | "levelComplete" | "gameOver";
+export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "feedback" | "settings" | "levelIntro" | "playing" | "levelComplete" | "gameOver" | "tutorial";
 
 export interface PlayerProfile {
   username: string;
@@ -20,6 +20,7 @@ export interface PlayerProfile {
   purchasedUpgrades: Record<string, boolean>;
   activeTheme: string;
   activeSong: string;
+  tutorialCompleted: boolean;
 }
 
 const DEFAULT_PROFILE: PlayerProfile = {
@@ -36,6 +37,7 @@ const DEFAULT_PROFILE: PlayerProfile = {
   purchasedUpgrades: {},
   activeTheme: "dark",
   activeSong: "default",
+  tutorialCompleted: false,
 };
 
 export function useGameState(user: User | null) {
@@ -78,6 +80,7 @@ export function useGameState(user: User | null) {
           purchasedUpgrades: (data.purchased_upgrades as Record<string, boolean>) || {},
           activeTheme: data.active_theme || "dark",
           activeSong: (data as any).active_song || "default",
+          tutorialCompleted: (data as any).tutorial_completed || false,
         });
       }
       setDbLoaded(true);
@@ -106,6 +109,7 @@ export function useGameState(user: User | null) {
       purchased_upgrades: p.purchasedUpgrades,
       active_theme: p.activeTheme,
       active_song: p.activeSong,
+      tutorial_completed: p.tutorialCompleted,
     } as any).eq("user_id", user.id);
   }, [user]);
 
