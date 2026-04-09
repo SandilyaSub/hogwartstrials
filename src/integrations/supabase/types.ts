@@ -104,6 +104,39 @@ export type Database = {
         }
         Relationships: []
       }
+      house_cup_winners: {
+        Row: {
+          created_at: string
+          house_color: string
+          house_emoji: string
+          house_id: string
+          house_name: string
+          id: string
+          total_points: number
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          house_color?: string
+          house_emoji?: string
+          house_id: string
+          house_name: string
+          id?: string
+          total_points?: number
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          house_color?: string
+          house_emoji?: string
+          house_id?: string
+          house_name?: string
+          id?: string
+          total_points?: number
+          week_start?: string
+        }
+        Relationships: []
+      }
       house_leaderboard: {
         Row: {
           house_color: string
