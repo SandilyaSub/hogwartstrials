@@ -160,6 +160,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
     const levelData = generateLevel(worldId, levelIdx, 3000, H);
     const { platforms, enemies, startX, startY } = levelData;
+    const houseTokens: HouseToken[] = levelData.houseTokens || [];
     const isDark = levelData.darkLevel || false;
     const isCheckered = levelData.checkered || false;
     const isBoatLevel = levelData.boatLevel || false;
@@ -174,8 +175,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let hasRevive = petEffect.type === "revive" || shopHasShield;
     const particles: Particle[] = [];
     let frameCount = 0;
-    let flyingCarSpeed = 3; // auto-scroll speed for flying car mode
-    let carInvincible = 0; // invincibility frames after hit
+    let flyingCarSpeed = 3;
+    let carInvincible = 0;
+    let collectedTokenPoints = 0; // track total tokens collected this level
 
     // Boss fight state
     let bossHp = bossData?.maxHp || 0;
