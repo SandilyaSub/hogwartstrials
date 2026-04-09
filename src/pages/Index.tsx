@@ -48,9 +48,9 @@ const Index = () => {
         document.head.appendChild(styleEl);
       }
       styleEl.textContent = `
-        :root, :root.light {
+        html, :root, :root.light, .light {
           --primary: ${primary} !important;
-          --primary-foreground: ${background} !important;
+          --primary-foreground: 0 0% 100% !important;
           --background: ${background} !important;
           --foreground: 50 40% 92% !important;
           --card: ${card} !important;
@@ -61,13 +61,14 @@ const Index = () => {
           --border: ${card} !important;
           --input: ${card} !important;
           --muted: ${card} !important;
-          --muted-foreground: 50 20% 50% !important;
+          --muted-foreground: 50 20% 55% !important;
           --secondary: ${card} !important;
           --secondary-foreground: 50 40% 92% !important;
           --accent: ${primary} !important;
           --accent-foreground: 50 40% 92% !important;
           --sidebar-background: ${background} !important;
           --sidebar-primary: ${primary} !important;
+          --magic-glow: ${primary} !important;
         }
       `;
     } else {
