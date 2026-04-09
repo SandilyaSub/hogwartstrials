@@ -961,7 +961,7 @@ function gen_2_9_SwordOfGryffindor(H: number): LevelData {
   // Ascending chamber with hazards
   for (let i = 0; i < 15; i++) {
     const y = H - 120 - i * 58;
-    platforms.push({ x: 20 + ((i * 97) % 320), y, w: 60, h: 12, type: i % 5 === 0 ? "bouncy" : "normal", color: i % 5 === 0 ? "#ffcc00" : "#5a4a3a" });
+    platforms.push({ x: 20 + ((i * 97) % 320), y, w: 60, h: 12, type: i % 5 === 0 ? "normal" : "normal", color: i % 5 === 0 ? "#ffcc00" : "#5a4a3a" });
   }
   enemies.push({ x: 180, y: H - 500, w: 40, h: 40, type: "basilisk", dir: 1, speed: 0.6, range: 120, origX: 180, emoji: "🐍" });
   platforms.push({ x: 150, y: H - 920, w: 100, h: 20, type: "finish", label: "⚔️ Sword of Gryffindor" });
@@ -1031,7 +1031,7 @@ function gen_3_9_PatronusTraining(H: number): LevelData {
   // Dementor-filled ascending challenge
   for (let i = 0; i < 14; i++) {
     const y = H - 120 - i * 60;
-    platforms.push({ x: 30 + ((i * 79) % 320), y, w: 60, h: 12, type: i % 4 === 0 ? "bouncy" : "normal", color: i % 4 === 0 ? "#aaccff" : "#4a4a6a" });
+    platforms.push({ x: 30 + ((i * 79) % 320), y, w: 60, h: 12, type: i % 4 === 0 ? "normal" : "normal", color: i % 4 === 0 ? "#aaccff" : "#4a4a6a" });
   }
   for (let i = 0; i < 5; i++) enemies.push({ x: 60 + i * 80, y: H - 250 - i * 120, w: 22, h: 22, type: "dementor", dir: i % 2 === 0 ? 1 : -1, speed: 0.9, range: 80, origX: 60 + i * 80, emoji: "👻" });
   platforms.push({ x: 150, y: H - 950, w: 100, h: 20, type: "finish", label: "✨ Expecto Patronum!" });
@@ -1047,7 +1047,7 @@ function gen_4_5_YuleBall(H: number): LevelData {
   // Dance floor - bouncy and moving platforms
   for (let i = 0; i < 12; i++) {
     const y = H - 120 - i * 60;
-    platforms.push({ x: 40 + ((i * 91) % 320), y, w: 65, h: 12, type: i % 2 === 0 ? "bouncy" : "moving", moveRange: 50, color: i % 2 === 0 ? "#cc88ff" : "#8866aa" });
+    platforms.push({ x: 40 + ((i * 91) % 320), y, w: 65, h: 12, type: i % 2 === 0 ? "normal" : "moving", moveRange: 50, color: i % 2 === 0 ? "#cc88ff" : "#8866aa" });
   }
   platforms.push({ x: 160, y: H - 860, w: 100, h: 20, type: "finish", label: "💃 Grand Finale" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
@@ -1174,7 +1174,7 @@ function gen_5_9_DumbledoresArmy(H: number): LevelData {
   // Training room - bouncy combat platforms
   for (let i = 0; i < 15; i++) {
     const y = H - 110 - i * 55;
-    platforms.push({ x: 25 + ((i * 69) % 330), y, w: 60, h: 12, type: i % 3 === 0 ? "bouncy" : "normal", color: i % 3 === 0 ? "#4488ff" : "#5a6a7a" });
+    platforms.push({ x: 25 + ((i * 69) % 330), y, w: 60, h: 12, type: i % 3 === 0 ? "normal" : "normal", color: i % 3 === 0 ? "#4488ff" : "#5a6a7a" });
   }
   for (let i = 0; i < 3; i++) enemies.push({ x: 120 + i * 100, y: H - 350 - i * 120, w: 20, h: 20, type: "dummy", dir: 1, speed: 0.6, range: 40, origX: 120 + i * 100, emoji: "🎯" });
   platforms.push({ x: 150, y: H - 930, w: 100, h: 20, type: "finish", label: "⚡ DA Trained!" });
@@ -1243,7 +1243,7 @@ function gen_6_9_FelixFelicis(H: number): LevelData {
   // Lucky golden path - mostly bouncy
   for (let i = 0; i < 14; i++) {
     const y = H - 120 - i * 58;
-    platforms.push({ x: 25 + ((i * 77) % 340), y, w: 60, h: 12, type: i % 2 === 0 ? "bouncy" : "normal", color: i % 2 === 0 ? "#ffdd44" : "#aa9933" });
+    platforms.push({ x: 25 + ((i * 77) % 340), y, w: 60, h: 12, type: i % 2 === 0 ? "normal" : "normal", color: i % 2 === 0 ? "#ffdd44" : "#aa9933" });
   }
   platforms.push({ x: 155, y: H - 930, w: 100, h: 20, type: "finish", label: "🍀 Liquid Luck!" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
@@ -1315,7 +1315,7 @@ function gen_7_9_BattleOfHogwarts(H: number): LevelData {
   // Ruined castle - chaotic mix of everything
   for (let i = 0; i < 18; i++) {
     const y = H - 100 - i * 52;
-    const types: Array<Platform["type"]> = ["normal", "moving", "disappearing", "bouncy", "ice"];
+    const types: Array<Platform["type"]> = ["normal", "moving", "disappearing", "normal", "ice"];
     const t = types[i % 5];
     platforms.push({ x: 20 + ((i * 67) % 340), y, w: 55, h: 12, type: t, moveRange: 60, timer: 0, visible: true, color: "#5a4a3a" });
   }
