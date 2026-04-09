@@ -470,7 +470,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
           token.collected = true;
           collectedTokenPoints += token.points;
-          // Sparkle particles
+          tokenPointsRef.current = collectedTokenPoints;
           for (let i = 0; i < 8; i++) {
             particles.push({
               x: token.x, y: token.y,
