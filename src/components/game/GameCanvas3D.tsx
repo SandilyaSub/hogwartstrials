@@ -7,6 +7,7 @@ import { generateLevel3D } from "@/lib/engine3d/levelGenerator3D";
 import type { Platform3D, Enemy3D, Coin3D, LevelData3D, PlayerState3D } from "@/lib/engine3d/types";
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { toggleMusic, isMusicPlaying } from "@/lib/musicEngine";
+import TouchControls from "./TouchControls";
 
 interface GameCanvas3DProps {
   profile: PlayerProfile;
@@ -419,6 +420,8 @@ function Scene({
 const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }: GameCanvas3DProps) => {
   const [paused, setPaused] = useState(false);
   const [musicOn, setMusicOn] = useState(isMusicPlaying());
+  const [touchMode, setTouchMode] = useState(false);
+  const sharedKeys = useRef(new Set<string>());
 
   const levelData = useMemo(() => generateLevel3D(worldId, levelIdx), [worldId, levelIdx]);
 
@@ -428,9 +431,12 @@ const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") setPaused(p => !p);
+      sharedKeys.current.add(e.key.toLowerCase());
     };
+    const up = (e: KeyboardEvent) => sharedKeys.current.delete(e.key.toLowerCase());
     window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener("keyup", up);
+    return () => { window.removeEventListener("keydown", handler); window.removeEventListener("keyup", up); };
   }, []);
 
   return (
