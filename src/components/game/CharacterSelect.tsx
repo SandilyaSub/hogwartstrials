@@ -9,7 +9,7 @@ const CharacterSelect = ({ onSelect }: CharacterSelectProps) => {
   const [selected, setSelected] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 overflow-y-auto">
+    <div className="min-h-screen flex flex-col items-center bg-background p-4 overflow-y-auto py-8">
       <div className="max-w-3xl w-full space-y-8 text-center animate-slide-up">
         <div>
           <div className="text-5xl mb-3 animate-wiggle inline-block">🧙</div>
@@ -17,7 +17,7 @@ const CharacterSelect = ({ onSelect }: CharacterSelectProps) => {
           <p className="text-foreground/55 mt-2 font-body text-lg">Select your character for this adventure</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
           {CHARACTERS.map((char, i) => (
             <button
               key={char.id}
