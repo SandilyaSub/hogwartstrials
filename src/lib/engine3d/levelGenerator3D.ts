@@ -56,7 +56,7 @@ function getTheme3D(worldId: number, levelIdx: number): LevelTheme3D {
 // Generate platforms in an obby (obstacle course) style - forward along Z axis
 export function generateLevel3D(worldId: number, levelIdx: number): LevelData3D {
   idCounter = 0;
-  const isBoss = levelIdx === 4;
+  const isBoss = levelIdx === 9;
   const theme = getTheme3D(worldId, levelIdx);
   const difficulty = (worldId - 1) * 5 + levelIdx;
 
