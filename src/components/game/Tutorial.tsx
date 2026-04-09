@@ -171,7 +171,7 @@ function TutorialPlayer({
           }
           if (plat.type === "disappearing") {
             plat.timer = (plat.timer || 0) + dt * 60;
-            if (plat.timer! > 40) plat.visible = false;
+            if (plat.timer! > 120) plat.visible = false; // 3x longer before vanishing
           }
         }
       }
