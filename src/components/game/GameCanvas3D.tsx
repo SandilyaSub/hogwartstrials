@@ -182,7 +182,7 @@ function Player({
     state.velocity[1] += GRAVITY * dt;
 
     // Jump
-    if ((k.has(" ") || k.has("arrowup")) && state.onGround) {
+    if (k.has(" ") && state.onGround) {
       state.velocity[1] = jumpPower;
       state.onGround = false;
     }
