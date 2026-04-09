@@ -32,7 +32,29 @@ const Index = () => {
     hasSave, dbLoaded,
   } = useGameState(user);
 
-  // Sync active song with music engine
+  // Monday winner overlay
+  const [mondayWinner, setMondayWinner] = useState<{ house_color: string; house_name: string; house_emoji: string } | null>(null);
+
+  useEffect(() => {
+    const now = new Date();
+    if (now.getUTCDay() !== 1) return; // Only on Mondays
+    const day = now.getUTCDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    const monday = new Date(now);
+    monday.setUTCDate(now.getUTCDate() + diff);
+    const weekStart = monday.toISOString().split("T")[0];
+
+    supabase
+      .from("house_cup_winners")
+      .select("house_color, house_name, house_emoji")
+      .eq("week_start", weekStart)
+      .limit(1)
+      .then(({ data }) => {
+        if (data && data.length > 0) setMondayWinner(data[0] as any);
+      });
+  }, []);
+
+
   useEffect(() => {
     setSong(profile.activeSong || "default");
   }, [profile.activeSong]);
