@@ -15,9 +15,10 @@ import Shop from "@/components/game/Shop";
 import Feedback from "@/components/game/Feedback";
 import SettingsScreen from "@/components/game/SettingsScreen";
 import LevelIntro from "@/components/game/LevelIntro";
-import GameCanvas from "@/components/game/GameCanvas";
+import GameCanvas3D from "@/components/game/GameCanvas3D";
 import LevelComplete from "@/components/game/LevelComplete";
 import GameOver from "@/components/game/GameOver";
+import Tutorial from "@/components/game/Tutorial";
 
 const Index = () => {
   const { user, loading, signUp, signIn, signOut } = useAuth();
@@ -122,7 +123,7 @@ const Index = () => {
 
     case "house":
       return (
-        <HouseSelect onSelect={(id) => { selectHouse(id); setScreen("worldmap"); }} />
+        <HouseSelect onSelect={(id) => { selectHouse(id); setScreen("tutorial"); }} />
       );
 
     case "worldmap":
@@ -196,7 +197,7 @@ const Index = () => {
 
     case "playing":
       return (
-        <GameCanvas
+        <GameCanvas3D
           profile={profile}
           worldId={profile.currentWorld}
           levelIdx={profile.currentLevel}
@@ -206,6 +207,17 @@ const Index = () => {
           }}
           onDeath={() => setScreen("gameOver")}
           onBack={() => setScreen("worldmap")}
+        />
+      );
+
+    case "tutorial":
+      return (
+        <Tutorial
+          profile={profile}
+          onComplete={() => {
+            saveProfile({ ...profile, tutorialCompleted: true });
+            setScreen("worldmap");
+          }}
         />
       );
 

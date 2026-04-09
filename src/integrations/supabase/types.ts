@@ -56,6 +56,7 @@ export type Database = {
           lives: number
           pet_id: string | null
           purchased_upgrades: Json
+          tutorial_completed: boolean
           unlocked_pets: string[]
           updated_at: string
           user_id: string
@@ -75,6 +76,7 @@ export type Database = {
           lives?: number
           pet_id?: string | null
           purchased_upgrades?: Json
+          tutorial_completed?: boolean
           unlocked_pets?: string[]
           updated_at?: string
           user_id: string
@@ -94,6 +96,7 @@ export type Database = {
           lives?: number
           pet_id?: string | null
           purchased_upgrades?: Json
+          tutorial_completed?: boolean
           unlocked_pets?: string[]
           updated_at?: string
           user_id?: string
