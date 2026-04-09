@@ -480,59 +480,274 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       }
     }
 
+    // Helper: draw a mountain silhouette layer
+    function drawMountains(yBase: number, color: string, parallax: number, seed: number) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+      const scrollX = cameraX * parallax;
+      for (let x = -60; x <= W + 60; x += 30) {
+        const wx = x + scrollX;
+        const h1 = Math.sin(wx * 0.003 + seed) * 40 + Math.sin(wx * 0.008 + seed * 2) * 25 + Math.cos(wx * 0.015 + seed * 0.5) * 15;
+        ctx.lineTo(x, yBase - Math.abs(h1));
+      }
+      ctx.lineTo(W + 60, H);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // Helper: draw tree silhouettes
+    function drawTreeLine(yBase: number, color: string, parallax: number, count: number, seed: number) {
+      const scrollX = cameraX * parallax;
+      ctx.fillStyle = color;
+      for (let i = 0; i < count; i++) {
+        const tx = ((i * 137 + seed * 50) % (W + 100)) - 50;
+        const treeH = 25 + ((i * 73 + seed) % 30);
+        const treeW = 8 + ((i * 31 + seed) % 8);
+        const bx = tx - (scrollX % (W + 100));
+        const finalX = ((bx % (W + 100)) + W + 100) % (W + 100) - 50;
+        // Trunk
+        ctx.fillRect(finalX + treeW / 2 - 2, yBase - treeH * 0.3, 4, treeH * 0.3);
+        // Canopy (triangle)
+        ctx.beginPath();
+        ctx.moveTo(finalX, yBase - treeH * 0.3);
+        ctx.lineTo(finalX + treeW / 2, yBase - treeH);
+        ctx.lineTo(finalX + treeW, yBase - treeH * 0.3);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    // Helper: draw castle silhouette
+    function drawCastle(x: number, y: number, scale: number, color: string) {
+      ctx.fillStyle = color;
+      const s = scale;
+      // Main keep
+      ctx.fillRect(x, y - 40 * s, 30 * s, 40 * s);
+      // Towers
+      ctx.fillRect(x - 8 * s, y - 55 * s, 14 * s, 55 * s);
+      ctx.fillRect(x + 24 * s, y - 50 * s, 14 * s, 50 * s);
+      // Tower tops (pointed)
+      ctx.beginPath();
+      ctx.moveTo(x - 8 * s, y - 55 * s);
+      ctx.lineTo(x - 1 * s, y - 68 * s);
+      ctx.lineTo(x + 6 * s, y - 55 * s);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 24 * s, y - 50 * s);
+      ctx.lineTo(x + 31 * s, y - 63 * s);
+      ctx.lineTo(x + 38 * s, y - 50 * s);
+      ctx.closePath();
+      ctx.fill();
+      // Windows (lit)
+      ctx.fillStyle = "rgba(255,200,80,0.3)";
+      ctx.fillRect(x + 10 * s, y - 30 * s, 4 * s, 6 * s);
+      ctx.fillRect(x + 18 * s, y - 25 * s, 4 * s, 6 * s);
+      ctx.fillRect(x - 3 * s, y - 40 * s, 3 * s, 4 * s);
+      ctx.fillRect(x + 28 * s, y - 35 * s, 3 * s, 4 * s);
+    }
+
     function draw() {
       // Background
       if (isFlyingCar) {
-        // Sky gradient for flying
+        // Rich sky gradient for flying
         const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
-        skyGrad.addColorStop(0, "#0a1530");
-        skyGrad.addColorStop(0.4, "#1a2a50");
-        skyGrad.addColorStop(0.7, "#2a3a60");
+        skyGrad.addColorStop(0, "#020a20");
+        skyGrad.addColorStop(0.2, "#0a1540");
+        skyGrad.addColorStop(0.5, "#1a2a55");
+        skyGrad.addColorStop(0.75, "#2a3a65");
         skyGrad.addColorStop(1, "#1a3a2a");
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, W, H);
-        // Moon
+        // Moon with atmospheric glow
+        ctx.save();
+        ctx.fillStyle = "rgba(255,240,200,0.03)";
+        ctx.beginPath(); ctx.arc(W - 80, 60, 80, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(255,240,200,0.06)";
+        ctx.beginPath(); ctx.arc(W - 80, 60, 50, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = "#e8e0c0";
-        ctx.beginPath();
-        ctx.arc(W - 80, 60, 25, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "rgba(255,240,200,0.05)";
-        ctx.beginPath();
-        ctx.arc(W - 80, 60, 50, 0, Math.PI * 2);
-        ctx.fill();
-        // Scrolling ground silhouette
+        ctx.beginPath(); ctx.arc(W - 80, 60, 25, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#f0e8d0";
+        ctx.beginPath(); ctx.arc(W - 78, 58, 20, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        // Scrolling hills (parallax layers)
+        drawMountains(H - 30, "rgba(10,30,15,0.8)", 0.1, 1);
+        drawMountains(H - 15, "rgba(8,20,10,0.9)", 0.2, 3);
+        // Ground silhouette with trees
         ctx.fillStyle = "#0a1a0a";
-        for (let i = -1; i < W / 60 + 2; i++) {
-          const gx = (i * 60 - (cameraX * 0.3) % 60);
+        for (let i = -1; i < W / 40 + 2; i++) {
+          const gx = (i * 40 - (cameraX * 0.3) % 40);
           const gh = 20 + ((i * 37 + 13) % 30);
-          ctx.fillRect(gx, H - gh, 60, gh);
+          ctx.fillRect(gx, H - gh, 42, gh);
         }
+        drawTreeLine(H - 20, "#0d1f0d", 0.25, 20, 7);
       } else {
         const [c1, c2] = theme.bgColors;
         const grad = ctx.createLinearGradient(0, 0, 0, H);
         grad.addColorStop(0, c1);
+        grad.addColorStop(0.3, c1);
+        grad.addColorStop(0.7, c2);
         grad.addColorStop(1, c2);
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
+
+        // Parallax background scenery based on world
+        if (worldId === 1) {
+          // Hogwarts silhouette
+          drawMountains(H * 0.7, "rgba(15,10,25,0.4)", 0.05, 0);
+          drawCastle(W * 0.7 - cameraX * 0.03, H * 0.65, 1.2, "rgba(20,15,30,0.35)");
+          drawCastle(W * 0.85 - cameraX * 0.04, H * 0.68, 0.8, "rgba(15,10,25,0.3)");
+          drawMountains(H * 0.8, "rgba(10,8,18,0.5)", 0.08, 5);
+          drawTreeLine(H * 0.82, "rgba(8,12,6,0.4)", 0.06, 15, 3);
+        } else if (worldId === 2) {
+          // Chamber - sewer/dungeon vibes with stalactites
+          for (let i = 0; i < 12; i++) {
+            const sx = ((i * 167 + 30) % W) - cameraX * 0.02;
+            const sh = 20 + (i * 43 % 35);
+            ctx.fillStyle = `rgba(30,40,25,${0.2 + (i % 3) * 0.1})`;
+            ctx.beginPath();
+            ctx.moveTo(sx - 6, 0);
+            ctx.lineTo(sx, sh);
+            ctx.lineTo(sx + 6, 0);
+            ctx.closePath();
+            ctx.fill();
+          }
+          drawMountains(H * 0.85, "rgba(15,20,10,0.3)", 0.04, 2);
+        } else if (worldId === 3) {
+          // Azkaban - cold, desolate
+          drawMountains(H * 0.6, "rgba(20,15,30,0.3)", 0.03, 1);
+          drawMountains(H * 0.75, "rgba(15,10,25,0.4)", 0.06, 4);
+          drawTreeLine(H * 0.78, "rgba(10,8,15,0.35)", 0.05, 12, 5);
+        } else if (worldId === 4) {
+          // Goblet of Fire - fiery, warm
+          drawMountains(H * 0.65, "rgba(30,15,5,0.3)", 0.04, 2);
+          drawMountains(H * 0.8, "rgba(25,10,0,0.4)", 0.07, 6);
+        } else if (worldId === 5) {
+          // Ministry - dark urban
+          for (let i = 0; i < 8; i++) {
+            const bx = ((i * 197 + 20) % W) - cameraX * 0.02;
+            const bh = 40 + (i * 47 % 50);
+            ctx.fillStyle = `rgba(15,15,25,${0.25 + (i % 3) * 0.08})`;
+            ctx.fillRect(bx, H * 0.55 - bh, 35, bh + H * 0.45);
+            // Windows
+            ctx.fillStyle = `rgba(255,200,80,${0.08 + Math.sin(frameCount * 0.02 + i) * 0.04})`;
+            for (let wy = H * 0.55 - bh + 8; wy < H * 0.55; wy += 12) {
+              ctx.fillRect(bx + 6, wy, 4, 5);
+              ctx.fillRect(bx + 18, wy, 4, 5);
+            }
+          }
+        } else if (worldId === 6) {
+          drawMountains(H * 0.6, "rgba(10,25,25,0.3)", 0.03, 0);
+          drawCastle(W * 0.6 - cameraX * 0.02, H * 0.58, 1.5, "rgba(10,20,20,0.25)");
+          drawMountains(H * 0.75, "rgba(8,18,18,0.4)", 0.06, 3);
+        } else if (worldId === 7) {
+          // Deathly Hallows - ominous ruins
+          drawMountains(H * 0.55, "rgba(25,5,5,0.3)", 0.03, 1);
+          drawCastle(W * 0.3 - cameraX * 0.02, H * 0.52, 1.8, "rgba(20,5,5,0.2)");
+          drawMountains(H * 0.7, "rgba(18,3,3,0.4)", 0.05, 4);
+          drawTreeLine(H * 0.73, "rgba(15,5,5,0.3)", 0.04, 10, 9);
+        }
       }
 
-      // Stars
-      ctx.fillStyle = "rgba(255,255,255,0.3)";
-      for (let i = 0; i < 40; i++) {
-        const sx = ((i * 137 + 50) % W + frameCount * 0.1 * ((i % 3) - 1)) % W;
-        const sy = (i * 97 + 30) % (H * 0.6);
-        ctx.fillRect(sx, sy, 1.5, 1.5);
+      // Stars with twinkling
+      for (let i = 0; i < 60; i++) {
+        const sx = ((i * 137 + 50) % W + frameCount * 0.05 * ((i % 3) - 1)) % W;
+        const sy = (i * 97 + 30) % (H * 0.5);
+        const twinkle = 0.2 + Math.sin(frameCount * 0.03 + i * 1.7) * 0.15 + Math.sin(frameCount * 0.07 + i * 3.1) * 0.1;
+        ctx.globalAlpha = twinkle;
+        const starSize = 1 + (i % 4 === 0 ? 1 : 0);
+        ctx.fillStyle = i % 7 === 0 ? "#aaccff" : i % 11 === 0 ? "#ffe8aa" : "#ffffff";
+        ctx.beginPath();
+        ctx.arc(sx, sy, starSize, 0, Math.PI * 2);
+        ctx.fill();
       }
+      ctx.globalAlpha = 1;
 
-      // Ambient particles (theme-specific)
+      // Ambient particles (theme-specific, enhanced)
       if (theme.ambientParticles) {
-        ctx.fillStyle = theme.ambientParticles.color;
         for (let i = 0; i < theme.ambientParticles.count; i++) {
-          const ax = ((i * 211 + frameCount * 0.3) % W);
-          const ay = ((i * 173 + frameCount * 0.2) % H);
-          ctx.globalAlpha = 0.3 + Math.sin(frameCount * 0.05 + i) * 0.2;
+          const ax = ((i * 211 + frameCount * 0.4) % W);
+          const ay = ((i * 173 + Math.sin(frameCount * 0.02 + i * 2) * 20 + frameCount * 0.15) % H);
+          const pulse = 0.25 + Math.sin(frameCount * 0.04 + i * 1.3) * 0.2;
+          ctx.globalAlpha = pulse;
+          // Glow
+          ctx.fillStyle = theme.ambientParticles.color;
+          ctx.beginPath();
+          ctx.arc(ax, ay, 5, 0, Math.PI * 2);
+          ctx.fill();
+          // Core
+          ctx.globalAlpha = pulse + 0.2;
           ctx.beginPath();
           ctx.arc(ax, ay, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      // Floating candles for Hogwarts worlds
+      if (worldId === 1 && !isFlyingCar) {
+        for (let i = 0; i < 8; i++) {
+          const cx = ((i * 193 + 40 + frameCount * 0.1) % (W + 40)) - 20;
+          const cy = 30 + (i * 71 % 60) + Math.sin(frameCount * 0.025 + i * 2) * 8;
+          // Candle body
+          ctx.fillStyle = "rgba(240,220,180,0.4)";
+          ctx.fillRect(cx - 1.5, cy, 3, 10);
+          // Flame
+          const flicker = Math.sin(frameCount * 0.15 + i * 3) * 1.5;
+          ctx.fillStyle = "rgba(255,180,40,0.5)";
+          ctx.beginPath();
+          ctx.ellipse(cx, cy - 2 + flicker, 2.5, 4, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "rgba(255,240,120,0.3)";
+          ctx.beginPath();
+          ctx.arc(cx, cy - 1, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Fireflies for forest worlds (3, 6)
+      if ((worldId === 3 || worldId === 6) && !isFlyingCar) {
+        for (let i = 0; i < 12; i++) {
+          const fx = ((i * 179 + frameCount * 0.3) % W);
+          const fy = H * 0.3 + ((i * 131) % (H * 0.5)) + Math.sin(frameCount * 0.03 + i) * 15;
+          const brightness = 0.15 + Math.sin(frameCount * 0.06 + i * 2.7) * 0.15;
+          ctx.globalAlpha = brightness;
+          ctx.fillStyle = worldId === 3 ? "#aaccff" : "#aaffaa";
+          ctx.beginPath();
+          ctx.arc(fx, fy, 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = brightness * 0.4;
+          ctx.beginPath();
+          ctx.arc(fx, fy, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      // Embers for fire world (4)
+      if (worldId === 4 && !isFlyingCar) {
+        for (let i = 0; i < 10; i++) {
+          const ex = ((i * 157 + frameCount * 0.5) % W);
+          const ey = H - ((frameCount * 0.8 + i * 97) % H);
+          ctx.globalAlpha = 0.3 + Math.sin(frameCount * 0.1 + i) * 0.15;
+          ctx.fillStyle = i % 3 === 0 ? "#ff6030" : "#ffaa40";
+          ctx.beginPath();
+          ctx.arc(ex, ey, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+
+      // Dark mist for world 7
+      if (worldId === 7 && !isFlyingCar) {
+        for (let i = 0; i < 5; i++) {
+          const mx = ((i * 223 + frameCount * 0.15) % (W + 200)) - 100;
+          const my = H * 0.7 + (i * 37 % 40);
+          ctx.globalAlpha = 0.06 + Math.sin(frameCount * 0.01 + i) * 0.03;
+          ctx.fillStyle = "#2a0000";
+          ctx.beginPath();
+          ctx.ellipse(mx, my, 80, 15, 0, 0, Math.PI * 2);
           ctx.fill();
         }
         ctx.globalAlpha = 1;
@@ -673,7 +888,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.fill();
           ctx.restore();
         } else {
-          // Improved platform rendering with rounded corners and gradients
+          // Enhanced platform rendering with depth, textures, and glow
           const colors: Record<string, string> = {
             normal: theme.platformColor,
             moving: "#3a4a6a",
@@ -686,42 +901,116 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           const baseColor = p.color || colors[p.type] || theme.platformColor;
           const radius = Math.min(6, p.h / 2, p.w / 4);
 
-          // Platform body with rounded rect
+          // Drop shadow
+          ctx.save();
+          ctx.globalAlpha = 0.2;
+          ctx.fillStyle = "#000";
+          ctx.beginPath();
+          ctx.roundRect(p.x + 2, p.y + 3, p.w, p.h, radius);
+          ctx.fill();
+          ctx.restore();
+
+          // Platform body with gradient
+          const platGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + p.h);
+          platGrad.addColorStop(0, baseColor);
+          platGrad.addColorStop(1, shadeColor(baseColor.startsWith("rgba") || baseColor.startsWith("rgb") ? "#4a4a4a" : baseColor, -25));
           ctx.beginPath();
           ctx.roundRect(p.x, p.y, p.w, p.h, radius);
-          ctx.fillStyle = baseColor;
+          ctx.fillStyle = platGrad;
           ctx.fill();
 
-          // Top highlight (subtle gradient feel)
+          // Top highlight stripe
           ctx.beginPath();
           ctx.roundRect(p.x, p.y, p.w, Math.min(4, p.h / 2), [radius, radius, 0, 0]);
           ctx.fillStyle = p.type === "finish" ? "#ffd700" : p.type === "hazard" ? "#ff4040" : theme.platformHighlight;
-          ctx.globalAlpha = 0.6;
+          ctx.globalAlpha = 0.7;
           ctx.fill();
           ctx.globalAlpha = 1;
 
-          // Subtle border
+          // Surface texture lines (stone/brick feel)
+          if (p.w > 30 && p.type !== "hazard" && p.type !== "finish") {
+            ctx.strokeStyle = "rgba(255,255,255,0.06)";
+            ctx.lineWidth = 0.5;
+            for (let lx = p.x + 12; lx < p.x + p.w - 5; lx += 15) {
+              ctx.beginPath();
+              ctx.moveTo(lx, p.y + 2);
+              ctx.lineTo(lx, p.y + p.h - 2);
+              ctx.stroke();
+            }
+          }
+
+          // Moving platform shimmer
+          if (p.type === "moving") {
+            ctx.globalAlpha = 0.12 + Math.sin(frameCount * 0.08) * 0.05;
+            ctx.fillStyle = "#88aaff";
+            ctx.beginPath();
+            ctx.roundRect(p.x, p.y, p.w, p.h, radius);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          }
+
+          // Ice platform sparkle
+          if (p.type === "ice") {
+            for (let si = 0; si < 3; si++) {
+              const sparkX = p.x + 10 + (si * 31 % (p.w - 20));
+              const sparkY = p.y + 3 + (si * 7 % (p.h - 4));
+              ctx.globalAlpha = 0.4 + Math.sin(frameCount * 0.12 + si * 2) * 0.3;
+              ctx.fillStyle = "#fff";
+              ctx.beginPath();
+              ctx.arc(sparkX, sparkY, 1.5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+          }
+
+          // Border
+          ctx.strokeStyle = "rgba(255,255,255,0.08)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.roundRect(p.x, p.y, p.w, p.h, radius);
+          ctx.stroke();
+
+          // Finish platform — golden glow + pulsing aura
           if (p.type === "finish") {
             ctx.strokeStyle = "#ffd700";
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.roundRect(p.x, p.y, p.w, p.h, radius);
             ctx.stroke();
-            // Glow
+            // Pulsing glow
+            ctx.save();
+            ctx.globalAlpha = 0.15 + Math.sin(frameCount * 0.06) * 0.1;
             ctx.shadowColor = "#ffd700";
-            ctx.shadowBlur = 12;
-            ctx.strokeStyle = "rgba(255,215,0,0.3)";
-            ctx.stroke();
-            ctx.shadowBlur = 0;
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = "#ffd700";
+            ctx.beginPath();
+            ctx.roundRect(p.x - 4, p.y - 4, p.w + 8, p.h + 8, radius + 2);
+            ctx.fill();
+            ctx.restore();
+          }
+
+          // Hazard platform — danger glow
+          if (p.type === "hazard") {
+            ctx.save();
+            ctx.globalAlpha = 0.1 + Math.sin(frameCount * 0.1) * 0.06;
+            ctx.fillStyle = "#ff2020";
+            ctx.beginPath();
+            ctx.roundRect(p.x - 2, p.y - 2, p.w + 4, p.h + 4, radius + 1);
+            ctx.fill();
+            ctx.restore();
           }
         }
 
         // Labels for finish, hazards, dock
         if (p.type === "finish") {
+          ctx.save();
           ctx.fillStyle = "#ffd700";
-          ctx.font = "14px Fredoka, sans-serif";
+          ctx.font = "bold 14px Fredoka, sans-serif";
           ctx.textAlign = "center";
-          ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 8);
+          ctx.shadowColor = "#ffd700";
+          ctx.shadowBlur = 8;
+          ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 10);
+          ctx.restore();
         } else if (p.label && !isBoatPlatform) {
           ctx.font = "11px serif";
           ctx.textAlign = "center";
@@ -1009,33 +1298,43 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
       ctx.restore();
 
+      // Vignette effect (subtle darkening at edges)
+      const vignetteGrad = ctx.createRadialGradient(W / 2, H / 2, W * 0.35, W / 2, H / 2, W * 0.75);
+      vignetteGrad.addColorStop(0, "rgba(0,0,0,0)");
+      vignetteGrad.addColorStop(1, "rgba(0,0,0,0.35)");
+      ctx.fillStyle = vignetteGrad;
+      ctx.fillRect(0, 0, W, H);
+
       // Dark level overlay (Troll Dungeon - Lumos effect)
       if (isDark) {
-        // Create a radial gradient centered on the player (screen space)
         const playerScreenX = px - cameraX + PLAYER_W / 2;
         const playerScreenY = py + cameraY + PLAYER_H / 2;
-        const gradient = ctx.createRadialGradient(playerScreenX, playerScreenY, 30, playerScreenX, playerScreenY, 150);
+        const gradient = ctx.createRadialGradient(playerScreenX, playerScreenY, 40, playerScreenX, playerScreenY, 170);
         gradient.addColorStop(0, "rgba(0,0,0,0)");
-        gradient.addColorStop(0.5, "rgba(0,0,0,0.6)");
-        gradient.addColorStop(1, "rgba(0,0,0,0.92)");
+        gradient.addColorStop(0.4, "rgba(0,0,0,0.5)");
+        gradient.addColorStop(1, "rgba(0,0,0,0.94)");
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, W, H);
 
-        // Lumos glow around player
+        // Warm Lumos glow
         ctx.save();
-        ctx.globalAlpha = 0.15 + Math.sin(frameCount * 0.08) * 0.05;
+        ctx.globalAlpha = 0.12 + Math.sin(frameCount * 0.08) * 0.05;
         ctx.fillStyle = "#fffae0";
         ctx.beginPath();
-        ctx.arc(playerScreenX, playerScreenY, 40, 0, Math.PI * 2);
+        ctx.arc(playerScreenX, playerScreenY, 50, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 0.06;
+        ctx.fillStyle = "#ffcc40";
+        ctx.beginPath();
+        ctx.arc(playerScreenX, playerScreenY, 80, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
-        // Lumos label
         ctx.fillStyle = "#fffae0";
-        ctx.globalAlpha = 0.6;
+        ctx.globalAlpha = 0.5;
         ctx.font = "10px Fredoka, sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("✨ Lumos", playerScreenX, playerScreenY - 50);
+        ctx.fillText("✨ Lumos", playerScreenX, playerScreenY - 55);
         ctx.globalAlpha = 1;
       }
 
