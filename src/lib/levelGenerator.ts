@@ -79,77 +79,87 @@ export interface LevelTheme {
 export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
   if (worldId === 1) {
     switch (levelIdx) {
-      case 0: return { // Hogwarts Arrival - boat across Black Lake
-        bgColors: ["#050a14", "#0a1525"],
-        platformColor: "#5a3a1a",
-        platformHighlight: "#8a6a3a",
-        ambientParticles: { color: "hsl(200, 60%, 40%)", count: 6 },
-      };
-      case 1: return { // Staircase Maze - vertical, grey stone
-        bgColors: ["#0d0d15", "#15152a"],
-        platformColor: "#4a4a5a",
-        platformHighlight: "#7a7a8a",
-        ambientParticles: { color: "hsl(240, 30%, 50%)", count: 5 },
-      };
-      case 2: return { // Troll Dungeon - very dark green
-        bgColors: ["#050805", "#0a100a"],
-        platformColor: "#3a3a2a",
-        platformHighlight: "#5a5a4a",
-        ambientParticles: { color: "hsl(120, 40%, 30%)", count: 3 },
-      };
-      case 3: return { // Wizard Chess - black and white
-        bgColors: ["#0a0a0f", "#151520"],
-        platformColor: "#2a2a2a",
-        platformHighlight: "#e0e0e0",
-        ambientParticles: { color: "hsl(0, 0%, 80%)", count: 4 },
-      };
-      case 4: return { // Mirror of Erised - purple mystical
-        bgColors: ["#100a1a", "#1a0a2a"],
-        platformColor: "#4a3a5a",
-        platformHighlight: "#9a7ab0",
-        ambientParticles: { color: "hsl(280, 60%, 60%)", count: 10 },
-      };
+      case 0: return { bgColors: ["#050a14", "#0a1525"], platformColor: "#5a3a1a", platformHighlight: "#8a6a3a", ambientParticles: { color: "hsl(200, 60%, 40%)", count: 6 } };
+      case 1: return { bgColors: ["#0d0d15", "#15152a"], platformColor: "#4a4a5a", platformHighlight: "#7a7a8a", ambientParticles: { color: "hsl(240, 30%, 50%)", count: 5 } };
+      case 2: return { bgColors: ["#050805", "#0a100a"], platformColor: "#3a3a2a", platformHighlight: "#5a5a4a", ambientParticles: { color: "hsl(120, 40%, 30%)", count: 3 } };
+      case 3: return { bgColors: ["#0a0a0f", "#151520"], platformColor: "#2a2a2a", platformHighlight: "#e0e0e0", ambientParticles: { color: "hsl(0, 0%, 80%)", count: 4 } };
+      case 4: return { bgColors: ["#0a0808", "#151010"], platformColor: "#4a3a2a", platformHighlight: "#6a5a4a", ambientParticles: { color: "hsl(30, 40%, 40%)", count: 5 } };
+      case 5: return { bgColors: ["#050805", "#0a100a"], platformColor: "#2a4a2a", platformHighlight: "#4a6a4a", ambientParticles: { color: "hsl(120, 50%, 30%)", count: 4 } };
+      case 6: return { bgColors: ["#0a1020", "#152040"], platformColor: "#6a6a8a", platformHighlight: "#8a8aaa", ambientParticles: { color: "hsl(220, 40%, 60%)", count: 8 } };
+      case 7: return { bgColors: ["#0a0a10", "#10101a"], platformColor: "#3a4a3a", platformHighlight: "#5a6a5a", ambientParticles: { color: "hsl(160, 40%, 40%)", count: 5 } };
+      case 8: return { bgColors: ["#0a0510", "#15081a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(280, 40%, 40%)", count: 6 } };
+      case 9: return { bgColors: ["#100a1a", "#1a0a2a"], platformColor: "#4a3a5a", platformHighlight: "#9a7ab0", ambientParticles: { color: "hsl(280, 60%, 60%)", count: 10 } };
     }
   }
 
   // Per-world, per-level themes
   const worldThemes: Record<string, LevelTheme> = {
-    // World 2 - Chamber of Secrets (green/sewer tones)
+    // World 2 - Chamber of Secrets
     "2-0": { bgColors: ["#0a0f1a", "#151a25"], platformColor: "#5a4a3a", platformHighlight: "#8a7a5a", ambientParticles: { color: "hsl(40, 60%, 50%)", count: 5 } },
     "2-1": { bgColors: ["#0a1020", "#152040"], platformColor: "#8a8aaa", platformHighlight: "#b0b0d0", ambientParticles: { color: "hsl(220, 40%, 70%)", count: 8 } },
     "2-2": { bgColors: ["#1a1008", "#2a1a10"], platformColor: "#6a5030", platformHighlight: "#8a7050", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 5 } },
     "2-3": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#3a3a3a", platformHighlight: "#5a5a6a", ambientParticles: { color: "hsl(150, 40%, 40%)", count: 4 } },
-    "2-4": { bgColors: ["#0a1a0a", "#052a10"], platformColor: "#2a4a2a", platformHighlight: "#4a7a4a", ambientParticles: { color: "hsl(120, 60%, 40%)", count: 8 } },
-    // World 3 - Prisoner of Azkaban (cold purples/blues)
+    "2-4": { bgColors: ["#0a150a", "#0a200a"], platformColor: "#3a4a2a", platformHighlight: "#5a6a4a", ambientParticles: { color: "hsl(100, 40%, 35%)", count: 5 } },
+    "2-5": { bgColors: ["#08101a", "#101a25"], platformColor: "#3a5a6a", platformHighlight: "#5a7a8a", ambientParticles: { color: "hsl(200, 40%, 50%)", count: 6 } },
+    "2-6": { bgColors: ["#050a05", "#0a150a"], platformColor: "#2a3a2a", platformHighlight: "#4a5a4a", ambientParticles: { color: "hsl(120, 30%, 30%)", count: 4 } },
+    "2-7": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#2a3a3a", platformHighlight: "#4a5a5a", ambientParticles: { color: "hsl(150, 30%, 35%)", count: 4 } },
+    "2-8": { bgColors: ["#0a0a0f", "#101020"], platformColor: "#4a3a2a", platformHighlight: "#6a5a4a", ambientParticles: { color: "hsl(40, 40%, 40%)", count: 6 } },
+    "2-9": { bgColors: ["#0a1a0a", "#052a10"], platformColor: "#2a4a2a", platformHighlight: "#4a7a4a", ambientParticles: { color: "hsl(120, 60%, 40%)", count: 8 } },
+    // World 3 - Prisoner of Azkaban
     "3-0": { bgColors: ["#10081a", "#1a1030"], platformColor: "#5a4a6a", platformHighlight: "#8a7a9a", ambientParticles: { color: "hsl(270, 40%, 50%)", count: 6 } },
     "3-1": { bgColors: ["#0d0d15", "#15152a"], platformColor: "#5a5a6a", platformHighlight: "#8a8a9a", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 4 } },
     "3-2": { bgColors: ["#050a05", "#0a150a"], platformColor: "#2a3a1a", platformHighlight: "#4a5a3a", ambientParticles: { color: "hsl(100, 30%, 30%)", count: 3 } },
     "3-3": { bgColors: ["#081020", "#0a1a35"], platformColor: "#6a8aaa", platformHighlight: "#8ab0d0", ambientParticles: { color: "hsl(200, 50%, 60%)", count: 7 } },
-    "3-4": { bgColors: ["#0a0a1a", "#0a0a2a"], platformColor: "#3a2a4a", platformHighlight: "#5a4a6a", ambientParticles: { color: "hsl(260, 50%, 40%)", count: 10 } },
-    // World 4 - Goblet of Fire (warm oranges/reds)
+    "3-4": { bgColors: ["#0a1020", "#152040"], platformColor: "#6a6a8a", platformHighlight: "#8a8aaa", ambientParticles: { color: "hsl(220, 40%, 60%)", count: 7 } },
+    "3-5": { bgColors: ["#0a0510", "#15081a"], platformColor: "#3a2a3a", platformHighlight: "#5a4a5a", ambientParticles: { color: "hsl(300, 30%, 35%)", count: 4 } },
+    "3-6": { bgColors: ["#0a0a0f", "#151520"], platformColor: "#4a4a5a", platformHighlight: "#6a6a7a", ambientParticles: { color: "hsl(240, 20%, 40%)", count: 5 } },
+    "3-7": { bgColors: ["#050a05", "#0a150a"], platformColor: "#3a3a2a", platformHighlight: "#5a5a4a", ambientParticles: { color: "hsl(100, 30%, 30%)", count: 3 } },
+    "3-8": { bgColors: ["#0a0810", "#15101a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(270, 40%, 45%)", count: 6 } },
+    "3-9": { bgColors: ["#0a0a1a", "#0a0a2a"], platformColor: "#3a2a4a", platformHighlight: "#5a4a6a", ambientParticles: { color: "hsl(260, 50%, 40%)", count: 10 } },
+    // World 4 - Goblet of Fire
     "4-0": { bgColors: ["#1a0a00", "#2a1505"], platformColor: "#5a3a1a", platformHighlight: "#8a5a3a", ambientParticles: { color: "hsl(20, 70%, 50%)", count: 6 } },
     "4-1": { bgColors: ["#0a0a15", "#15152a"], platformColor: "#5a5a5a", platformHighlight: "#8a8a8a", ambientParticles: { color: "hsl(200, 20%, 50%)", count: 4 } },
     "4-2": { bgColors: ["#051020", "#0a1a35"], platformColor: "#3a5a7a", platformHighlight: "#5a8aaa", ambientParticles: { color: "hsl(200, 50%, 40%)", count: 8 } },
     "4-3": { bgColors: ["#0a0808", "#151010"], platformColor: "#3a3a3a", platformHighlight: "#5a5a5a", ambientParticles: { color: "hsl(0, 0%, 30%)", count: 3 } },
-    "4-4": { bgColors: ["#1a0a00", "#2a1500"], platformColor: "#5a3a1a", platformHighlight: "#7a5a3a", ambientParticles: { color: "hsl(15, 80%, 50%)", count: 10 } },
-    // World 5 - Order of the Phoenix (dark blues/greys)
+    "4-4": { bgColors: ["#1a100a", "#2a1a10"], platformColor: "#6a5a3a", platformHighlight: "#8a7a5a", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 5 } },
+    "4-5": { bgColors: ["#0a100a", "#0a1a0a"], platformColor: "#2a4a2a", platformHighlight: "#4a6a4a", ambientParticles: { color: "hsl(120, 40%, 35%)", count: 5 } },
+    "4-6": { bgColors: ["#051020", "#0a1a35"], platformColor: "#3a5a7a", platformHighlight: "#5a8aaa", ambientParticles: { color: "hsl(200, 40%, 40%)", count: 7 } },
+    "4-7": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(280, 40%, 45%)", count: 6 } },
+    "4-8": { bgColors: ["#100a10", "#1a0a1a"], platformColor: "#5a3a5a", platformHighlight: "#7a5a7a", ambientParticles: { color: "hsl(300, 40%, 45%)", count: 7 } },
+    "4-9": { bgColors: ["#1a0a00", "#2a1500"], platformColor: "#5a3a1a", platformHighlight: "#7a5a3a", ambientParticles: { color: "hsl(15, 80%, 50%)", count: 10 } },
+    // World 5 - Order of the Phoenix
     "5-0": { bgColors: ["#080810", "#10101a"], platformColor: "#3a3a4a", platformHighlight: "#5a5a7a", ambientParticles: { color: "hsl(230, 30%, 50%)", count: 5 } },
     "5-1": { bgColors: ["#060608", "#0a0a10"], platformColor: "#2a2a3a", platformHighlight: "#4a4a5a", ambientParticles: { color: "hsl(270, 40%, 40%)", count: 4 } },
     "5-2": { bgColors: ["#0a0a15", "#151525"], platformColor: "#4a4a5a", platformHighlight: "#6a6a8a", ambientParticles: { color: "hsl(45, 60%, 50%)", count: 6 } },
     "5-3": { bgColors: ["#0a0508", "#150a10"], platformColor: "#4a3a3a", platformHighlight: "#6a5a5a", ambientParticles: { color: "hsl(0, 50%, 40%)", count: 8 } },
-    "5-4": { bgColors: ["#0a0a2a", "#001030"], platformColor: "#2a2a5a", platformHighlight: "#4a4a7a", ambientParticles: { color: "hsl(240, 50%, 50%)", count: 10 } },
-    // World 6 - Half-Blood Prince (dark greens/teals)
+    "5-4": { bgColors: ["#0a0810", "#15101a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(280, 40%, 45%)", count: 5 } },
+    "5-5": { bgColors: ["#1a1008", "#2a1a10"], platformColor: "#5a4a3a", platformHighlight: "#7a6a5a", ambientParticles: { color: "hsl(330, 40%, 50%)", count: 6 } },
+    "5-6": { bgColors: ["#0a1020", "#152040"], platformColor: "#6a6a8a", platformHighlight: "#8a8aaa", ambientParticles: { color: "hsl(220, 40%, 60%)", count: 7 } },
+    "5-7": { bgColors: ["#0a0508", "#150a10"], platformColor: "#3a2a3a", platformHighlight: "#5a4a5a", ambientParticles: { color: "hsl(300, 30%, 35%)", count: 4 } },
+    "5-8": { bgColors: ["#0a0a15", "#151525"], platformColor: "#4a4a5a", platformHighlight: "#6a6a8a", ambientParticles: { color: "hsl(45, 60%, 50%)", count: 7 } },
+    "5-9": { bgColors: ["#0a0a2a", "#001030"], platformColor: "#2a2a5a", platformHighlight: "#4a4a7a", ambientParticles: { color: "hsl(240, 50%, 50%)", count: 10 } },
+    // World 6 - Half-Blood Prince
     "6-0": { bgColors: ["#050a0a", "#0a1515"], platformColor: "#2a4a4a", platformHighlight: "#4a6a6a", ambientParticles: { color: "hsl(160, 40%, 40%)", count: 5 } },
     "6-1": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#4a4a5a", platformHighlight: "#6a6a8a", ambientParticles: { color: "hsl(240, 20%, 50%)", count: 4 } },
     "6-2": { bgColors: ["#050505", "#0a0a0a"], platformColor: "#2a2a2a", platformHighlight: "#4a4a4a", ambientParticles: { color: "hsl(0, 0%, 25%)", count: 2 } },
     "6-3": { bgColors: ["#050a10", "#0a1520"], platformColor: "#3a4a5a", platformHighlight: "#5a7a8a", ambientParticles: { color: "hsl(200, 30%, 35%)", count: 6 } },
-    "6-4": { bgColors: ["#0a1a1a", "#001a20"], platformColor: "#2a4a4a", platformHighlight: "#4a6a6a", ambientParticles: { color: "hsl(180, 40%, 30%)", count: 8 } },
-    // World 7 - Deathly Hallows (dark reds/blacks)
+    "6-4": { bgColors: ["#1a100a", "#2a1a10"], platformColor: "#6a5a3a", platformHighlight: "#8a7a5a", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 5 } },
+    "6-5": { bgColors: ["#08101a", "#101a25"], platformColor: "#3a5a6a", platformHighlight: "#5a7a8a", ambientParticles: { color: "hsl(200, 40%, 50%)", count: 6 } },
+    "6-6": { bgColors: ["#0a0810", "#15101a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(280, 40%, 45%)", count: 5 } },
+    "6-7": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#4a4a5a", platformHighlight: "#6a6a8a", ambientParticles: { color: "hsl(240, 20%, 50%)", count: 5 } },
+    "6-8": { bgColors: ["#0a0a0f", "#151520"], platformColor: "#4a4a5a", platformHighlight: "#6a6a7a", ambientParticles: { color: "hsl(200, 30%, 40%)", count: 5 } },
+    "6-9": { bgColors: ["#0a1a1a", "#001a20"], platformColor: "#2a4a4a", platformHighlight: "#4a6a6a", ambientParticles: { color: "hsl(180, 40%, 30%)", count: 8 } },
+    // World 7 - Deathly Hallows
     "7-0": { bgColors: ["#100505", "#1a0a0a"], platformColor: "#4a2a2a", platformHighlight: "#6a4a4a", ambientParticles: { color: "hsl(0, 40%, 35%)", count: 4 } },
     "7-1": { bgColors: ["#0a0808", "#150f0f"], platformColor: "#4a4a4a", platformHighlight: "#6a6a6a", ambientParticles: { color: "hsl(0, 30%, 40%)", count: 5 } },
     "7-2": { bgColors: ["#0a0a15", "#15152a"], platformColor: "#5a5a7a", platformHighlight: "#8a8aaa", ambientParticles: { color: "hsl(0, 60%, 50%)", count: 6 } },
     "7-3": { bgColors: ["#0a0505", "#150808"], platformColor: "#4a3a3a", platformHighlight: "#6a5a5a", ambientParticles: { color: "hsl(0, 50%, 40%)", count: 8 } },
-    "7-4": { bgColors: ["#1a0000", "#0a0000"], platformColor: "#4a1a1a", platformHighlight: "#6a3a3a", ambientParticles: { color: "hsl(0, 70%, 45%)", count: 12 } },
+    "7-4": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#3a3a4a", platformHighlight: "#5a5a6a", ambientParticles: { color: "hsl(230, 30%, 40%)", count: 4 } },
+    "7-5": { bgColors: ["#1a0a00", "#2a1500"], platformColor: "#5a3a1a", platformHighlight: "#7a5a3a", ambientParticles: { color: "hsl(15, 70%, 45%)", count: 7 } },
+    "7-6": { bgColors: ["#050a05", "#0a150a"], platformColor: "#2a3a1a", platformHighlight: "#4a5a3a", ambientParticles: { color: "hsl(100, 30%, 30%)", count: 3 } },
+    "7-7": { bgColors: ["#0a0508", "#150a10"], platformColor: "#4a3a3a", platformHighlight: "#6a5a5a", ambientParticles: { color: "hsl(0, 40%, 35%)", count: 5 } },
+    "7-8": { bgColors: ["#0a0808", "#151010"], platformColor: "#4a3a3a", platformHighlight: "#6a5a5a", ambientParticles: { color: "hsl(0, 50%, 40%)", count: 8 } },
+    "7-9": { bgColors: ["#1a0000", "#0a0000"], platformColor: "#4a1a1a", platformHighlight: "#6a3a3a", ambientParticles: { color: "hsl(0, 70%, 45%)", count: 12 } },
   };
 
   const key = `${worldId}-${levelIdx}`;
@@ -492,7 +502,7 @@ export function generateLevel(worldId: number, levelIdx: number, canvasW: number
       case 1: data = gen_1_2_StaircaseMaze(canvasH); break;
       case 2: data = gen_1_3_TrollDungeon(canvasH); break;
       case 3: data = gen_1_4_WizardChess(canvasH); break;
-      case 4: data = gen_1_5_MirrorOfErised(canvasH); break;
+      case 9: data = gen_1_5_MirrorOfErised(canvasH); break;
       default: data = generateGenericLevel(worldId, levelIdx, canvasW, canvasH); break;
     }
   } else {
@@ -510,7 +520,7 @@ export function generateLevel(worldId: number, levelIdx: number, canvasW: number
 }
 
 function generateGenericLevel(worldId: number, levelIdx: number, canvasW: number, canvasH: number): LevelData {
-  const isBoss = levelIdx === 4;
+  const isBoss = levelIdx === 9;
 
   // Boss levels get an arena with spell combat
   if (isBoss) {

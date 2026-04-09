@@ -898,30 +898,66 @@ function gen_7_4_FinalClimb(H: number): LevelData {
 
 export function getWorldLevelGenerator(worldId: number, levelIdx: number, H: number): LevelData | null {
   const generators: Record<string, (H: number) => LevelData> = {
+    // World 2
     "2-0": gen_2_1_DiagonAlley,
     "2-1": gen_2_2_FlyingEscape,
     "2-2": gen_2_3_DetentionLockhart,
     "2-3": gen_2_4_ChamberDoors,
+    "2-4": gen_2_5_WhompingWillow,
+    "2-5": gen_2_6_MoaningMyrtleBathroom,
+    "2-6": gen_2_7_AragogLair,
+    "2-7": gen_2_8_ParseltonguePipes,
+    "2-8": gen_2_9_SwordOfGryffindor,
+    // World 3
     "3-0": gen_3_1_TimePlatforms,
     "3-1": gen_3_2_ClockTower,
     "3-2": gen_3_3_ForestRun,
     "3-3": gen_3_4_IceLake,
+    "3-4": gen_3_5_HippogriffFlight,
+    "3-5": gen_3_6_ShriekingShack,
+    "3-6": gen_3_7_MaraudersMap,
+    "3-7": gen_3_8_WillowTunnel,
+    "3-8": gen_3_9_PatronusTraining,
+    // World 4
     "4-0": gen_4_1_DragonArena,
     "4-1": gen_4_2_CliffJumps,
     "4-2": gen_4_3_UnderwaterMaze,
     "4-3": gen_4_4_Graveyard,
+    "4-4": gen_4_5_YuleBall,
+    "4-5": gen_4_6_TriwizardMaze,
+    "4-6": gen_4_7_MerpeopleVillage,
+    "4-7": gen_4_8_PortkeyField,
+    "4-8": gen_4_9_WandPriori,
+    // World 5
     "5-0": gen_5_1_MinistryHall,
     "5-1": gen_5_2_ProphecyRoom,
     "5-2": gen_5_3_TrainingPuzzles,
     "5-3": gen_5_4_ChaosCorridor,
+    "5-4": gen_5_5_RoomOfRequirement,
+    "5-5": gen_5_6_UmbridgeOffice,
+    "5-6": gen_5_7_ThestralFlight,
+    "5-7": gen_5_8_VeilChamber,
+    "5-8": gen_5_9_DumbledoresArmy,
+    // World 6
     "6-0": gen_6_1_PotionPuzzle,
     "6-1": gen_6_2_TowerJumps,
     "6-2": gen_6_3_DarkCorridor,
     "6-3": gen_6_4_InferiLake,
+    "6-4": gen_6_5_SlugClubParty,
+    "6-5": gen_6_6_Sectumsempra,
+    "6-6": gen_6_7_PensieveMemories,
+    "6-7": gen_6_8_LightningTower,
+    "6-8": gen_6_9_FelixFelicis,
+    // World 7
     "7-0": gen_7_1_EscapeRun,
     "7-1": gen_7_2_RuinedHogwarts,
     "7-2": gen_7_3_HardFlying,
     "7-3": gen_7_4_FinalClimb,
+    "7-4": gen_7_5_GringottsVault,
+    "7-5": gen_7_6_RoomOfHiddenThings,
+    "7-6": gen_7_7_ForbiddenForestWalk,
+    "7-7": gen_7_8_ElderWandChase,
+    "7-8": gen_7_9_BattleOfHogwarts,
   };
 
   const key = `${worldId}-${levelIdx}`;
