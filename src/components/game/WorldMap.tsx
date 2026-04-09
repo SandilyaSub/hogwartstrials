@@ -67,9 +67,50 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={toggleTheme} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground">
-                {theme === "dark" ? "☀️" : "🌙"}
-              </button>
+              <div className="relative" ref={themeMenuRef}>
+                <button
+                  onClick={() => setShowThemeMenu(v => !v)}
+                  className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground"
+                >
+                  🎨
+                </button>
+                {showThemeMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-card border border-border shadow-lg z-50 p-2 space-y-1 animate-pop-in">
+                    <p className="text-xs text-muted-foreground font-display px-2 py-1">Mode</p>
+                    <button
+                      onClick={() => { toggleTheme(); }}
+                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-2 text-sm font-body text-foreground"
+                    >
+                      {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
+                    </button>
+                    {purchasedThemes.length > 0 && (
+                      <>
+                        <div className="border-t border-border my-1" />
+                        <p className="text-xs text-muted-foreground font-display px-2 py-1">Color Themes</p>
+                        <button
+                          onClick={() => { onActivateTheme?.(""); setShowThemeMenu(false); }}
+                          className={`w-full text-left px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-2 text-sm font-body ${
+                            !profile.activeTheme ? "text-primary font-semibold bg-primary/8" : "text-foreground"
+                          }`}
+                        >
+                          🌑 Default
+                        </button>
+                        {purchasedThemes.map(t => (
+                          <button
+                            key={t.id}
+                            onClick={() => { onActivateTheme?.(t.id); setShowThemeMenu(false); }}
+                            className={`w-full text-left px-3 py-2 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-2 text-sm font-body ${
+                              profile.activeTheme === t.id ? "text-primary font-semibold bg-primary/8" : "text-foreground"
+                            }`}
+                          >
+                            {t.emoji} {t.name}
+                          </button>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
               <button onClick={onOpenPetStore} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
                 🐾
               </button>
