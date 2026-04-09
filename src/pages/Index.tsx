@@ -116,7 +116,7 @@ const Index = () => {
   const currentWorld = WORLDS[profile.currentWorld - 1];
   const currentLevel = currentWorld?.levels[profile.currentLevel];
 
-  switch (screen) {
+  const renderScreen = () => { switch (screen) {
     case "auth":
       return (
         <AuthScreen onAuth={async (email, password, isSignUp) => {
@@ -285,7 +285,22 @@ const Index = () => {
 
     default:
       return null;
-  }
+  }};
+
+  return (
+    <>
+      {mondayWinner && (
+        <div
+          className="fixed inset-0 pointer-events-none z-50"
+          style={{
+            background: `radial-gradient(ellipse at top, ${mondayWinner.house_color}18 0%, transparent 60%)`,
+            borderTop: `3px solid ${mondayWinner.house_color}60`,
+          }}
+        />
+      )}
+      {renderScreen()}
+    </>
+  );
 };
 
 export default Index;
