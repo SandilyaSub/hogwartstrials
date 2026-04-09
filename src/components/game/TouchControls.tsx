@@ -5,105 +5,129 @@ interface TouchControlsProps {
 }
 
 const TouchControls = ({ keysRef }: TouchControlsProps) => {
-  const joystickRef = useRef<HTMLDivElement>(null);
   const [joystickPos, setJoystickPos] = useState({ x: 0, y: 0 });
-  const [touching, setTouching] = useState(false);
-  const centerRef = useRef({ x: 0, y: 0 });
+  const [joystickOrigin, setJoystickOrigin] = useState<{ x: number; y: number } | null>(null);
+  const [jumping, setJumping] = useState(false);
+  const originRef = useRef({ x: 0, y: 0 });
+  const activeTouch = useRef<number | null>(null);
 
-  const handleJoystickStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    const touch = e.touches[0];
-    const rect = joystickRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    centerRef.current = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-    setTouching(true);
-    updateJoystick(touch.clientX, touch.clientY);
-  }, []);
+  const maxDist = 50;
+  const threshold = 12;
 
-  const handleJoystickMove = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    if (!touching) return;
-    const touch = e.touches[0];
-    updateJoystick(touch.clientX, touch.clientY);
-  }, [touching]);
-
-  const handleJoystickEnd = useCallback(() => {
-    setTouching(false);
-    setJoystickPos({ x: 0, y: 0 });
+  const updateKeys = useCallback((dx: number, dy: number) => {
     keysRef.current.delete("a");
     keysRef.current.delete("d");
     keysRef.current.delete("w");
     keysRef.current.delete("s");
-  }, [keysRef]);
-
-  const updateJoystick = useCallback((cx: number, cy: number) => {
-    const center = centerRef.current;
-    const maxDist = 40;
-    let dx = cx - center.x;
-    let dy = cy - center.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist > maxDist) { dx = (dx / dist) * maxDist; dy = (dy / dist) * maxDist; }
-
-    setJoystickPos({ x: dx, y: dy });
-
-    // Map to keys
-    const threshold = 15;
-    keysRef.current.delete("a");
-    keysRef.current.delete("d");
-    keysRef.current.delete("w");
-    keysRef.current.delete("s");
-
     if (dx < -threshold) keysRef.current.add("a");
     if (dx > threshold) keysRef.current.add("d");
     if (dy < -threshold) keysRef.current.add("w");
     if (dy > threshold) keysRef.current.add("s");
+  }, [keysRef, threshold]);
+
+  const handleLeftTouchStart = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    const touch = e.changedTouches[0];
+    activeTouch.current = touch.identifier;
+    originRef.current = { x: touch.clientX, y: touch.clientY };
+    setJoystickOrigin({ x: touch.clientX, y: touch.clientY });
+    setJoystickPos({ x: 0, y: 0 });
+  }, []);
+
+  const handleLeftTouchMove = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const touch = e.changedTouches[i];
+      if (touch.identifier !== activeTouch.current) continue;
+      const center = originRef.current;
+      let dx = touch.clientX - center.x;
+      let dy = touch.clientY - center.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > maxDist) { dx = (dx / dist) * maxDist; dy = (dy / dist) * maxDist; }
+      setJoystickPos({ x: dx, y: dy });
+      updateKeys(dx, dy);
+    }
+  }, [updateKeys, maxDist]);
+
+  const handleLeftTouchEnd = useCallback((e: React.TouchEvent) => {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === activeTouch.current) {
+        activeTouch.current = null;
+        setJoystickOrigin(null);
+        setJoystickPos({ x: 0, y: 0 });
+        keysRef.current.delete("a");
+        keysRef.current.delete("d");
+        keysRef.current.delete("w");
+        keysRef.current.delete("s");
+      }
+    }
   }, [keysRef]);
 
   const handleJumpStart = useCallback((e: React.TouchEvent) => {
     e.preventDefault();
     keysRef.current.add(" ");
+    setJumping(true);
   }, [keysRef]);
 
   const handleJumpEnd = useCallback(() => {
     keysRef.current.delete(" ");
+    setJumping(false);
   }, [keysRef]);
 
   return (
     <div className="absolute inset-0 pointer-events-none z-10">
-      {/* Joystick - bottom left */}
+      {/* Left half - dynamic joystick zone */}
       <div
-        ref={joystickRef}
-        className="absolute bottom-16 left-8 w-28 h-28 pointer-events-auto touch-none"
-        onTouchStart={handleJoystickStart}
-        onTouchMove={handleJoystickMove}
-        onTouchEnd={handleJoystickEnd}
+        className="absolute left-0 top-0 w-1/2 h-full pointer-events-auto touch-none"
+        onTouchStart={handleLeftTouchStart}
+        onTouchMove={handleLeftTouchMove}
+        onTouchEnd={handleLeftTouchEnd}
+        onTouchCancel={handleLeftTouchEnd}
       >
-        {/* Base */}
-        <div className="absolute inset-0 rounded-full bg-white/15 border-2 border-white/25" />
-        {/* Stick */}
-        <div
-          className="absolute w-12 h-12 rounded-full bg-white/40 border-2 border-white/50 transition-transform duration-75"
-          style={{
-            left: "50%",
-            top: "50%",
-            transform: `translate(calc(-50% + ${joystickPos.x}px), calc(-50% + ${joystickPos.y}px))`,
-          }}
-        />
-        {/* Direction arrows */}
-        <div className="absolute top-1 left-1/2 -translate-x-1/2 text-white/30 text-xs">▲</div>
-        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-white/30 text-xs">▼</div>
-        <div className="absolute left-1 top-1/2 -translate-y-1/2 text-white/30 text-xs">◀</div>
-        <div className="absolute right-1 top-1/2 -translate-y-1/2 text-white/30 text-xs">▶</div>
+        {/* Joystick appears where you touch */}
+        {joystickOrigin && (
+          <div
+            className="absolute"
+            style={{
+              left: joystickOrigin.x - 56,
+              top: joystickOrigin.y - 56,
+              width: 112,
+              height: 112,
+            }}
+          >
+            {/* Outer ring */}
+            <div className="absolute inset-0 rounded-full bg-black/20 border-[3px] border-white/20 backdrop-blur-sm" />
+            {/* Inner stick */}
+            <div
+              className="absolute w-14 h-14 rounded-full bg-white/50 border-2 border-white/70 shadow-lg"
+              style={{
+                left: "50%",
+                top: "50%",
+                transform: `translate(calc(-50% + ${joystickPos.x}px), calc(-50% + ${joystickPos.y}px))`,
+                transition: "none",
+              }}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Jump button - bottom right */}
+      {/* Jump button - bottom right, Roblox style */}
       <div
-        className="absolute bottom-20 right-10 w-20 h-20 pointer-events-auto touch-none"
+        className="absolute bottom-16 right-8 pointer-events-auto touch-none"
         onTouchStart={handleJumpStart}
         onTouchEnd={handleJumpEnd}
+        onTouchCancel={handleJumpEnd}
       >
-        <div className="w-full h-full rounded-full bg-primary/40 border-2 border-primary/60 flex items-center justify-center active:bg-primary/60 transition-colors">
-          <span className="text-white font-display text-lg font-bold select-none">JUMP</span>
+        <div
+          className={`w-[72px] h-[72px] rounded-full flex items-center justify-center shadow-xl transition-all duration-75 ${
+            jumping
+              ? "bg-white/50 border-[3px] border-white/70 scale-90"
+              : "bg-black/25 border-[3px] border-white/30 backdrop-blur-sm"
+          }`}
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-white drop-shadow">
+            <path d="M12 5l-7 7h4v7h6v-7h4L12 5z" fill="currentColor" />
+          </svg>
         </div>
       </div>
     </div>
