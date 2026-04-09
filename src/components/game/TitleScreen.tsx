@@ -32,7 +32,7 @@ const TitleScreen = ({ onNewGame, onContinue, hasSave, onSignOut }: TitleScreenP
       <div className="relative z-10 text-center space-y-10 px-4">
         {/* Logo area */}
         <div className="space-y-4 animate-slide-up">
-          <div className="text-6xl animate-wiggle inline-block">🏰</div>
+          <div className="text-6xl animate-wiggle inline-block">​</div>
           <h1 className="font-display text-5xl md:text-7xl font-bold text-glow tracking-wide text-primary drop-shadow-lg">
             Wizarding Obby
           </h1>
