@@ -130,6 +130,36 @@ export const SHOP_ITEMS: ShopItem[] = [
     id: "song_battle", name: "Battle of Hogwarts", description: "An intense, driving battle theme",
     emoji: "⚔️", cost: 120, type: "song",
   },
+
+  // ─── Premium Songs ───
+  {
+    id: "song_lush_life", name: "Lush Life", description: "A dreamy, uplifting pop melody",
+    emoji: "🌴", cost: 200, type: "song",
+  },
+  {
+    id: "song_touch", name: "Touch", description: "A smooth, soulful groove",
+    emoji: "💫", cost: 200, type: "song",
+  },
+  {
+    id: "song_passo_bem_solto", name: "Passo Bem Solto", description: "A chill, breezy Brazilian vibe",
+    emoji: "🇧🇷", cost: 220, type: "song",
+  },
+  {
+    id: "song_levitating", name: "Levitating", description: "A funky, groovy disco beat",
+    emoji: "🪩", cost: 200, type: "song",
+  },
+  {
+    id: "song_blinding_lights", name: "Blinding Lights", description: "A synth-driven retro banger",
+    emoji: "🌃", cost: 250, type: "song",
+  },
+  {
+    id: "song_dancin", name: "Dancin", description: "A smooth, flowing dance melody",
+    emoji: "🕺", cost: 180, type: "song",
+  },
+  {
+    id: "song_super_shy", name: "Super Shy", description: "A catchy, bouncy K-pop tune",
+    emoji: "🫣", cost: 220, type: "song",
+  },
 ];
 
 export function getShopCategory(type: ShopItem["type"]): string {
