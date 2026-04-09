@@ -888,7 +888,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.fill();
           ctx.restore();
         } else {
-          // Improved platform rendering with rounded corners and gradients
+          // Enhanced platform rendering with depth, textures, and glow
           const colors: Record<string, string> = {
             normal: theme.platformColor,
             moving: "#3a4a6a",
@@ -901,42 +901,116 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           const baseColor = p.color || colors[p.type] || theme.platformColor;
           const radius = Math.min(6, p.h / 2, p.w / 4);
 
-          // Platform body with rounded rect
+          // Drop shadow
+          ctx.save();
+          ctx.globalAlpha = 0.2;
+          ctx.fillStyle = "#000";
+          ctx.beginPath();
+          ctx.roundRect(p.x + 2, p.y + 3, p.w, p.h, radius);
+          ctx.fill();
+          ctx.restore();
+
+          // Platform body with gradient
+          const platGrad = ctx.createLinearGradient(p.x, p.y, p.x, p.y + p.h);
+          platGrad.addColorStop(0, baseColor);
+          platGrad.addColorStop(1, shadeColor(baseColor.startsWith("rgba") || baseColor.startsWith("rgb") ? "#4a4a4a" : baseColor, -25));
           ctx.beginPath();
           ctx.roundRect(p.x, p.y, p.w, p.h, radius);
-          ctx.fillStyle = baseColor;
+          ctx.fillStyle = platGrad;
           ctx.fill();
 
-          // Top highlight (subtle gradient feel)
+          // Top highlight stripe
           ctx.beginPath();
           ctx.roundRect(p.x, p.y, p.w, Math.min(4, p.h / 2), [radius, radius, 0, 0]);
           ctx.fillStyle = p.type === "finish" ? "#ffd700" : p.type === "hazard" ? "#ff4040" : theme.platformHighlight;
-          ctx.globalAlpha = 0.6;
+          ctx.globalAlpha = 0.7;
           ctx.fill();
           ctx.globalAlpha = 1;
 
-          // Subtle border
+          // Surface texture lines (stone/brick feel)
+          if (p.w > 30 && p.type !== "hazard" && p.type !== "finish") {
+            ctx.strokeStyle = "rgba(255,255,255,0.06)";
+            ctx.lineWidth = 0.5;
+            for (let lx = p.x + 12; lx < p.x + p.w - 5; lx += 15) {
+              ctx.beginPath();
+              ctx.moveTo(lx, p.y + 2);
+              ctx.lineTo(lx, p.y + p.h - 2);
+              ctx.stroke();
+            }
+          }
+
+          // Moving platform shimmer
+          if (p.type === "moving") {
+            ctx.globalAlpha = 0.12 + Math.sin(frameCount * 0.08) * 0.05;
+            ctx.fillStyle = "#88aaff";
+            ctx.beginPath();
+            ctx.roundRect(p.x, p.y, p.w, p.h, radius);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          }
+
+          // Ice platform sparkle
+          if (p.type === "ice") {
+            for (let si = 0; si < 3; si++) {
+              const sparkX = p.x + 10 + (si * 31 % (p.w - 20));
+              const sparkY = p.y + 3 + (si * 7 % (p.h - 4));
+              ctx.globalAlpha = 0.4 + Math.sin(frameCount * 0.12 + si * 2) * 0.3;
+              ctx.fillStyle = "#fff";
+              ctx.beginPath();
+              ctx.arc(sparkX, sparkY, 1.5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+          }
+
+          // Border
+          ctx.strokeStyle = "rgba(255,255,255,0.08)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.roundRect(p.x, p.y, p.w, p.h, radius);
+          ctx.stroke();
+
+          // Finish platform — golden glow + pulsing aura
           if (p.type === "finish") {
             ctx.strokeStyle = "#ffd700";
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.roundRect(p.x, p.y, p.w, p.h, radius);
             ctx.stroke();
-            // Glow
+            // Pulsing glow
+            ctx.save();
+            ctx.globalAlpha = 0.15 + Math.sin(frameCount * 0.06) * 0.1;
             ctx.shadowColor = "#ffd700";
-            ctx.shadowBlur = 12;
-            ctx.strokeStyle = "rgba(255,215,0,0.3)";
-            ctx.stroke();
-            ctx.shadowBlur = 0;
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = "#ffd700";
+            ctx.beginPath();
+            ctx.roundRect(p.x - 4, p.y - 4, p.w + 8, p.h + 8, radius + 2);
+            ctx.fill();
+            ctx.restore();
+          }
+
+          // Hazard platform — danger glow
+          if (p.type === "hazard") {
+            ctx.save();
+            ctx.globalAlpha = 0.1 + Math.sin(frameCount * 0.1) * 0.06;
+            ctx.fillStyle = "#ff2020";
+            ctx.beginPath();
+            ctx.roundRect(p.x - 2, p.y - 2, p.w + 4, p.h + 4, radius + 1);
+            ctx.fill();
+            ctx.restore();
           }
         }
 
         // Labels for finish, hazards, dock
         if (p.type === "finish") {
+          ctx.save();
           ctx.fillStyle = "#ffd700";
-          ctx.font = "14px Fredoka, sans-serif";
+          ctx.font = "bold 14px Fredoka, sans-serif";
           ctx.textAlign = "center";
-          ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 8);
+          ctx.shadowColor = "#ffd700";
+          ctx.shadowBlur = 8;
+          ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 10);
+          ctx.restore();
         } else if (p.label && !isBoatPlatform) {
           ctx.font = "11px serif";
           ctx.textAlign = "center";
