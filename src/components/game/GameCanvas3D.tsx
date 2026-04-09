@@ -459,9 +459,13 @@ const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack 
             profile={profile}
             onComplete={onComplete}
             onDeath={onDeath}
+            externalKeys={touchMode ? sharedKeys : undefined}
           />
         )}
       </Canvas>
+
+      {/* Touch controls overlay */}
+      {touchMode && !paused && <TouchControls keysRef={sharedKeys} />}
 
       {/* HUD */}
       <div className="absolute top-4 left-4 flex items-center gap-3 z-10">
@@ -478,6 +482,13 @@ const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack 
 
       <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
         <button
+          onClick={() => setTouchMode(t => !t)}
+          className="px-3 py-1.5 bg-black/60 text-white rounded-lg text-sm hover:bg-black/80"
+          title="Toggle touch controls"
+        >
+          {touchMode ? "⌨️" : "👆"}
+        </button>
+        <button
           onClick={() => { toggleMusic(); setMusicOn(isMusicPlaying()); }}
           className="px-3 py-1.5 bg-black/60 text-white rounded-lg text-sm hover:bg-black/80"
         >
@@ -492,9 +503,11 @@ const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack 
       </div>
 
       {/* Controls hint */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white/70 px-4 py-2 rounded-lg text-xs font-body z-10">
-        WASD / Arrows to move • Space to jump • ESC to pause
-      </div>
+      {!touchMode && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white/70 px-4 py-2 rounded-lg text-xs font-body z-10">
+          WASD / Arrows to move • Space to jump • ESC to pause
+        </div>
+      )}
 
       {/* Paused overlay */}
       {paused && (
