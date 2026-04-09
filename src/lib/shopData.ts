@@ -67,12 +67,12 @@ export const SHOP_ITEMS: ShopItem[] = [
   {
     id: "theme_pink", name: "Amortentia Theme", description: "A rosy pink magical theme",
     emoji: "💖", cost: 100, type: "theme",
-    themeColors: { primary: "330 70% 60%", background: "330 30% 8%", card: "330 25% 12%" },
+    themeColors: { primary: "330 85% 65%", background: "330 35% 8%", card: "330 30% 14%" },
   },
   {
     id: "theme_blue", name: "Ravenclaw Skies", description: "A brilliant blue theme",
     emoji: "💙", cost: 100, type: "theme",
-    themeColors: { primary: "220 70% 55%", background: "220 30% 8%", card: "220 25% 12%" },
+    themeColors: { primary: "220 85% 60%", background: "220 35% 8%", card: "220 30% 14%" },
   },
   {
     id: "theme_green", name: "Forbidden Forest", description: "A deep emerald theme",
