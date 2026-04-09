@@ -458,26 +458,55 @@ export function getWorldBoss(worldId: number): BossData {
   return bosses[worldId] || bosses[1];
 }
 
+// Generate house tokens placed above platforms
+function generateHouseTokens(platforms: Platform[]): HouseToken[] {
+  const tokens: HouseToken[] = [];
+  const eligiblePlatforms = platforms.filter(p => 
+    p.type === "normal" || p.type === "moving" || p.type === "ice"
+  );
+  
+  // Place tokens above ~30% of eligible platforms
+  eligiblePlatforms.forEach((p, i) => {
+    if (i % 3 === 1 && tokens.length < 8) {
+      tokens.push({
+        x: p.x + p.w / 2,
+        y: p.y - 30,
+        collected: false,
+        points: 5 + (i % 3) * 5, // 5, 10, or 15 points
+      });
+    }
+  });
+  
+  return tokens;
+}
+
 // ─── Main Generator ────────────────────────────
 
 export function generateLevel(worldId: number, levelIdx: number, canvasW: number, canvasH: number): LevelData {
+  let data: LevelData;
+  
   // World 1 has themed generators
   if (worldId === 1) {
     switch (levelIdx) {
-      case 0: return gen_1_1_HogwartsArrival(canvasH);
-      case 1: return gen_1_2_StaircaseMaze(canvasH);
-      case 2: return gen_1_3_TrollDungeon(canvasH);
-      case 3: return gen_1_4_WizardChess(canvasH);
-      case 4: return gen_1_5_MirrorOfErised(canvasH);
+      case 0: data = gen_1_1_HogwartsArrival(canvasH); break;
+      case 1: data = gen_1_2_StaircaseMaze(canvasH); break;
+      case 2: data = gen_1_3_TrollDungeon(canvasH); break;
+      case 3: data = gen_1_4_WizardChess(canvasH); break;
+      case 4: data = gen_1_5_MirrorOfErised(canvasH); break;
+      default: data = generateGenericLevel(worldId, levelIdx, canvasW, canvasH); break;
     }
+  } else {
+    // Worlds 2-7 themed generators
+    const themed = getWorldLevelGenerator(worldId, levelIdx, canvasH);
+    data = themed || generateGenericLevel(worldId, levelIdx, canvasW, canvasH);
   }
-
-  // Worlds 2-7 themed generators
-  const themed = getWorldLevelGenerator(worldId, levelIdx, canvasH);
-  if (themed) return themed;
-
-  // Fallback generic generator
-  return generateGenericLevel(worldId, levelIdx, canvasW, canvasH);
+  
+  // Auto-generate house tokens if not already set
+  if (!data.houseTokens || data.houseTokens.length === 0) {
+    data.houseTokens = generateHouseTokens(data.platforms);
+  }
+  
+  return data;
 }
 
 function generateGenericLevel(worldId: number, levelIdx: number, canvasW: number, canvasH: number): LevelData {
