@@ -48,7 +48,7 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
   const randomQuote = mentorQuotes[Math.floor(Math.random() * mentorQuotes.length)];
 
   return (
-    <div className="min-h-screen bg-background p-4 overflow-y-auto">
+    <div className="h-screen bg-background p-4 overflow-y-auto">
       <div className="max-w-3xl mx-auto">
         {/* Header card */}
         <div className="card-illustrated p-5 mb-5 animate-slide-up">
