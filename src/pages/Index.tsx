@@ -197,7 +197,7 @@ const Index = () => {
 
     case "playing":
       return (
-        <GameCanvas
+        <GameCanvas3D
           profile={profile}
           worldId={profile.currentWorld}
           levelIdx={profile.currentLevel}
@@ -207,6 +207,17 @@ const Index = () => {
           }}
           onDeath={() => setScreen("gameOver")}
           onBack={() => setScreen("worldmap")}
+        />
+      );
+
+    case "tutorial":
+      return (
+        <Tutorial
+          profile={profile}
+          onComplete={() => {
+            saveProfile({ ...profile, tutorialCompleted: true });
+            setScreen("worldmap");
+          }}
         />
       );
 
