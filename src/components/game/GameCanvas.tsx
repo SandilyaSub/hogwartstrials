@@ -1047,6 +1047,61 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
+      // Draw house tokens
+      const houseColor = profile.house?.id === "gryffindor" ? "#c0392b" : profile.house?.id === "slytherin" ? "#27ae60" : profile.house?.id === "ravenclaw" ? "#2980b9" : "#f39c12";
+      houseTokens.forEach(token => {
+        if (token.collected) return;
+        const tx = token.x, ty = token.y;
+        const bob = Math.sin(frameCount * 0.06 + tx * 0.05) * 3;
+        const pulse = 0.8 + Math.sin(frameCount * 0.1 + tx * 0.03) * 0.2;
+
+        // Outer glow
+        ctx.save();
+        ctx.globalAlpha = 0.2 * pulse;
+        ctx.fillStyle = houseColor;
+        ctx.beginPath();
+        ctx.arc(tx, ty + bob, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Token body (shield shape)
+        ctx.save();
+        ctx.globalAlpha = pulse;
+        ctx.fillStyle = houseColor;
+        ctx.beginPath();
+        ctx.arc(tx, ty + bob, 9, 0, Math.PI * 2);
+        ctx.fill();
+        // Inner highlight
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
+        ctx.beginPath();
+        ctx.arc(tx - 2, ty + bob - 2, 4, 0, Math.PI * 2);
+        ctx.fill();
+        // Border
+        ctx.strokeStyle = "rgba(255,255,255,0.5)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(tx, ty + bob, 9, 0, Math.PI * 2);
+        ctx.stroke();
+        // House initial
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 9px Fredoka, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(
+          profile.house?.id === "gryffindor" ? "G" : profile.house?.id === "slytherin" ? "S" : profile.house?.id === "ravenclaw" ? "R" : "H",
+          tx, ty + bob + 3
+        );
+        ctx.restore();
+
+        // Sparkle trail
+        if (frameCount % 8 === 0) {
+          particles.push({
+            x: tx + (Math.random() - 0.5) * 10, y: ty + bob,
+            vx: (Math.random() - 0.5) * 1, vy: -Math.random() * 1.5,
+            life: 15, color: houseColor,
+          });
+        }
+      });
+
       // Draw enemies — emoji only, no boxes
       // Load dementor image once
       if (!(window as any).__dementorImage) {
