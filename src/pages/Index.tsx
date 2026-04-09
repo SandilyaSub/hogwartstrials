@@ -136,6 +136,7 @@ const Index = () => {
           onOpenShop={() => setScreen("shop")}
           onOpenFeedback={() => setScreen("feedback")}
           onOpenSettings={() => setScreen("settings")}
+          onOpenLeaderboard={() => setScreen("leaderboard")}
           onResetGame={resetGame}
         />
       );
