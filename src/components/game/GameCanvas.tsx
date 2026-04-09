@@ -1298,33 +1298,43 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
       ctx.restore();
 
+      // Vignette effect (subtle darkening at edges)
+      const vignetteGrad = ctx.createRadialGradient(W / 2, H / 2, W * 0.35, W / 2, H / 2, W * 0.75);
+      vignetteGrad.addColorStop(0, "rgba(0,0,0,0)");
+      vignetteGrad.addColorStop(1, "rgba(0,0,0,0.35)");
+      ctx.fillStyle = vignetteGrad;
+      ctx.fillRect(0, 0, W, H);
+
       // Dark level overlay (Troll Dungeon - Lumos effect)
       if (isDark) {
-        // Create a radial gradient centered on the player (screen space)
         const playerScreenX = px - cameraX + PLAYER_W / 2;
         const playerScreenY = py + cameraY + PLAYER_H / 2;
-        const gradient = ctx.createRadialGradient(playerScreenX, playerScreenY, 30, playerScreenX, playerScreenY, 150);
+        const gradient = ctx.createRadialGradient(playerScreenX, playerScreenY, 40, playerScreenX, playerScreenY, 170);
         gradient.addColorStop(0, "rgba(0,0,0,0)");
-        gradient.addColorStop(0.5, "rgba(0,0,0,0.6)");
-        gradient.addColorStop(1, "rgba(0,0,0,0.92)");
+        gradient.addColorStop(0.4, "rgba(0,0,0,0.5)");
+        gradient.addColorStop(1, "rgba(0,0,0,0.94)");
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, W, H);
 
-        // Lumos glow around player
+        // Warm Lumos glow
         ctx.save();
-        ctx.globalAlpha = 0.15 + Math.sin(frameCount * 0.08) * 0.05;
+        ctx.globalAlpha = 0.12 + Math.sin(frameCount * 0.08) * 0.05;
         ctx.fillStyle = "#fffae0";
         ctx.beginPath();
-        ctx.arc(playerScreenX, playerScreenY, 40, 0, Math.PI * 2);
+        ctx.arc(playerScreenX, playerScreenY, 50, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 0.06;
+        ctx.fillStyle = "#ffcc40";
+        ctx.beginPath();
+        ctx.arc(playerScreenX, playerScreenY, 80, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
-        // Lumos label
         ctx.fillStyle = "#fffae0";
-        ctx.globalAlpha = 0.6;
+        ctx.globalAlpha = 0.5;
         ctx.font = "10px Fredoka, sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("✨ Lumos", playerScreenX, playerScreenY - 50);
+        ctx.fillText("✨ Lumos", playerScreenX, playerScreenY - 55);
         ctx.globalAlpha = 1;
       }
 
