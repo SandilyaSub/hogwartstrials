@@ -137,9 +137,25 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
     const houseBoosts = profile.house?.boosts || { speed: 0, jump: 0, flying: 0 };
     const petEffect = profile.pet?.effect || { type: "", value: 0 };
+    const upgrades = profile.purchasedUpgrades || {};
 
-    const jumpPower = BASE_JUMP - houseBoosts.jump * 1.5 - (petEffect.type === "jump" ? petEffect.value : 0);
-    const speed = BASE_SPEED + houseBoosts.speed * 0.5 + (petEffect.type === "speed" ? petEffect.value * 0.5 : 0);
+    // Shop upgrade boosts
+    let shopJumpBoost = 0;
+    let shopSpeedBoost = 0;
+    let shopCoinMultiplier = 1;
+    let shopHasMagnet = false;
+    let shopHasShield = false;
+
+    if (upgrades["jump_boost_1"]) shopJumpBoost += 1;
+    if (upgrades["jump_boost_2"]) shopJumpBoost += 2;
+    if (upgrades["speed_boost_1"]) shopSpeedBoost += 1;
+    if (upgrades["speed_boost_2"]) shopSpeedBoost += 2;
+    if (upgrades["double_coins"]) shopCoinMultiplier = 2;
+    if (upgrades["magnet"]) shopHasMagnet = true;
+    if (upgrades["shield"]) shopHasShield = true;
+
+    const jumpPower = BASE_JUMP - houseBoosts.jump * 1.5 - (petEffect.type === "jump" ? petEffect.value : 0) - shopJumpBoost * 1.5;
+    const speed = BASE_SPEED + houseBoosts.speed * 0.5 + (petEffect.type === "speed" ? petEffect.value * 0.5 : 0) + shopSpeedBoost * 0.5;
 
     const levelData = generateLevel(worldId, levelIdx, 3000, H);
     const { platforms, enemies, startX, startY } = levelData;
