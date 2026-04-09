@@ -455,6 +455,25 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (playerHitFlash > 0) playerHitFlash--;
       }
 
+      // House token collection
+      houseTokens.forEach(token => {
+        if (token.collected) return;
+        const dx = (px + PLAYER_W / 2) - token.x;
+        const dy = (py + PLAYER_H / 2) - token.y;
+        if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+          token.collected = true;
+          collectedTokenPoints += token.points;
+          // Sparkle particles
+          for (let i = 0; i < 8; i++) {
+            particles.push({
+              x: token.x, y: token.y,
+              vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.5) * 5,
+              life: 25, color: profile.house?.id === "gryffindor" ? "#c0392b" : profile.house?.id === "slytherin" ? "#27ae60" : profile.house?.id === "ravenclaw" ? "#2980b9" : "#f39c12",
+            });
+          }
+        }
+      });
+
       // Fall death (into water for boat level, off-screen otherwise) - skip for flying car
       if (!isFlyingCar) {
         const deathY = isBoatLevel ? H - 45 : H + 100;
