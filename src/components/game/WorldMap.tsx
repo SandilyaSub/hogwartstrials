@@ -21,7 +21,7 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
     if (worldId === 1 && levelIdx === 0) return true;
     const prevLevelId = levelIdx > 0
       ? WORLDS[worldId - 1].levels[levelIdx - 1].id
-      : WORLDS[worldId - 2]?.levels[4]?.id;
+      : WORLDS[worldId - 2]?.levels[WORLDS[worldId - 2].levels.length - 1]?.id;
     return prevLevelId ? profile.completedLevels.includes(prevLevelId) : false;
   };
 

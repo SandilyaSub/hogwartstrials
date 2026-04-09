@@ -138,7 +138,7 @@ export function useGameState(user: User | null) {
     const levelIdx = world?.levels.findIndex(l => l.id === levelId) ?? -1;
     const newPets = [...profile.unlockedPets];
 
-    if (world && levelIdx === 4) {
+    if (world && levelIdx === world.levels.length - 1) {
       PETS.forEach(p => {
         if (p.unlockWorld <= world.id && !newPets.includes(p.id)) {
           newPets.push(p.id);
