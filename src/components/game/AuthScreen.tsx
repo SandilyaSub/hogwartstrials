@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AuthScreenProps {
   onAuth: (email: string, password: string, isSignUp: boolean) => Promise<string | null>;
@@ -6,6 +7,7 @@ interface AuthScreenProps {
 
 const AuthScreen = ({ onAuth }: AuthScreenProps) => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [forgotMode, setForgotMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
