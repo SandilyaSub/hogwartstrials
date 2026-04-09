@@ -125,14 +125,17 @@ function Player({
   profile,
   onComplete,
   onDeath,
+  externalKeys,
 }: {
   levelData: LevelData3D;
   profile: PlayerProfile;
   onComplete: () => void;
   onDeath: () => void;
+  externalKeys?: React.MutableRefObject<Set<string>>;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const keys = useKeyboard();
+  const internalKeys = useKeyboard();
+  const keys = externalKeys || internalKeys;
   const { camera } = useThree();
   const stateRef = useRef<PlayerState3D>({
     position: [...levelData.startPos],
