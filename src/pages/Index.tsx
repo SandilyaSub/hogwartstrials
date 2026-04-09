@@ -119,6 +119,9 @@ const Index = () => {
           onOpenShop={() => setScreen("shop")}
           onOpenFeedback={() => setScreen("feedback")}
           onResetGame={resetGame}
+          onActivateTheme={(themeId) => {
+            saveProfile({ ...profile, activeTheme: themeId });
+          }}
         />
       );
 
