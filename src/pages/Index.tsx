@@ -19,6 +19,7 @@ import GameCanvas from "@/components/game/GameCanvas";
 import LevelComplete from "@/components/game/LevelComplete";
 import GameOver from "@/components/game/GameOver";
 import Tutorial from "@/components/game/Tutorial";
+import HouseLeaderboard from "@/components/game/HouseLeaderboard";
 
 const Index = () => {
   const { user, loading, signUp, signIn, signOut } = useAuth();
