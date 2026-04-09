@@ -75,10 +75,10 @@ const AuthScreen = ({ onAuth }: AuthScreenProps) => {
           <div>
             <div className="text-6xl mb-4 animate-wiggle inline-block">🧙‍♂️</div>
             <h2 className="font-display text-3xl font-bold text-primary text-glow">
-              {isSignUp ? "Create Your Account" : "Welcome Back, Wizard"}
+              {forgotMode ? "Reset Password" : isSignUp ? "Create Your Account" : "Welcome Back, Wizard"}
             </h2>
             <p className="text-foreground/55 mt-2 font-body text-lg">
-              {isSignUp ? "Begin your magical journey" : "Continue your adventure"}
+              {forgotMode ? "We'll send you a reset link" : isSignUp ? "Begin your magical journey" : "Continue your adventure"}
             </p>
           </div>
 
@@ -91,24 +91,26 @@ const AuthScreen = ({ onAuth }: AuthScreenProps) => {
               placeholder="Email address..."
               className="w-full px-5 py-3.5 rounded-2xl bg-secondary/50 border-2 border-border text-foreground font-body text-base placeholder:text-muted-foreground/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300"
             />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setError(""); }}
-              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              placeholder="Password..."
-              className="w-full px-5 py-3.5 rounded-2xl bg-secondary/50 border-2 border-border text-foreground font-body text-base placeholder:text-muted-foreground/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300"
-            />
+            {!forgotMode && (
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                placeholder="Password..."
+                className="w-full px-5 py-3.5 rounded-2xl bg-secondary/50 border-2 border-border text-foreground font-body text-base placeholder:text-muted-foreground/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+              />
+            )}
 
             {error && <p className="text-destructive text-sm font-medium animate-pop-in">{error}</p>}
             {success && <p className="text-primary text-sm font-medium animate-pop-in">{success}</p>}
 
             <button
               onClick={handleSubmit}
-              disabled={loading || !email.trim() || !password.trim()}
+              disabled={loading || !email.trim() || (!forgotMode && !password.trim())}
               className="w-full btn-storybook text-lg px-8 py-4 bg-primary text-primary-foreground disabled:opacity-25 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
             >
-              {loading ? "✨ Loading..." : isSignUp ? "✨ Create Account" : "✨ Sign In"}
+              {loading ? "✨ Loading..." : forgotMode ? "✨ Send Reset Link" : isSignUp ? "✨ Create Account" : "✨ Sign In"}
             </button>
           </div>
 
