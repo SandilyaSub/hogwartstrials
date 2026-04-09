@@ -1,8 +1,9 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import { WORLDS } from "@/lib/gameData";
-import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef } from "@/lib/levelGenerator";
+import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef, type HouseToken } from "@/lib/levelGenerator";
 import { toggleMusic, isMusicPlaying, startMusic } from "@/lib/musicEngine";
 import type { PlayerProfile } from "@/hooks/useGameState";
+import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
 
 interface GameCanvasProps {
@@ -112,6 +113,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
   const gameLoopRef = useRef<number>(0);
   const [paused, setPaused] = useState(false);
   const [musicOn, setMusicOn] = useState(isMusicPlaying());
+  const tokenPointsRef = useRef(0);
 
   const world = WORLDS[worldId - 1];
   const level = world.levels[levelIdx];
@@ -119,8 +121,14 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
   const handleComplete = useCallback(() => {
     cancelAnimationFrame(gameLoopRef.current);
+    // Submit house points
+    const pts = tokenPointsRef.current;
+    if (pts > 0 && profile.house?.id) {
+      supabase.rpc("add_house_points", { p_house_id: profile.house.id, p_points: pts }).then(() => {});
+    }
+    tokenPointsRef.current = 0;
     onComplete();
-  }, [onComplete]);
+  }, [onComplete, profile.house?.id]);
 
   const handleDeath = useCallback(() => {
     cancelAnimationFrame(gameLoopRef.current);
@@ -159,6 +167,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
     const levelData = generateLevel(worldId, levelIdx, 3000, H);
     const { platforms, enemies, startX, startY } = levelData;
+    const houseTokens: HouseToken[] = levelData.houseTokens || [];
     const isDark = levelData.darkLevel || false;
     const isCheckered = levelData.checkered || false;
     const isBoatLevel = levelData.boatLevel || false;
@@ -173,8 +182,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let hasRevive = petEffect.type === "revive" || shopHasShield;
     const particles: Particle[] = [];
     let frameCount = 0;
-    let flyingCarSpeed = 3; // auto-scroll speed for flying car mode
-    let carInvincible = 0; // invincibility frames after hit
+    let flyingCarSpeed = 3;
+    let carInvincible = 0;
+    let collectedTokenPoints = 0; // track total tokens collected this level
 
     // Boss fight state
     let bossHp = bossData?.maxHp || 0;
@@ -451,6 +461,25 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (bossHitFlash > 0) bossHitFlash--;
         if (playerHitFlash > 0) playerHitFlash--;
       }
+
+      // House token collection
+      houseTokens.forEach(token => {
+        if (token.collected) return;
+        const dx = (px + PLAYER_W / 2) - token.x;
+        const dy = (py + PLAYER_H / 2) - token.y;
+        if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+          token.collected = true;
+          collectedTokenPoints += token.points;
+          tokenPointsRef.current = collectedTokenPoints;
+          for (let i = 0; i < 8; i++) {
+            particles.push({
+              x: token.x, y: token.y,
+              vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.5) * 5,
+              life: 25, color: profile.house?.id === "gryffindor" ? "#c0392b" : profile.house?.id === "slytherin" ? "#27ae60" : profile.house?.id === "ravenclaw" ? "#2980b9" : "#f39c12",
+            });
+          }
+        }
+      });
 
       // Fall death (into water for boat level, off-screen otherwise) - skip for flying car
       if (!isFlyingCar) {
@@ -1018,6 +1047,61 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
+      // Draw house tokens
+      const houseColor = profile.house?.id === "gryffindor" ? "#c0392b" : profile.house?.id === "slytherin" ? "#27ae60" : profile.house?.id === "ravenclaw" ? "#2980b9" : "#f39c12";
+      houseTokens.forEach(token => {
+        if (token.collected) return;
+        const tx = token.x, ty = token.y;
+        const bob = Math.sin(frameCount * 0.06 + tx * 0.05) * 3;
+        const pulse = 0.8 + Math.sin(frameCount * 0.1 + tx * 0.03) * 0.2;
+
+        // Outer glow
+        ctx.save();
+        ctx.globalAlpha = 0.2 * pulse;
+        ctx.fillStyle = houseColor;
+        ctx.beginPath();
+        ctx.arc(tx, ty + bob, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Token body (shield shape)
+        ctx.save();
+        ctx.globalAlpha = pulse;
+        ctx.fillStyle = houseColor;
+        ctx.beginPath();
+        ctx.arc(tx, ty + bob, 9, 0, Math.PI * 2);
+        ctx.fill();
+        // Inner highlight
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
+        ctx.beginPath();
+        ctx.arc(tx - 2, ty + bob - 2, 4, 0, Math.PI * 2);
+        ctx.fill();
+        // Border
+        ctx.strokeStyle = "rgba(255,255,255,0.5)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(tx, ty + bob, 9, 0, Math.PI * 2);
+        ctx.stroke();
+        // House initial
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 9px Fredoka, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(
+          profile.house?.id === "gryffindor" ? "G" : profile.house?.id === "slytherin" ? "S" : profile.house?.id === "ravenclaw" ? "R" : "H",
+          tx, ty + bob + 3
+        );
+        ctx.restore();
+
+        // Sparkle trail
+        if (frameCount % 8 === 0) {
+          particles.push({
+            x: tx + (Math.random() - 0.5) * 10, y: ty + bob,
+            vx: (Math.random() - 0.5) * 1, vy: -Math.random() * 1.5,
+            life: 15, color: houseColor,
+          });
+        }
+      });
+
       // Draw enemies — emoji only, no boxes
       // Load dementor image once
       if (!(window as any).__dementorImage) {
@@ -1345,6 +1429,15 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       ctx.fillStyle = "#c8a020";
       ctx.textAlign = "left";
       ctx.fillText(`World ${worldId}: ${level.name}`, 10, 24);
+
+      // House token counter
+      const totalTokens = houseTokens.length;
+      const collected = houseTokens.filter(t => t.collected).length;
+      if (totalTokens > 0) {
+        ctx.fillStyle = houseColor;
+        ctx.textAlign = "center";
+        ctx.fillText(`🪙 ${collected}/${totalTokens}  (+${collectedTokenPoints} pts)`, W / 2, 24);
+      }
 
       if (isBossArena) {
         // Player HP bar

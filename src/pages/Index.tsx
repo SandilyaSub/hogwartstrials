@@ -19,6 +19,7 @@ import GameCanvas from "@/components/game/GameCanvas";
 import LevelComplete from "@/components/game/LevelComplete";
 import GameOver from "@/components/game/GameOver";
 import Tutorial from "@/components/game/Tutorial";
+import HouseLeaderboard from "@/components/game/HouseLeaderboard";
 
 const Index = () => {
   const { user, loading, signUp, signIn, signOut } = useAuth();
@@ -135,6 +136,7 @@ const Index = () => {
           onOpenShop={() => setScreen("shop")}
           onOpenFeedback={() => setScreen("feedback")}
           onOpenSettings={() => setScreen("settings")}
+          onOpenLeaderboard={() => setScreen("leaderboard")}
           onResetGame={resetGame}
         />
       );
@@ -247,6 +249,14 @@ const Index = () => {
         <GameOver
           onRetry={() => startLevel(profile.currentWorld, profile.currentLevel)}
           onWorldMap={() => setScreen("worldmap")}
+        />
+      );
+
+    case "leaderboard":
+      return (
+        <HouseLeaderboard
+          playerHouseId={profile.house?.id}
+          onBack={() => setScreen("worldmap")}
         />
       );
 
