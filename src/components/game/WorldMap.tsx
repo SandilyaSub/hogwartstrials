@@ -121,12 +121,12 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
                     <h3 className="font-display text-base font-semibold" style={{ color: world.color }}>
                       World {world.id}: {world.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground font-body truncate">{world.subtitle} · {completedCount}/5</p>
+                    <p className="text-xs text-muted-foreground font-body truncate">{world.subtitle} · {completedCount}/{world.levels.length}</p>
                   </div>
                   <div className="w-20 h-2.5 rounded-full bg-secondary/60 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${(completedCount / 5) * 100}%`, backgroundColor: world.color }}
+                      style={{ width: `${(completedCount / world.levels.length) * 100}%`, backgroundColor: world.color }}
                     />
                   </div>
                   <span className="text-muted-foreground text-sm transition-transform duration-300" style={{ transform: isExpanded ? "rotate(180deg)" : "" }}>▾</span>
