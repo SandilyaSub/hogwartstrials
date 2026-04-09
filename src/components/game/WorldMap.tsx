@@ -1,7 +1,8 @@
 import { WORLDS, MENTOR_QUOTES } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTheme } from "@/hooks/useTheme";
+import { SHOP_ITEMS } from "@/lib/shopData";
 
 interface WorldMapProps {
   profile: PlayerProfile;
@@ -10,12 +11,30 @@ interface WorldMapProps {
   onOpenShop?: () => void;
   onOpenFeedback?: () => void;
   onResetGame: () => void;
+  onActivateTheme?: (themeId: string) => void;
 }
 
-const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onResetGame }: WorldMapProps) => {
+const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onResetGame, onActivateTheme }: WorldMapProps) => {
   const [expandedWorld, setExpandedWorld] = useState<number | null>(null);
   const [showMentor, setShowMentor] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const themeMenuRef = useRef<HTMLDivElement>(null);
   const { theme, toggleTheme } = useTheme();
+
+  // Close theme menu on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (themeMenuRef.current && !themeMenuRef.current.contains(e.target as Node)) {
+        setShowThemeMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const purchasedThemes = SHOP_ITEMS.filter(
+    i => i.type === "theme" && profile.purchasedUpgrades?.[i.id]
+  );
 
   const isLevelUnlocked = (worldId: number, levelIdx: number) => {
     if (worldId === 1 && levelIdx === 0) return true;
