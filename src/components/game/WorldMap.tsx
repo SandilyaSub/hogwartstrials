@@ -9,10 +9,11 @@ interface WorldMapProps {
   onOpenShop?: () => void;
   onOpenFeedback?: () => void;
   onOpenSettings?: () => void;
+  onOpenLeaderboard?: () => void;
   onResetGame: () => void;
 }
 
-const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onOpenSettings, onResetGame }: WorldMapProps) => {
+const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onOpenSettings, onOpenLeaderboard, onResetGame }: WorldMapProps) => {
   const [expandedWorld, setExpandedWorld] = useState<number | null>(null);
   const [showMentor, setShowMentor] = useState(false);
 
