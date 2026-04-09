@@ -123,7 +123,7 @@ const Index = () => {
 
     case "house":
       return (
-        <HouseSelect onSelect={(id) => { selectHouse(id); setScreen("worldmap"); }} />
+        <HouseSelect onSelect={(id) => { selectHouse(id); setScreen("tutorial"); }} />
       );
 
     case "worldmap":
