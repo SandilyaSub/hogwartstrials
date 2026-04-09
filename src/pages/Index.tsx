@@ -15,7 +15,7 @@ import Shop from "@/components/game/Shop";
 import Feedback from "@/components/game/Feedback";
 import SettingsScreen from "@/components/game/SettingsScreen";
 import LevelIntro from "@/components/game/LevelIntro";
-import GameCanvas3D from "@/components/game/GameCanvas3D";
+import GameCanvas from "@/components/game/GameCanvas";
 import LevelComplete from "@/components/game/LevelComplete";
 import GameOver from "@/components/game/GameOver";
 import Tutorial from "@/components/game/Tutorial";
@@ -197,7 +197,7 @@ const Index = () => {
 
     case "playing":
       return (
-        <GameCanvas3D
+        <GameCanvas
           profile={profile}
           worldId={profile.currentWorld}
           levelIdx={profile.currentLevel}
