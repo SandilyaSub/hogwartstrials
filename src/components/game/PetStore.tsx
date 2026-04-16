@@ -1,6 +1,19 @@
 import { PETS } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 
+import owlImg from "@/assets/pets/owl.png";
+import catImg from "@/assets/pets/cat.png";
+import toadImg from "@/assets/pets/toad.png";
+import ratImg from "@/assets/pets/rat.png";
+import phoenixImg from "@/assets/pets/phoenix.png";
+import hippogriffImg from "@/assets/pets/hippogriff.png";
+import thestralImg from "@/assets/pets/thestral.png";
+
+const PET_IMAGES: Record<string, string> = {
+  owl: owlImg, cat: catImg, toad: toadImg, rat: ratImg,
+  phoenix: phoenixImg, hippogriff: hippogriffImg, thestral: thestralImg,
+};
+
 interface PetStoreProps {
   profile: PlayerProfile;
   onSelectPet: (petId: string) => void;
@@ -37,7 +50,12 @@ const PetStore = ({ profile, onSelectPet, onBack }: PetStoreProps) => {
                 style={{ animationDelay: `${i * 0.06}s` }}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{pet.emoji}</span>
+                  <img
+                    src={PET_IMAGES[pet.id]}
+                    alt={pet.name}
+                    className="w-12 h-12 rounded-xl object-cover"
+                    loading="lazy"
+                  />
                   <div className="flex-1">
                     <h3 className="font-display font-semibold text-foreground">{pet.name}</h3>
                     <p className="text-xs text-primary font-body font-medium">{pet.ability}</p>
