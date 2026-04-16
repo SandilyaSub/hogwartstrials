@@ -936,32 +936,34 @@ function gen_2_5_WhompingWillow(H: number): LevelData {
 function gen_2_6_MoaningMyrtleBathroom(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
+  // Flooded bathroom floor
   for (let i = 0; i < 6; i++) platforms.push({ x: i * 100, y: H - 40, w: 98, h: 40, type: "normal", color: "#4a5a6a" });
-  // Wet slippery platforms
+  // Wet slippery platforms — sinks and pipes (matches story — flooding, spinning sinks)
   for (let i = 0; i < 10; i++) {
     const y = H - 130 - i * 65;
-    platforms.push({ x: 40 + ((i * 67) % 300), y, w: 65, h: 12, type: i % 3 === 0 ? "ice" : "normal", color: i % 3 === 0 ? "#8ab8d8" : "#6a7a8a" });
+    platforms.push({ x: 40 + ((i * 67) % 300), y, w: 65, h: 12, type: i % 3 === 0 ? "ice" : "normal", color: i % 3 === 0 ? "#8ab8d8" : "#6a7a8a", label: i % 4 === 0 ? "🚰" : "" });
   }
-  // Water hazards
-  for (let i = 0; i < 3; i++) platforms.push({ x: 50 + i * 150, y: H - 250 - i * 100, w: 80, h: 10, type: "disappearing", timer: 0, visible: true, color: "#4488aa" });
-  enemies.push({ x: 200, y: H - 400, w: 20, h: 20, type: "ghost", dir: -1, speed: 0.8, range: 100, origX: 200, emoji: "👻" });
-  platforms.push({ x: 160, y: H - 820, w: 100, h: 20, type: "finish", label: "🚰 Chamber Entrance" });
+  // Water burst hazards (pipes bursting, matches story)
+  for (let i = 0; i < 3; i++) platforms.push({ x: 50 + i * 150, y: H - 250 - i * 100, w: 80, h: 10, type: "disappearing", timer: 0, visible: true, color: "#4488aa", label: "💧" });
+  // Moaning Myrtle ghost (matches story)
+  enemies.push({ x: 200, y: H - 400, w: 20, h: 20, type: "myrtle", dir: -1, speed: 0.8, range: 100, origX: 200, emoji: "👻" });
+  platforms.push({ x: 160, y: H - 820, w: 100, h: 20, type: "finish", label: "🐍 Chamber Entrance" });
   return { platforms, enemies, startX: 30, startY: H - 80 };
 }
 
 function gen_2_7_AragogLair(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Wider ground
+  // Forest floor covered in webs
   for (let i = 0; i < 7; i++) platforms.push({ x: i * 80, y: H - 40, w: 78, h: 40, type: "normal", color: "#2a3a1a" });
-  // Web platforms – wider, fewer disappearing
+  // Web platforms – wider, some crumbling (matches story — thousands of Acromantulas)
   for (let i = 0; i < 14; i++) {
     const y = H - 100 - i * 50;
-    platforms.push({ x: 30 + ((i * 83) % 350), y, w: 80, h: 12, type: i % 6 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#aaa" });
+    platforms.push({ x: 30 + ((i * 83) % 350), y, w: 80, h: 12, type: i % 6 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#aaa", label: i % 3 === 0 ? "🕸️" : "" });
   }
-  // Fewer, slower spiders
-  for (let i = 0; i < 3; i++) enemies.push({ x: 80 + i * 120, y: H - 200 - i * 150, w: 18, h: 18, type: "spider", dir: 1, speed: 0.6 + i * 0.15, range: 40, origX: 80 + i * 120, emoji: "🕷️" });
-  platforms.push({ x: 140, y: H - 750, w: 120, h: 20, type: "finish", label: "🕸️ Escape the Lair" });
+  // Acromantulas — many spiders swarming (matches story)
+  for (let i = 0; i < 5; i++) enemies.push({ x: 60 + i * 80, y: H - 150 - i * 120, w: 18, h: 18, type: "acromantula", dir: i % 2 === 0 ? 1 : -1, speed: 0.8 + i * 0.1, range: 50, origX: 60 + i * 80, emoji: "🕷️" });
+  platforms.push({ x: 140, y: H - 750, w: 120, h: 20, type: "finish", label: "🚗 Escape the Lair" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
