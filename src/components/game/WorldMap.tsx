@@ -142,12 +142,12 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
                   onClick={() => setExpandedWorld(isExpanded ? null : world.id)}
                   className="w-full p-4 text-left flex items-center gap-4 hover:bg-secondary/20 transition-all duration-300"
                 >
-                  <div
-                    className="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shrink-0"
-                    style={{ backgroundColor: `${world.color}18` }}
-                  >
-                    {world.emoji}
-                  </div>
+                  <img
+                    src={WORLD_IMAGES[world.id]}
+                    alt={world.title}
+                    className="w-11 h-11 rounded-2xl object-cover shrink-0"
+                    loading="lazy"
+                  />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-display text-base font-semibold" style={{ color: world.color }}>
                       World {world.id}: {world.title}
