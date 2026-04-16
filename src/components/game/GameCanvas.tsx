@@ -1327,62 +1327,185 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
       // Draw player
       if (isFlyingCar) {
-        // Draw flying car
         const cx = px, cy = py;
-        const carW = 50, carH = 28;
-        // Car body
-        ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
-        ctx.beginPath();
-        ctx.moveTo(cx, cy + carH * 0.3);
-        ctx.lineTo(cx + 8, cy);
-        ctx.lineTo(cx + carW - 5, cy);
-        ctx.lineTo(cx + carW, cy + carH * 0.3);
-        ctx.lineTo(cx + carW + 5, cy + carH * 0.6);
-        ctx.lineTo(cx + carW, cy + carH);
-        ctx.lineTo(cx, cy + carH);
-        ctx.lineTo(cx - 3, cy + carH * 0.6);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = "#2a6aaa";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        // Windows
-        ctx.fillStyle = "#aaddff";
-        ctx.fillRect(cx + 12, cy + 3, 14, 10);
-        ctx.fillRect(cx + 28, cy + 3, 12, 10);
-        // Wheels (flying, so they spin)
-        ctx.fillStyle = "#222";
-        ctx.beginPath();
-        ctx.arc(cx + 12, cy + carH + 2, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(cx + carW - 10, cy + carH + 2, 5, 0, Math.PI * 2);
-        ctx.fill();
-        // Exhaust particles
-        if (frameCount % 2 === 0) {
-          particles.push({
-            x: cx - 5, y: cy + carH * 0.6,
-            vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1.5,
-            life: 15, color: "rgba(200,200,200,0.6)",
-          });
-        }
-        // Character avatar in car
-        const carCharId = profile.character?.id || "harry";
-        const carImgKey = `__charImg_${carCharId}`;
-        if (!(window as any)[carImgKey]) {
-          const img = new Image();
-          img.src = CHARACTER_IMAGES[carCharId] || CHARACTER_IMAGES.harry;
-          (window as any)[carImgKey] = img;
-        }
-        const carCharImg = (window as any)[carImgKey] as HTMLImageElement;
-        if (carCharImg.complete && carCharImg.naturalWidth > 0) {
-          const avatarSize = 18;
+        if (isHippogriffFlight) {
+          // Draw Buckbeak the Hippogriff
+          const hW = 56, hH = 34;
+          const bobY = Math.sin(frameCount * 0.08) * 3;
+          const flash = carInvincible > 0 && frameCount % 4 < 2;
           ctx.save();
+          ctx.translate(cx, cy + bobY);
+
+          // Wing flap animation
+          const wingAngle = Math.sin(frameCount * 0.15) * 0.3;
+
+          // Left wing (back)
+          ctx.save();
+          ctx.translate(hW * 0.4, hH * 0.3);
+          ctx.rotate(-wingAngle - 0.2);
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#8B7355";
           ctx.beginPath();
-          ctx.arc(cx + carW / 2, cy + carH / 2, avatarSize / 2, 0, Math.PI * 2);
-          ctx.clip();
-          ctx.drawImage(carCharImg, cx + carW / 2 - avatarSize / 2, cy + carH / 2 - avatarSize / 2, avatarSize, avatarSize);
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(-30, -25, -45, -15);
+          ctx.quadraticCurveTo(-35, 0, 0, 5);
+          ctx.closePath();
+          ctx.fill();
           ctx.restore();
+
+          // Right wing (back)
+          ctx.save();
+          ctx.translate(hW * 0.4, hH * 0.3);
+          ctx.rotate(wingAngle + 0.2);
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#8B7355";
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(30, -25, 45, -15);
+          ctx.quadraticCurveTo(35, 0, 0, 5);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+
+          // Body
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#A0896C";
+          ctx.beginPath();
+          ctx.ellipse(hW * 0.45, hH * 0.55, hW * 0.32, hH * 0.35, -0.1, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Head
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#C4A97D";
+          ctx.beginPath();
+          ctx.arc(hW * 0.82, hH * 0.25, 8, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Beak
+          ctx.fillStyle = "#E8A020";
+          ctx.beginPath();
+          ctx.moveTo(hW * 0.9, hH * 0.22);
+          ctx.lineTo(hW + 6, hH * 0.2);
+          ctx.lineTo(hW * 0.9, hH * 0.32);
+          ctx.closePath();
+          ctx.fill();
+
+          // Eye
+          ctx.fillStyle = "#FF8C00";
+          ctx.beginPath();
+          ctx.arc(hW * 0.85, hH * 0.22, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#000";
+          ctx.beginPath();
+          ctx.arc(hW * 0.85, hH * 0.22, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Tail feathers
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#6B5B3A";
+          for (let t = 0; t < 3; t++) {
+            ctx.beginPath();
+            ctx.moveTo(hW * 0.05, hH * 0.5);
+            ctx.quadraticCurveTo(-12, hH * 0.3 + t * 8, -20, hH * 0.4 + t * 6);
+            ctx.quadraticCurveTo(-10, hH * 0.5 + t * 4, hW * 0.1, hH * 0.6);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          // Talons
+          ctx.strokeStyle = "#555";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(hW * 0.35, hH * 0.85);
+          ctx.lineTo(hW * 0.3, hH + 5);
+          ctx.moveTo(hW * 0.55, hH * 0.85);
+          ctx.lineTo(hW * 0.5, hH + 5);
+          ctx.stroke();
+
+          // Character riding on top
+          const charId = profile.character?.id || "harry";
+          const imgKey = `__charImg_${charId}`;
+          if (!(window as any)[imgKey]) {
+            const img = new Image();
+            img.src = CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
+            (window as any)[imgKey] = img;
+          }
+          const charImg = (window as any)[imgKey] as HTMLImageElement;
+          if (charImg.complete && charImg.naturalWidth > 0) {
+            const avatarSize = 20;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(hW * 0.45, hH * 0.1, avatarSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(charImg, hW * 0.45 - avatarSize / 2, hH * 0.1 - avatarSize / 2, avatarSize, avatarSize);
+            ctx.restore();
+          }
+
+          ctx.restore();
+
+          // Wind trail particles
+          if (frameCount % 2 === 0) {
+            particles.push({
+              x: cx - 5, y: cy + hH * 0.5 + bobY,
+              vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1,
+              life: 12, color: "rgba(200,220,255,0.4)",
+            });
+          }
+          // Feather particles occasionally
+          if (frameCount % 20 === 0) {
+            particles.push({
+              x: cx + hW * 0.3, y: cy + hH * 0.3 + bobY,
+              vx: -1 - Math.random(), vy: 0.5 + Math.random(),
+              life: 30, color: "rgba(160,137,108,0.6)",
+            });
+          }
+        } else {
+          // Draw flying car (original)
+          const carW = 50, carH = 28;
+          ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
+          ctx.beginPath();
+          ctx.moveTo(cx, cy + carH * 0.3);
+          ctx.lineTo(cx + 8, cy);
+          ctx.lineTo(cx + carW - 5, cy);
+          ctx.lineTo(cx + carW, cy + carH * 0.3);
+          ctx.lineTo(cx + carW + 5, cy + carH * 0.6);
+          ctx.lineTo(cx + carW, cy + carH);
+          ctx.lineTo(cx, cy + carH);
+          ctx.lineTo(cx - 3, cy + carH * 0.6);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = "#2a6aaa";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.fillStyle = "#aaddff";
+          ctx.fillRect(cx + 12, cy + 3, 14, 10);
+          ctx.fillRect(cx + 28, cy + 3, 12, 10);
+          ctx.fillStyle = "#222";
+          ctx.beginPath();
+          ctx.arc(cx + 12, cy + carH + 2, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx + carW - 10, cy + carH + 2, 5, 0, Math.PI * 2);
+          ctx.fill();
+          if (frameCount % 2 === 0) {
+            particles.push({
+              x: cx - 5, y: cy + carH * 0.6,
+              vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1.5,
+              life: 15, color: "rgba(200,200,200,0.6)",
+            });
+          }
+          const carCharId = profile.character?.id || "harry";
+          const carImgKey = `__charImg_${carCharId}`;
+          if (!(window as any)[carImgKey]) {
+            const img = new Image();
+            img.src = CHARACTER_IMAGES[carCharId] || CHARACTER_IMAGES.harry;
+            (window as any)[carImgKey] = img;
+          }
+          const carCharImg = (window as any)[carImgKey] as HTMLImageElement;
+          if (carCharImg.complete && carCharImg.naturalWidth > 0) {
+            const avatarSize = 18;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx + carW / 2, cy + carH / 2, avatarSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(carCharImg, cx + carW / 2 - avatarSize / 2, cy + carH / 2 - avatarSize / 2, avatarSize, avatarSize);
+            ctx.restore();
+          }
         }
       } else {
         const charId = profile.character?.id || "harry";
