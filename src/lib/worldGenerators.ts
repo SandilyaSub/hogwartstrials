@@ -936,34 +936,107 @@ function gen_2_5_WhompingWillow(H: number): LevelData {
 function gen_2_6_MoaningMyrtleBathroom(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Flooded bathroom floor
-  for (let i = 0; i < 6; i++) platforms.push({ x: i * 100, y: H - 40, w: 98, h: 40, type: "normal", color: "#4a5a6a" });
-  // Wet slippery platforms — sinks and pipes (matches story — flooding, spinning sinks)
-  for (let i = 0; i < 10; i++) {
-    const y = H - 130 - i * 65;
-    platforms.push({ x: 40 + ((i * 67) % 300), y, w: 65, h: 12, type: i % 3 === 0 ? "ice" : "normal", color: i % 3 === 0 ? "#8ab8d8" : "#6a7a8a", label: i % 4 === 0 ? "🚰" : "" });
+
+  // Flooded bathroom floor with sinks
+  platforms.push({ x: 0, y: H - 40, w: 180, h: 40, type: "normal", color: "#4a5a6a", label: "🚻 Bathroom" });
+
+  // Row of sinks along ground level — some working, some broken
+  const sinks = [200, 310, 420, 530, 640];
+  sinks.forEach((sx, i) => {
+    platforms.push({ x: sx, y: H - 50, w: 60, h: 16, type: "normal", color: "#6a7a8a", label: "🚰" });
+    // Water spray hazards from broken pipes above
+    if (i % 2 === 0) {
+      platforms.push({ x: sx + 10, y: H - 110, w: 15, h: 50, type: "hazard", color: "#4488cc", label: "💧" });
+    }
+  });
+
+  // Upper bathroom level — toilet stalls as platforms
+  const stalls = [
+    { x: 100, y: H - 140, label: "🚪" }, { x: 250, y: H - 160, label: "🚪" },
+    { x: 400, y: H - 150, label: "🚪" }, { x: 550, y: H - 170, label: "🚪" },
+  ];
+  stalls.forEach(s => {
+    platforms.push({ x: s.x, y: s.y, w: 80, h: 14, type: "normal", color: "#5a6a7a", label: s.label });
+  });
+
+  // Slippery wet pipes going up toward the chamber entrance
+  for (let i = 0; i < 6; i++) {
+    const side = i % 2 === 0 ? 50 + i * 30 : 350 - i * 20;
+    platforms.push({
+      x: side, y: H - 240 - i * 70, w: 90, h: 12,
+      type: "ice", color: "#8ab8d8", label: i % 2 === 0 ? "🪈" : "",
+    });
   }
-  // Water burst hazards (pipes bursting, matches story)
-  for (let i = 0; i < 3; i++) platforms.push({ x: 50 + i * 150, y: H - 250 - i * 100, w: 80, h: 10, type: "disappearing", timer: 0, visible: true, color: "#4488aa", label: "💧" });
-  // Moaning Myrtle ghost (matches story)
-  enemies.push({ x: 200, y: H - 400, w: 20, h: 20, type: "myrtle", dir: -1, speed: 0.8, range: 100, origX: 200, emoji: "👻" });
-  platforms.push({ x: 160, y: H - 820, w: 100, h: 20, type: "finish", label: "🐍 Chamber Entrance" });
-  return { platforms, enemies, startX: 30, startY: H - 80 };
+
+  // Spinning sink platform (the Chamber entrance mechanism)
+  const spinSink: Platform = {
+    x: 250, y: H - 680, w: 80, h: 14, type: "moving",
+    color: "#8a9aaa", label: "🐍 Sink",
+    origX: 250, origY: H - 680, moveDir: 1, moveRange: 60,
+  };
+  platforms.push(spinSink);
+
+  // Myrtle flying around wailing
+  enemies.push({ x: 350, y: H - 200, w: 22, h: 22, type: "myrtle", dir: -1, speed: 0.7, range: 120, origX: 350, emoji: "👻" });
+  // Water burst enemies
+  enemies.push({ x: 150, y: H - 400, w: 18, h: 18, type: "waterBurst", dir: 1, speed: 1.0, range: 50, origX: 150, emoji: "💦" });
+  enemies.push({ x: 400, y: H - 550, w: 18, h: 18, type: "waterBurst", dir: -1, speed: 1.1, range: 60, origX: 400, emoji: "💦" });
+
+  platforms.push({ x: 200, y: H - 780, w: 120, h: 20, type: "finish", label: "🐍 Chamber Entrance" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_2_7_AragogLair(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Forest floor covered in webs
-  for (let i = 0; i < 7; i++) platforms.push({ x: i * 80, y: H - 40, w: 78, h: 40, type: "normal", color: "#2a3a1a" });
-  // Web platforms – wider, some crumbling (matches story — thousands of Acromantulas)
-  for (let i = 0; i < 14; i++) {
-    const y = H - 100 - i * 50;
-    platforms.push({ x: 30 + ((i * 83) % 350), y, w: 80, h: 12, type: i % 6 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#aaa", label: i % 3 === 0 ? "🕸️" : "" });
+
+  // Forest clearing — you've followed the spiders here
+  platforms.push({ x: 0, y: H - 40, w: 150, h: 40, type: "normal", color: "#2a3a1a", label: "🕸️ Follow the spiders..." });
+
+  // Ground-level forest path with web obstacles
+  for (let i = 0; i < 8; i++) {
+    platforms.push({
+      x: 170 + i * 110, y: H - 45 - (i % 2) * 15, w: 70, h: 16,
+      type: "normal", color: "#3a2a1a", label: i % 3 === 0 ? "🍂" : "",
+    });
   }
-  // Acromantulas — many spiders swarming (matches story)
-  for (let i = 0; i < 5; i++) enemies.push({ x: 60 + i * 80, y: H - 150 - i * 120, w: 18, h: 18, type: "acromantula", dir: i % 2 === 0 ? 1 : -1, speed: 0.8 + i * 0.1, range: 50, origX: 60 + i * 80, emoji: "🕷️" });
-  platforms.push({ x: 140, y: H - 750, w: 120, h: 20, type: "finish", label: "🚗 Escape the Lair" });
+
+  // Web bridges between trees (disappearing — fragile webs)
+  const webBridges = [
+    { x: 300, y: H - 100 }, { x: 550, y: H - 120 },
+    { x: 800, y: H - 110 }, { x: 1050, y: H - 130 },
+  ];
+  webBridges.forEach(wb => {
+    platforms.push({ x: wb.x, y: wb.y, w: 100, h: 10, type: "disappearing", timer: 0, visible: true, color: "#cccccc", label: "🕸️" });
+  });
+
+  // Tree trunk platforms (safe havens)
+  const trees = [
+    { x: 200, y: H - 170, label: "🌲" }, { x: 480, y: H - 180, label: "🌲" },
+    { x: 720, y: H - 200, label: "🌲" }, { x: 950, y: H - 190, label: "🌲" },
+  ];
+  trees.forEach(t => {
+    platforms.push({ x: t.x, y: t.y, w: 65, h: 14, type: "normal", color: "#4a3a1a", label: t.label });
+  });
+
+  // Higher canopy escape route
+  for (let i = 0; i < 5; i++) {
+    platforms.push({
+      x: 150 + i * 200, y: H - 260 - i * 30, w: 60, h: 12,
+      type: "normal", color: "#2a4a1a", label: "🌿",
+    });
+  }
+
+  // Acromantulas everywhere — ground and trees
+  enemies.push({ x: 250, y: H - 68, w: 18, h: 18, type: "acromantula", dir: 1, speed: 0.9, range: 60, origX: 250, emoji: "🕷️" });
+  enemies.push({ x: 500, y: H - 68, w: 20, h: 20, type: "acromantula", dir: -1, speed: 1.0, range: 70, origX: 500, emoji: "🕷️" });
+  enemies.push({ x: 700, y: H - 220, w: 18, h: 18, type: "acromantula", dir: 1, speed: 1.1, range: 50, origX: 700, emoji: "🕷️" });
+  enemies.push({ x: 400, y: H - 150, w: 22, h: 22, type: "acromantula", dir: -1, speed: 0.8, range: 80, origX: 400, emoji: "🕷️" });
+  enemies.push({ x: 900, y: H - 68, w: 24, h: 24, type: "acromantula", dir: 1, speed: 1.2, range: 60, origX: 900, emoji: "🕷️" });
+  // Aragog himself — large, slow
+  enemies.push({ x: 600, y: H - 130, w: 36, h: 36, type: "aragog", dir: 1, speed: 0.3, range: 100, origX: 600, emoji: "🕷️" });
+
+  platforms.push({ x: 1100, y: H - 300, w: 120, h: 20, type: "finish", label: "🚗 Escape the Lair" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
@@ -971,31 +1044,99 @@ function gen_2_8_ParseltonguePipes(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Solid ground to start on
-  platforms.push({ x: 0, y: H - 40, w: 200, h: 40, type: "normal", color: "#3a4a3a" });
+  // Bathroom entrance — you've spoken Parseltongue
+  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#3a4a3a", label: "🐍 Open up..." });
 
-  // Pipe tunnel - vertical climb with wider, closer platforms
-  for (let i = 0; i < 14; i++) {
-    const side = i % 2 === 0 ? 40 : 220;
-    platforms.push({ x: side, y: H - 100 - i * 50, w: 120, h: 16, type: "normal", color: "#3a4a3a" });
+  // Initial slide down — wide angled platforms descending
+  for (let i = 0; i < 5; i++) {
+    platforms.push({
+      x: 40 + i * 60, y: H - 20 + i * 30, w: 100, h: 10,
+      type: "normal", color: "#4a5a4a", label: i === 0 ? "🪈 Slide!" : "",
+    });
   }
-  // Fewer snakes, slower
-  for (let i = 0; i < 3; i++) enemies.push({ x: 140, y: H - 300 - i * 200, w: 24, h: 24, type: "snake", dir: i % 2 === 0 ? 1 : -1, speed: 0.9, range: 60, origX: 140, emoji: "🐍" });
-  platforms.push({ x: 100, y: H - 820, w: 120, h: 20, type: "finish", label: "🐍 Chamber Below" });
+
+  // Vertical pipe shaft — zigzag climbing through ancient plumbing
+  const pipeLeft = 30, pipeRight = 250;
+  for (let i = 0; i < 16; i++) {
+    const side = i % 2 === 0 ? pipeLeft : pipeRight;
+    const w = 100 + (i % 3) * 20;
+    platforms.push({
+      x: side, y: H - 120 - i * 50, w, h: 16,
+      type: i % 5 === 0 ? "ice" : "normal",
+      color: i % 5 === 0 ? "#5a7a6a" : "#3a4a3a",
+      label: i % 4 === 0 ? "🪈" : "",
+    });
+  }
+
+  // Pipe junction platforms — wider rest areas
+  platforms.push({ x: 60, y: H - 320, w: 250, h: 14, type: "normal", color: "#4a5a4a", label: "🔀 Junction" });
+  platforms.push({ x: 40, y: H - 570, w: 280, h: 14, type: "normal", color: "#4a5a4a", label: "🔀 Junction" });
+
+  // Grate traps — hazard platforms blocking parts of the path
+  platforms.push({ x: 150, y: H - 200, w: 20, h: 40, type: "hazard", color: "#5a5a5a", label: "⚠️" });
+  platforms.push({ x: 100, y: H - 450, w: 20, h: 40, type: "hazard", color: "#5a5a5a", label: "⚠️" });
+  platforms.push({ x: 250, y: H - 650, w: 20, h: 40, type: "hazard", color: "#5a5a5a", label: "⚠️" });
+
+  // Snakes guarding the pipes
+  enemies.push({ x: 130, y: H - 250, w: 24, h: 24, type: "snake", dir: 1, speed: 0.7, range: 70, origX: 130, emoji: "🐍" });
+  enemies.push({ x: 200, y: H - 430, w: 24, h: 24, type: "snake", dir: -1, speed: 0.9, range: 60, origX: 200, emoji: "🐍" });
+  enemies.push({ x: 100, y: H - 700, w: 26, h: 26, type: "snake", dir: 1, speed: 1.0, range: 80, origX: 100, emoji: "🐍" });
+
+  platforms.push({ x: 100, y: H - 870, w: 160, h: 20, type: "finish", label: "🐍 Chamber Below" });
   return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 function gen_2_9_SwordOfGryffindor(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 5; i++) platforms.push({ x: i * 100, y: H - 40, w: 98, h: 40, type: "normal", color: "#3a2a1a" });
-  // Ascending chamber with hazards
-  for (let i = 0; i < 15; i++) {
-    const y = H - 120 - i * 58;
-    platforms.push({ x: 20 + ((i * 97) % 320), y, w: 60, h: 12, type: i % 5 === 0 ? "normal" : "normal", color: i % 5 === 0 ? "#ffcc00" : "#5a4a3a" });
-  }
-  enemies.push({ x: 180, y: H - 500, w: 40, h: 40, type: "basilisk", dir: 1, speed: 0.6, range: 120, origX: 180, emoji: "🐍" });
-  platforms.push({ x: 150, y: H - 920, w: 100, h: 20, type: "finish", label: "⚔️ Sword of Gryffindor" });
+
+  // Deep within the Chamber — dark stone floor
+  platforms.push({ x: 0, y: H - 40, w: 200, h: 40, type: "normal", color: "#2a2a2a", label: "⚔️ The Chamber" });
+
+  // Snake-head pillars along the sides (decorative + platforms)
+  const pillars = [
+    { x: 60, y: H - 120 }, { x: 300, y: H - 130 },
+    { x: 60, y: H - 250 }, { x: 300, y: H - 260 },
+    { x: 60, y: H - 380 }, { x: 300, y: H - 390 },
+    { x: 60, y: H - 510 }, { x: 300, y: H - 520 },
+  ];
+  pillars.forEach((p, i) => {
+    platforms.push({
+      x: p.x, y: p.y, w: 70, h: 14, type: "normal",
+      color: "#3a3a2a", label: i % 2 === 0 ? "🐍" : "🗿",
+    });
+  });
+
+  // Central ascending path — Sorting Hat platforms
+  const hatPath = [
+    { x: 150, y: H - 170 }, { x: 200, y: H - 300 },
+    { x: 130, y: H - 430 }, { x: 220, y: H - 560 },
+  ];
+  hatPath.forEach((p, i) => {
+    platforms.push({
+      x: p.x, y: p.y, w: 60, h: 12,
+      type: i === 3 ? "normal" : "disappearing", timer: 0, visible: true,
+      color: i === 3 ? "#aa7733" : "#5a4a3a",
+      label: i === 3 ? "🎩 Hat!" : "",
+    });
+  });
+
+  // Moving platforms — enchanted stones
+  const mp1: Platform = { x: 180, y: H - 200, w: 55, h: 12, type: "moving", color: "#4a4a5a", origX: 180, origY: H - 200, moveDir: 1, moveRange: 40 };
+  const mp2: Platform = { x: 150, y: H - 460, w: 55, h: 12, type: "moving", color: "#4a4a5a", origX: 150, origY: H - 460, moveDir: -1, moveRange: 50 };
+  platforms.push(mp1, mp2);
+
+  // Water on the floor (the Chamber is flooded)
+  platforms.push({ x: 220, y: H - 30, w: 150, h: 20, type: "hazard", color: "#2a4a4a", label: "💧" });
+
+  // Basilisk fragments — mini-snake enemies guarding the ascent
+  enemies.push({ x: 120, y: H - 150, w: 22, h: 22, type: "snake", dir: 1, speed: 0.8, range: 60, origX: 120, emoji: "🐍" });
+  enemies.push({ x: 250, y: H - 290, w: 22, h: 22, type: "snake", dir: -1, speed: 0.9, range: 50, origX: 250, emoji: "🐍" });
+  enemies.push({ x: 100, y: H - 420, w: 24, h: 24, type: "snake", dir: 1, speed: 1.0, range: 70, origX: 100, emoji: "🐍" });
+  // The Basilisk itself — large, dangerous
+  enemies.push({ x: 180, y: H - 580, w: 36, h: 36, type: "basilisk", dir: 1, speed: 0.5, range: 100, origX: 180, emoji: "🐍" });
+
+  platforms.push({ x: 140, y: H - 680, w: 120, h: 20, type: "finish", label: "⚔️ Sword of Gryffindor" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
 }
 
