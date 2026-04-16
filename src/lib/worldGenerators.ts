@@ -1160,11 +1160,14 @@ function gen_5_5_RoomOfRequirement(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
   for (let i = 0; i < 7; i++) platforms.push({ x: i * 80, y: H - 40, w: 78, h: 40, type: "normal", color: "#5a4a3a" });
-  // Room morphs - platforms appear and disappear
+  // Room morphs - platforms appear and disappear (glitching room, matches story)
   for (let i = 0; i < 14; i++) {
     const y = H - 110 - i * 58;
-    platforms.push({ x: 25 + ((i * 77) % 330), y, w: 60, h: 12, type: i % 2 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#7a6a5a" });
+    platforms.push({ x: 25 + ((i * 77) % 330), y, w: 60, h: 12, type: i % 2 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#7a6a5a", label: i % 4 === 0 ? "🚪" : "" });
   }
+  // Training dummies from DA sessions
+  enemies.push({ x: 180, y: H - 400, w: 20, h: 20, type: "dummy", dir: 1, speed: 0.5, range: 40, origX: 180, emoji: "🎯" });
+  enemies.push({ x: 250, y: H - 630, w: 20, h: 20, type: "dummy", dir: -1, speed: 0.6, range: 50, origX: 250, emoji: "🎯" });
   platforms.push({ x: 140, y: H - 920, w: 100, h: 20, type: "finish", label: "🚪 Room Found" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
@@ -1186,12 +1189,15 @@ function gen_5_6_UmbridgeOffice(H: number): LevelData {
 function gen_5_7_ThestralFlight(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // High altitude - moving cloud platforms
+  // High altitude - moving cloud platforms over countryside
   for (let i = 0; i < 16; i++) {
     const y = H - 80 - i * 55;
-    platforms.push({ x: 30 + ((i * 89) % 340), y, w: 55, h: 12, type: "moving", moveRange: 70 + i * 0.1, color: "#6a6a8a" });
+    platforms.push({ x: 30 + ((i * 89) % 340), y, w: 55, h: 12, type: "moving", moveRange: 70 + i * 0.1, color: "#6a6a8a", label: i % 5 === 0 ? "☁️" : "" });
   }
-  platforms.push({ x: 160, y: H - 960, w: 100, h: 20, type: "finish", label: "🦇 Ministry Arrival" });
+  // Death Eaters chasing (matches story - dodge curses)
+  enemies.push({ x: 150, y: H - 350, w: 22, h: 22, type: "deathEater", dir: 1, speed: 1.4, range: 80, origX: 150, emoji: "💀" });
+  enemies.push({ x: 280, y: H - 600, w: 22, h: 22, type: "deathEater", dir: -1, speed: 1.5, range: 90, origX: 280, emoji: "💀" });
+  platforms.push({ x: 160, y: H - 960, w: 100, h: 20, type: "finish", label: "🏛️ Ministry Arrival" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
 }
 
@@ -1229,11 +1235,14 @@ function gen_6_5_SlugClubParty(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
   for (let i = 0; i < 7; i++) platforms.push({ x: i * 80, y: H - 40, w: 78, h: 40, type: "normal", color: "#4a5a4a" });
-  // Party platforms with chandeliers
+  // Party platforms with chandeliers and curtained alcoves
   for (let i = 0; i < 12; i++) {
     const y = H - 120 - i * 62;
-    platforms.push({ x: 40 + ((i * 87) % 320), y, w: 65, h: 12, type: i % 3 === 0 ? "moving" : "normal", moveRange: 40, color: "#8a7a3a" });
+    platforms.push({ x: 40 + ((i * 87) % 320), y, w: 65, h: 12, type: i % 3 === 0 ? "moving" : "normal", moveRange: 40, color: "#8a7a3a", label: i % 3 === 0 ? "🕯️" : "" });
   }
+  // Floating candelabras and Filch (matches story - gatecrashers being caught)
+  enemies.push({ x: 180, y: H - 350, w: 20, h: 20, type: "candelabra", dir: 1, speed: 0.7, range: 60, origX: 180, emoji: "🕯️" });
+  enemies.push({ x: 300, y: H - 550, w: 22, h: 22, type: "filch", dir: -1, speed: 0.9, range: 70, origX: 300, emoji: "🧹" });
   platforms.push({ x: 150, y: H - 870, w: 100, h: 20, type: "finish", label: "🥂 Party Over" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
 }
@@ -1255,11 +1264,14 @@ function gen_6_6_Sectumsempra(H: number): LevelData {
 function gen_6_7_PensieveMemories(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Floating memory fragments
+  // Floating memory fragments — silver swirling platforms
   for (let i = 0; i < 16; i++) {
     const y = H - 80 - i * 54;
-    platforms.push({ x: 30 + ((i * 71) % 330), y, w: 55, h: 12, type: "moving", moveRange: 50 + i * 0.1, color: "#8888cc" });
+    platforms.push({ x: 30 + ((i * 71) % 330), y, w: 55, h: 12, type: "moving", moveRange: 50 + i * 0.1, color: "#8888cc", label: i % 4 === 0 ? "💭" : "" });
   }
+  // Memory echoes — ghostly figures from the past
+  enemies.push({ x: 150, y: H - 400, w: 20, h: 20, type: "memoryEcho", dir: 1, speed: 0.6, range: 60, origX: 150, emoji: "👤" });
+  enemies.push({ x: 280, y: H - 650, w: 20, h: 20, type: "memoryEcho", dir: -1, speed: 0.7, range: 50, origX: 280, emoji: "👤" });
   platforms.push({ x: 150, y: H - 940, w: 100, h: 20, type: "finish", label: "💭 Memory Found" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
 }
