@@ -16,10 +16,52 @@ import dracoImg from "@/assets/characters/draco.png";
 import cedricImg from "@/assets/characters/cedric.png";
 import choImg from "@/assets/characters/cho.png";
 
+// Enemy avatars
+import spiderImg from "@/assets/enemies/spider.png";
+import deathEaterImg from "@/assets/enemies/death_eater.png";
+import trollImg from "@/assets/enemies/troll.png";
+import chessImg from "@/assets/enemies/chess.png";
+import quirrellImg from "@/assets/enemies/quirrell.png";
+import snakeImg from "@/assets/enemies/snake.png";
+import werewolfImg from "@/assets/enemies/werewolf.png";
+import pixieImg from "@/assets/enemies/pixie.png";
+import goblinImg from "@/assets/enemies/goblin.png";
+import portraitImg from "@/assets/enemies/portrait.png";
+import centaurImg from "@/assets/enemies/centaur.png";
+import wolfImg from "@/assets/enemies/wolf.png";
+import birdImg from "@/assets/enemies/bird.png";
+import wizardNpcImg from "@/assets/enemies/wizard_npc.png";
+import dementorAvatarImg from "@/assets/enemies/dementor_avatar.png";
+
+// Boss avatars
+import voldemortImg from "@/assets/enemies/voldemort.png";
+import basiliskImg from "@/assets/enemies/basilisk.png";
+import dragonImg from "@/assets/enemies/dragon.png";
+import bellatrixImg from "@/assets/enemies/bellatrix.png";
+import inferiImg from "@/assets/enemies/inferi.png";
+
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
   luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
   draco: dracoImg, cedric: cedricImg, cho: choImg,
+};
+
+const ENEMY_IMAGES: Record<string, string> = {
+  spider: spiderImg, deathEater: deathEaterImg, troll: trollImg,
+  chess: chessImg, quirrell: quirrellImg, snake: snakeImg,
+  werewolf: werewolfImg, pixie: pixieImg, goblin: goblinImg,
+  portrait: portraitImg, centaur: centaurImg, wolf: wolfImg,
+  bird: birdImg, wizard_npc: wizardNpcImg, dementor: dementorAvatarImg,
+};
+
+const BOSS_IMAGES: Record<string, string> = {
+  "Professor Quirrell": quirrellImg,
+  "Basilisk": basiliskImg,
+  "Dementor Swarm": dementorAvatarImg,
+  "Hungarian Horntail": dragonImg,
+  "Bellatrix": bellatrixImg,
+  "Inferi Horde": inferiImg,
+  "Lord Voldemort": voldemortImg,
 };
 
 interface GameCanvasProps {
