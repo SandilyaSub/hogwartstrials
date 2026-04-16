@@ -131,9 +131,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     onComplete();
   }, [onComplete, profile.house?.id]);
 
-  const handleDeath = useCallback(() => {
+  const handleDeath = useCallback((reason: DeathReason = "fall") => {
     cancelAnimationFrame(gameLoopRef.current);
-    onDeath();
+    onDeath(reason);
   }, [onDeath]);
 
   useEffect(() => {
