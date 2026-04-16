@@ -725,7 +725,7 @@ function generateGenericLevel(worldId: number, levelIdx: number, canvasW: number
 
     platforms.push(plat);
 
-    if (difficulty > 2 && Math.random() < 0.15 + difficulty * 0.01 && type === "normal") {
+    if (difficulty > 2 && Math.random() < Math.min(0.15 + difficulty * 0.01, 0.3) && type === "normal") {
       enemies.push({
         x: nx + pw / 4, y: ny - 24, w: 20, h: 20,
         type: worldId <= 2 ? "spider" : worldId <= 4 ? "dementor" : "deathEater",
