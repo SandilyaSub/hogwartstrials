@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback, useState } from "react";
+import type { DeathReason } from "./GameOver";
 import { WORLDS } from "@/lib/gameData";
 import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef, type HouseToken } from "@/lib/levelGenerator";
 
@@ -11,7 +12,7 @@ interface GameCanvasProps {
   worldId: number;
   levelIdx: number;
   onComplete: () => void;
-  onDeath: () => void;
+  onDeath: (reason: DeathReason) => void;
   onBack: () => void;
 }
 
