@@ -12,10 +12,23 @@ import dracoImg from "@/assets/characters/draco.png";
 import cedricImg from "@/assets/characters/cedric.png";
 import choImg from "@/assets/characters/cho.png";
 
+import world1Img from "@/assets/worlds/world1_philosopher.png";
+import world2Img from "@/assets/worlds/world2_chamber.png";
+import world3Img from "@/assets/worlds/world3_azkaban.png";
+import world4Img from "@/assets/worlds/world4_goblet.png";
+import world5Img from "@/assets/worlds/world5_phoenix.png";
+import world6Img from "@/assets/worlds/world6_prince.png";
+import world7Img from "@/assets/worlds/world7_hallows.png";
+
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
   luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
   draco: dracoImg, cedric: cedricImg, cho: choImg,
+};
+
+const WORLD_IMAGES: Record<number, string> = {
+  1: world1Img, 2: world2Img, 3: world3Img, 4: world4Img,
+  5: world5Img, 6: world6Img, 7: world7Img,
 };
 
 interface WorldMapProps {
@@ -129,12 +142,12 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
                   onClick={() => setExpandedWorld(isExpanded ? null : world.id)}
                   className="w-full p-4 text-left flex items-center gap-4 hover:bg-secondary/20 transition-all duration-300"
                 >
-                  <div
-                    className="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shrink-0"
-                    style={{ backgroundColor: `${world.color}18` }}
-                  >
-                    {world.emoji}
-                  </div>
+                  <img
+                    src={WORLD_IMAGES[world.id]}
+                    alt={world.title}
+                    className="w-11 h-11 rounded-2xl object-cover shrink-0"
+                    loading="lazy"
+                  />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-display text-base font-semibold" style={{ color: world.color }}>
                       World {world.id}: {world.title}
