@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { SHOP_ITEMS, getShopCategory, type ShopItem } from "@/lib/shopData";
-import { PREMIUM_ITEMS, getPremiumCategory, type PremiumItem } from "@/lib/premiumShopData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { toast } from "@/hooks/use-toast";
 
