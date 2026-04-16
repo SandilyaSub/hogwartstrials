@@ -12,10 +12,23 @@ import dracoImg from "@/assets/characters/draco.png";
 import cedricImg from "@/assets/characters/cedric.png";
 import choImg from "@/assets/characters/cho.png";
 
+import world1Img from "@/assets/worlds/world1_philosopher.png";
+import world2Img from "@/assets/worlds/world2_chamber.png";
+import world3Img from "@/assets/worlds/world3_azkaban.png";
+import world4Img from "@/assets/worlds/world4_goblet.png";
+import world5Img from "@/assets/worlds/world5_phoenix.png";
+import world6Img from "@/assets/worlds/world6_prince.png";
+import world7Img from "@/assets/worlds/world7_hallows.png";
+
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
   luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
   draco: dracoImg, cedric: cedricImg, cho: choImg,
+};
+
+const WORLD_IMAGES: Record<number, string> = {
+  1: world1Img, 2: world2Img, 3: world3Img, 4: world4Img,
+  5: world5Img, 6: world6Img, 7: world7Img,
 };
 
 interface WorldMapProps {
