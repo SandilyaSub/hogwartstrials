@@ -816,9 +816,12 @@ export function generateLevel(worldId: number, levelIdx: number, canvasW: number
       case 1: data = gen_1_2_StaircaseMaze(canvasH); break;
       case 2: data = gen_1_3_TrollDungeon(canvasH); break;
       case 3: data = gen_1_4_WizardChess(canvasH); break;
+      case 4: data = gen_1_5_FluffyChamber(canvasH); break;
       case 5: data = gen_1_6_DevilsSnare(canvasH); break;
       case 6: data = gen_1_7_FlyingKeys(canvasH); break;
-      case 9: data = gen_1_5_MirrorOfErised(canvasH); break;
+      case 7: data = gen_1_8_PotionRiddle(canvasH); break;
+      case 8: data = gen_1_9_ForbiddenCorridor(canvasH); break;
+      case 9: data = gen_1_10_MirrorOfErised(canvasH); break;
       default: data = generateGenericLevel(worldId, levelIdx, canvasW, canvasH); break;
     }
   } else {
