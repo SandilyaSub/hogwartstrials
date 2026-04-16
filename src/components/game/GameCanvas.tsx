@@ -1520,12 +1520,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       {/* Top right controls */}
       <div className="absolute top-2 right-2 z-10 flex gap-2">
         <button
-          onClick={() => { setMusicOn(m => { toggleMusic(); return !m; }); }}
-          className="text-xs px-2 py-1 rounded bg-card/80 border border-border font-display text-foreground/60 hover:text-foreground"
-        >
-          {musicOn ? "🎵 Music" : "🔇 Music"}
-        </button>
-        <button
           onClick={() => { cancelAnimationFrame(gameLoopRef.current); onBack(); }}
           className="text-xs px-2 py-1 rounded bg-card/80 border border-border font-display text-foreground/60 hover:text-foreground"
         >

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useGameState } from "@/hooks/useGameState";
 import { WORLDS } from "@/lib/gameData";
-import { setSong } from "@/lib/musicEngine";
+
 import { SHOP_ITEMS } from "@/lib/shopData";
 import AuthScreen from "@/components/game/AuthScreen";
 import TitleScreen from "@/components/game/TitleScreen";
@@ -54,10 +54,6 @@ const Index = () => {
       });
   }, []);
 
-
-  useEffect(() => {
-    setSong(profile.activeSong || "default");
-  }, [profile.activeSong]);
 
   // Apply purchased theme colors to CSS variables
   useEffect(() => {
@@ -171,9 +167,6 @@ const Index = () => {
           onActivateTheme={(themeId) => {
             saveProfile({ ...profile, activeTheme: themeId });
           }}
-          onActivateSong={(songId) => {
-            saveProfile({ ...profile, activeSong: songId });
-          }}
           onBack={() => setScreen("worldmap")}
         />
       );
@@ -193,10 +186,9 @@ const Index = () => {
           profile={profile}
           onPurchase={purchaseItem}
           onActivate={(item) => {
-            const updates: Partial<typeof profile> = {};
-            if (item.type === "theme") updates.activeTheme = item.id;
-            if (item.type === "song") updates.activeSong = item.id;
-            saveProfile({ ...profile, ...updates });
+            if (item.type === "theme") {
+              saveProfile({ ...profile, activeTheme: item.id });
+            }
           }}
           onBack={() => setScreen("worldmap")}
         />
