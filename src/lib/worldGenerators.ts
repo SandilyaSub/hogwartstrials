@@ -968,15 +968,19 @@ function gen_2_7_AragogLair(H: number): LevelData {
 function gen_2_8_ParseltonguePipes(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Pipe tunnel - narrow vertical climb
-  for (let i = 0; i < 16; i++) {
-    const side = i % 2 === 0 ? 30 : 250;
-    platforms.push({ x: side, y: H - 80 - i * 55, w: 100, h: 14, type: "normal", color: "#3a4a3a" });
+
+  // Solid ground to start on
+  platforms.push({ x: 0, y: H - 40, w: 200, h: 40, type: "normal", color: "#3a4a3a" });
+
+  // Pipe tunnel - vertical climb with wider, closer platforms
+  for (let i = 0; i < 14; i++) {
+    const side = i % 2 === 0 ? 40 : 220;
+    platforms.push({ x: side, y: H - 100 - i * 50, w: 120, h: 16, type: "normal", color: "#3a4a3a" });
   }
-  // Snake enemies in pipes
-  for (let i = 0; i < 4; i++) enemies.push({ x: 140, y: H - 250 - i * 180, w: 24, h: 24, type: "snake", dir: i % 2 === 0 ? 1 : -1, speed: 1.3, range: 80, origX: 140, emoji: "🐍" });
-  platforms.push({ x: 130, y: H - 960, w: 100, h: 20, type: "finish", label: "🐍 Chamber Below" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+  // Fewer snakes, slower
+  for (let i = 0; i < 3; i++) enemies.push({ x: 140, y: H - 300 - i * 200, w: 24, h: 24, type: "snake", dir: i % 2 === 0 ? 1 : -1, speed: 0.9, range: 60, origX: 140, emoji: "🐍" });
+  platforms.push({ x: 100, y: H - 820, w: 120, h: 20, type: "finish", label: "🐍 Chamber Below" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 function gen_2_9_SwordOfGryffindor(H: number): LevelData {
