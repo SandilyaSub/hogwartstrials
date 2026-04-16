@@ -56,7 +56,6 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
                 alt={profile.character?.name || "Character"}
                 className="w-12 h-12 rounded-2xl object-cover border-2 border-primary/30"
               />
-              </div>
               <div>
                 <h1 className="font-display text-xl font-semibold text-primary text-glow">
                   {profile.username}
