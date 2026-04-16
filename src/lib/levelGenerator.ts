@@ -689,27 +689,33 @@ function generateGenericLevel(worldId: number, levelIdx: number, canvasW: number
 
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  const difficulty = (worldId - 1) * 5 + levelIdx;
+  const rawDifficulty = (worldId - 1) * 5 + levelIdx;
+  // Cap difficulty scaling so later levels stay challenging but never impossible
+  const difficulty = Math.min(rawDifficulty, 25);
 
   platforms.push({ x: 0, y: canvasH - 40, w: 150, h: 40, type: "normal" });
 
-  const totalPlatforms = 12 + difficulty * 2;
+  const totalPlatforms = 12 + Math.min(difficulty, 20) * 2;
   let lastX = 80, lastY = canvasH - 80;
 
   for (let i = 0; i < totalPlatforms; i++) {
-    const gapX = 60 + Math.random() * (40 + difficulty * 3);
-    const gapY = -30 - Math.random() * (30 + difficulty * 2);
+    // Cap gap size so jumps are always reachable
+    const maxGapX = Math.min(40 + difficulty * 3, 100);
+    const gapX = 60 + Math.random() * maxGapX;
+    const maxGapY = Math.min(30 + difficulty * 2, 70);
+    const gapY = -30 - Math.random() * maxGapY;
     const nx = lastX + gapX;
     const ny = Math.max(80, Math.min(canvasH - 100, lastY + gapY + (Math.random() > 0.5 ? 60 : 0)));
-    const pw = 60 + Math.random() * 60 - difficulty;
+    // Ensure platforms are never too narrow
+    const pw = Math.max(50, 60 + Math.random() * 60 - Math.min(difficulty, 15));
 
     let type: Platform["type"] = "normal";
     const roll = Math.random();
-    if (difficulty > 3 && roll < 0.2) type = "moving";
-    else if (difficulty > 5 && roll < 0.35) type = "disappearing";
-    else if (difficulty > 8 && roll < 0.4) type = "hazard";
+    if (difficulty > 3 && roll < 0.15) type = "moving";
+    else if (difficulty > 5 && roll < 0.25) type = "disappearing";
+    else if (difficulty > 8 && roll < 0.3) type = "hazard";
 
-    const plat: Platform = { x: nx, y: ny, w: Math.max(40, pw), h: 16, type, visible: true };
+    const plat: Platform = { x: nx, y: ny, w: Math.max(50, pw), h: 16, type, visible: true };
     if (type === "moving") {
       plat.origX = nx; plat.origY = ny;
       plat.moveDir = Math.random() > 0.5 ? 1 : -1;
@@ -719,7 +725,7 @@ function generateGenericLevel(worldId: number, levelIdx: number, canvasW: number
 
     platforms.push(plat);
 
-    if (difficulty > 2 && Math.random() < 0.15 + difficulty * 0.01 && type === "normal") {
+    if (difficulty > 2 && Math.random() < Math.min(0.15 + difficulty * 0.01, 0.3) && type === "normal") {
       enemies.push({
         x: nx + pw / 4, y: ny - 24, w: 20, h: 20,
         type: worldId <= 2 ? "spider" : worldId <= 4 ? "dementor" : "deathEater",
