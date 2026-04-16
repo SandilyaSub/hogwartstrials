@@ -1160,15 +1160,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
-      // Draw enemies — emoji only, no boxes
-      // Load dementor image once
-      if (!(window as any).__dementorImage) {
-        const img = new Image();
-        img.src = dementorImg;
-        (window as any).__dementorImage = img;
-      }
-      const dementorImageEl = (window as any).__dementorImage as HTMLImageElement;
-
+      // Draw enemies with avatar images
       enemies.forEach(e => {
         if (e.y < -50) return;
         // Subtle shadow/glow under enemy
@@ -1179,24 +1171,42 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.ellipse(e.x + e.w / 2, e.y + e.h, e.w * 0.6, 4, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
-        // Bobbing animation
         const bob = Math.sin(frameCount * 0.06 + e.origX * 0.1) * 2;
 
-        if (e.type === "dementor" && dementorImageEl.complete) {
-          const imgW = e.w * 2.2;
-          const imgH = e.h * 2.2;
-          ctx.save();
-          ctx.globalAlpha = 0.85;
-          ctx.drawImage(dementorImageEl, e.x + e.w / 2 - imgW / 2, e.y + e.h / 2 - imgH / 2 + bob, imgW, imgH);
-          ctx.restore();
-        } else {
-          const defaultEmojis: Record<string, string> = { spider: "🕷️", deathEater: "💀", troll: "🧌", chess: "♟", quirrell: "🧙" };
-          const emoji = e.emoji || defaultEmojis[e.type] || "👾";
-          const emojiSize = Math.max(18, e.w + 4);
-          ctx.font = `${emojiSize}px serif`;
-          ctx.textAlign = "center";
-          ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + emojiSize * 0.35 + bob);
+        // Try to draw avatar image
+        const enemyImgSrc = ENEMY_IMAGES[e.type];
+        if (enemyImgSrc) {
+          const cacheKey = `__enemyImg_${e.type}`;
+          if (!(window as any)[cacheKey]) {
+            const img = new Image();
+            img.src = enemyImgSrc;
+            (window as any)[cacheKey] = img;
+          }
+          const imgEl = (window as any)[cacheKey] as HTMLImageElement;
+          if (imgEl.complete && imgEl.naturalWidth > 0) {
+            const imgSize = Math.max(e.w, e.h) * 1.8;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(e.x + e.w / 2, e.y + e.h / 2 + bob, imgSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(imgEl, e.x + e.w / 2 - imgSize / 2, e.y + e.h / 2 - imgSize / 2 + bob, imgSize, imgSize);
+            ctx.restore();
+            // Red border ring
+            ctx.strokeStyle = "#ff4040";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(e.x + e.w / 2, e.y + e.h / 2 + bob, imgSize / 2, 0, Math.PI * 2);
+            ctx.stroke();
+            return;
+          }
         }
+        // Fallback to emoji
+        const defaultEmojis: Record<string, string> = { spider: "🕷️", deathEater: "💀", troll: "🧌", chess: "♟", quirrell: "🧙" };
+        const emoji = e.emoji || defaultEmojis[e.type] || "👾";
+        const emojiSize = Math.max(18, e.w + 4);
+        ctx.font = `${emojiSize}px serif`;
+        ctx.textAlign = "center";
+        ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + emojiSize * 0.35 + bob);
       });
 
       // ─── Draw Boss ───
