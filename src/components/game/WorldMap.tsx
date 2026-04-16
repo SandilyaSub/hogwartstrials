@@ -51,8 +51,11 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
         <div className="card-illustrated p-5 mb-5 animate-slide-up">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center text-2xl">
-                {profile.character?.emoji || "⚡"}
+              <img
+                src={CHARACTER_IMAGES[profile.character?.id || "harry"]}
+                alt={profile.character?.name || "Character"}
+                className="w-12 h-12 rounded-2xl object-cover border-2 border-primary/30"
+              />
               </div>
               <div>
                 <h1 className="font-display text-xl font-semibold text-primary text-glow">
