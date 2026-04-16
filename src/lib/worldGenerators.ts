@@ -1145,75 +1145,234 @@ function gen_2_9_SwordOfGryffindor(H: number): LevelData {
 function gen_3_5_HippogriffFlight(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Sky-high platforms - flight path over Hogwarts towers
-  for (let i = 0; i < 18; i++) {
-    const y = H - 80 - i * 50;
-    platforms.push({ x: 20 + ((i * 73) % 350), y, w: 55, h: 12, type: "moving", moveRange: 60 + i * 0.1, color: "#6699cc", label: i % 5 === 0 ? "🏰" : "" });
-  }
-  // Dementors chasing through the sky (matches story)
-  for (let i = 0; i < 3; i++) enemies.push({ x: 100 + i * 130, y: H - 300 - i * 150, w: 22, h: 22, type: "dementor", dir: 1, speed: 1.2, range: 80, origX: 100 + i * 130, emoji: "👻" });
-  platforms.push({ x: 170, y: H - 960, w: 100, h: 20, type: "finish", label: "🦅 Safe Landing" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Starting on the pumpkin patch near Hagrid's hut
+  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#4a5a2a", label: "🎃 Hagrid's Hut" });
+
+  // Buckbeak takeoff run — ground platforms getting higher
+  const takeoff = [
+    { x: 180, y: H - 60 }, { x: 310, y: H - 90 }, { x: 440, y: H - 130 },
+    { x: 570, y: H - 180 }, { x: 700, y: H - 240 },
+  ];
+  takeoff.forEach((t, i) => {
+    platforms.push({ x: t.x, y: t.y, w: 80, h: 14, type: "normal", color: "#5a4a2a", label: i === 0 ? "🦅 Run!" : "" });
+  });
+
+  // Airborne — Hogwarts towers as platforms
+  const towers = [
+    { x: 850, y: H - 300, label: "🏰 Tower" }, { x: 1050, y: H - 350, label: "🏰" },
+    { x: 1250, y: H - 280, label: "🏰" }, { x: 1450, y: H - 370, label: "🏰" },
+    { x: 1650, y: H - 320, label: "🏰" }, { x: 1850, y: H - 390, label: "🏰" },
+  ];
+  towers.forEach(t => {
+    platforms.push({ x: t.x, y: t.y, w: 70, h: 14, type: "normal", color: "#5a5a6a", label: t.label });
+  });
+
+  // Cloud platforms — moving (wind)
+  const clouds = [
+    { x: 950, y: H - 380, range: 50 }, { x: 1150, y: H - 420, range: 60 },
+    { x: 1350, y: H - 340, range: 45 }, { x: 1550, y: H - 430, range: 55 },
+    { x: 1750, y: H - 360, range: 50 },
+  ];
+  clouds.forEach((c, i) => {
+    const p: Platform = {
+      x: c.x, y: c.y, w: 55, h: 12, type: "moving", color: "#8899bb",
+      label: "☁️", origX: c.x, origY: c.y, moveDir: i % 2 === 0 ? 1 : -1, moveRange: c.range,
+    };
+    platforms.push(p);
+  });
+
+  // Dementors chasing through the sky
+  enemies.push({ x: 900, y: H - 340, w: 22, h: 22, type: "dementor", dir: 1, speed: 1.0, range: 80, origX: 900, emoji: "👻" });
+  enemies.push({ x: 1300, y: H - 400, w: 24, h: 24, type: "dementor", dir: -1, speed: 1.2, range: 90, origX: 1300, emoji: "👻" });
+  enemies.push({ x: 1700, y: H - 380, w: 24, h: 24, type: "dementor", dir: 1, speed: 1.3, range: 100, origX: 1700, emoji: "👻" });
+
+  platforms.push({ x: 2000, y: H - 400, w: 120, h: 20, type: "finish", label: "🦅 Safe Landing" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_3_6_ShriekingShack(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 6; i++) platforms.push({ x: i * 85, y: H - 40, w: 83, h: 40, type: "normal", color: "#4a3a2a" });
-  // Creaky floorboards
-  for (let i = 0; i < 12; i++) {
-    const y = H - 130 - i * 60;
-    platforms.push({ x: 30 + ((i * 89) % 300), y, w: 70, h: 12, type: i % 3 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#6a5a3a" });
+
+  // Ground floor — entrance from the tunnel
+  platforms.push({ x: 0, y: H - 40, w: 140, h: 40, type: "normal", color: "#4a3a2a", label: "🏚️ Ground Floor" });
+
+  // Room 1: Living room — furniture as platforms, some collapse
+  platforms.push({ x: 160, y: H - 50, w: 100, h: 16, type: "normal", color: "#6a5a3a", label: "🪑 Chair" });
+  platforms.push({ x: 280, y: H - 80, w: 80, h: 16, type: "disappearing", timer: 0, visible: true, color: "#6a5a3a", label: "🛋️ Sofa" });
+  platforms.push({ x: 400, y: H - 60, w: 90, h: 16, type: "normal", color: "#6a5a3a", label: "📦 Crate" });
+
+  // Stairs going up — creaky, some disappear
+  for (let i = 0; i < 5; i++) {
+    platforms.push({
+      x: 500 + i * 35, y: H - 90 - i * 30, w: 40, h: 10,
+      type: i === 2 || i === 4 ? "disappearing" : "normal", timer: 0, visible: true,
+      color: "#5a4a2a", label: i === 0 ? "📐 Stairs" : "",
+    });
   }
-  enemies.push({ x: 200, y: H - 350, w: 22, h: 22, type: "werewolf", dir: 1, speed: 1.8, range: 90, origX: 200, emoji: "🐺" });
-  platforms.push({ x: 140, y: H - 860, w: 100, h: 20, type: "finish", label: "🏚️ Secret Passage" });
+
+  // Room 2: Upper bedroom — bed, wardrobe, broken windows
+  platforms.push({ x: 400, y: H - 250, w: 120, h: 14, type: "normal", color: "#5a4a3a", label: "🛏️ Bed" });
+  platforms.push({ x: 250, y: H - 280, w: 80, h: 14, type: "normal", color: "#4a3a2a", label: "🚪 Wardrobe" });
+  platforms.push({ x: 550, y: H - 300, w: 70, h: 14, type: "disappearing", timer: 0, visible: true, color: "#5a4a3a", label: "🪟 Window" });
+
+  // Room 3: Attic — exposed beams, narrow
+  platforms.push({ x: 100, y: H - 350, w: 90, h: 12, type: "normal", color: "#5a4a2a", label: "🪵 Beam" });
+  platforms.push({ x: 280, y: H - 380, w: 80, h: 12, type: "normal", color: "#5a4a2a", label: "🪵 Beam" });
+  platforms.push({ x: 450, y: H - 410, w: 90, h: 12, type: "moving", color: "#5a4a2a", origX: 450, origY: H - 410, moveDir: 1, moveRange: 40, label: "🪵" });
+  platforms.push({ x: 200, y: H - 450, w: 80, h: 12, type: "normal", color: "#5a4a2a" });
+  platforms.push({ x: 380, y: H - 490, w: 90, h: 12, type: "disappearing", timer: 0, visible: true, color: "#5a4a2a" });
+
+  // Sliding furniture — moving platforms (poltergeist activity)
+  const slide1: Platform = { x: 150, y: H - 150, w: 70, h: 14, type: "moving", color: "#6a5a4a", label: "🪑", origX: 150, origY: H - 150, moveDir: 1, moveRange: 60 };
+  const slide2: Platform = { x: 300, y: H - 320, w: 60, h: 14, type: "moving", color: "#6a5a4a", label: "📦", origX: 300, origY: H - 320, moveDir: -1, moveRange: 50 };
+  platforms.push(slide1, slide2);
+
+  // Werewolf Lupin — fast and dangerous
+  enemies.push({ x: 350, y: H - 278, w: 26, h: 26, type: "werewolf", dir: 1, speed: 1.6, range: 80, origX: 350, emoji: "🐺" });
+  // Ghostly echoes
+  enemies.push({ x: 200, y: H - 180, w: 20, h: 20, type: "ghost", dir: -1, speed: 0.5, range: 60, origX: 200, emoji: "👤" });
+  enemies.push({ x: 400, y: H - 430, w: 20, h: 20, type: "ghost", dir: 1, speed: 0.6, range: 50, origX: 400, emoji: "👤" });
+
+  platforms.push({ x: 250, y: H - 550, w: 120, h: 20, type: "finish", label: "🏚️ Secret Passage" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_3_7_MaraudersMap(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Hidden passage maze - secret corridors behind paintings
-  for (let i = 0; i < 15; i++) {
-    const y = H - 100 - i * 55;
-    const visible = i % 4 !== 0;
-    platforms.push({ x: 20 + ((i * 71) % 340), y, w: 65, h: 12, type: visible ? "normal" : "disappearing", timer: 0, visible, color: "#8a7a5a", label: i % 5 === 0 ? "🗺️" : "" });
+
+  // Start in a corridor behind a portrait
+  platforms.push({ x: 0, y: H - 40, w: 140, h: 40, type: "normal", color: "#5a4a3a", label: "🖼️ Behind the portrait" });
+
+  // Secret passage 1 — narrow tunnel (horizontal)
+  for (let i = 0; i < 6; i++) {
+    platforms.push({
+      x: 160 + i * 100, y: H - 60 - (i % 2) * 20, w: 70, h: 14,
+      type: "normal", color: "#4a3a2a", label: i === 0 ? "🗺️ Passage" : "",
+    });
   }
-  // Filch and Mrs Norris patrol (matches story - secret passages)
-  enemies.push({ x: 120, y: H - 400, w: 20, h: 20, type: "filch", dir: -1, speed: 0.8, range: 70, origX: 120, emoji: "🧹" });
-  enemies.push({ x: 280, y: H - 500, w: 16, h: 16, type: "cat", dir: 1, speed: 1.2, range: 60, origX: 280, emoji: "🐱" });
-  platforms.push({ x: 160, y: H - 900, w: 100, h: 20, type: "finish", label: "🗺️ Mischief Managed" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Emerge into corridor — painting platforms
+  platforms.push({ x: 800, y: H - 100, w: 90, h: 14, type: "normal", color: "#6a5a4a", label: "🖼️" });
+  platforms.push({ x: 930, y: H - 130, w: 80, h: 14, type: "normal", color: "#6a5a4a", label: "🖼️" });
+
+  // Secret passage 2 — behind the one-eyed witch statue (vertical)
+  platforms.push({ x: 1050, y: H - 80, w: 70, h: 14, type: "normal", color: "#5a5a5a", label: "🗿 Statue" });
+  for (let i = 0; i < 4; i++) {
+    const side = i % 2 === 0 ? 1000 : 1100;
+    platforms.push({ x: side, y: H - 160 - i * 55, w: 70, h: 12, type: "normal", color: "#3a3a2a" });
+  }
+
+  // Secret passage 3 — the Honeydukes passage (longest)
+  for (let i = 0; i < 8; i++) {
+    platforms.push({
+      x: 1200 + i * 90, y: H - 120 - (i % 3) * 30, w: 60, h: 12,
+      type: i % 4 === 0 ? "disappearing" : "normal", timer: 0, visible: true,
+      color: "#4a4a3a", label: i % 3 === 0 ? "🍬" : "",
+    });
+  }
+
+  // Hidden map collectible platforms (gold)
+  platforms.push({ x: 500, y: H - 150, w: 40, h: 10, type: "normal", color: "#c0a040", label: "🗺️" });
+  platforms.push({ x: 1400, y: H - 200, w: 40, h: 10, type: "normal", color: "#c0a040", label: "🗺️" });
+
+  // Filch patrolling corridors
+  enemies.push({ x: 700, y: H - 78, w: 22, h: 22, type: "filch", dir: -1, speed: 0.7, range: 80, origX: 700, emoji: "🧹" });
+  // Mrs Norris — fast cat
+  enemies.push({ x: 1100, y: H - 108, w: 16, h: 16, type: "cat", dir: 1, speed: 1.5, range: 70, origX: 1100, emoji: "🐱" });
+  // Prefect
+  enemies.push({ x: 1500, y: H - 148, w: 20, h: 20, type: "prefect", dir: -1, speed: 0.9, range: 60, origX: 1500, emoji: "🧑‍🎓" });
+
+  platforms.push({ x: 1900, y: H - 150, w: 120, h: 20, type: "finish", label: "🗺️ Mischief Managed" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_3_8_WillowTunnel(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Narrow tunnel climb
-  for (let i = 0; i < 16; i++) {
-    const side = i % 2 === 0 ? 40 : 220;
-    platforms.push({ x: side, y: H - 70 - i * 52, w: 90, h: 14, type: "normal", color: "#5a4a2a" });
-  }
-  for (let i = 0; i < 3; i++) enemies.push({ x: 130, y: H - 200 - i * 200, w: 20, h: 20, type: "root", dir: 1, speed: 0.7, range: 60, origX: 130, emoji: "🌿" });
-  platforms.push({ x: 100, y: H - 910, w: 100, h: 20, type: "finish", label: "🌳 End of Tunnel" });
-  return { platforms, enemies, startX: 60, startY: H - 80 };
+
+  // Whomping Willow roots — you've pressed the knot
+  platforms.push({ x: 0, y: H - 40, w: 140, h: 40, type: "normal", color: "#3a2a1a", label: "🌳 Tunnel Entrance" });
+
+  // Narrow earth tunnel — zigzag with roots
+  const tunnelPath = [
+    { x: 160, y: H - 70, w: 100 }, { x: 100, y: H - 130, w: 90 },
+    { x: 200, y: H - 190, w: 80 }, { x: 80, y: H - 250, w: 100 },
+    { x: 220, y: H - 310, w: 90 }, { x: 100, y: H - 370, w: 80 },
+    { x: 200, y: H - 430, w: 100 }, { x: 80, y: H - 490, w: 90 },
+    { x: 220, y: H - 550, w: 80 }, { x: 100, y: H - 610, w: 100 },
+    { x: 200, y: H - 670, w: 90 },
+  ];
+  tunnelPath.forEach((p, i) => {
+    platforms.push({
+      x: p.x, y: p.y, w: p.w, h: 14,
+      type: i % 4 === 3 ? "disappearing" : "normal", timer: 0, visible: true,
+      color: "#4a3a1a", label: i % 3 === 0 ? "🪨" : "",
+    });
+  });
+
+  // Root hazards — they reach down from ceiling
+  platforms.push({ x: 150, y: H - 100, w: 15, h: 30, type: "hazard", color: "#3a2a0a", label: "🌿" });
+  platforms.push({ x: 180, y: H - 280, w: 15, h: 35, type: "hazard", color: "#3a2a0a", label: "🌿" });
+  platforms.push({ x: 130, y: H - 460, w: 15, h: 30, type: "hazard", color: "#3a2a0a", label: "🌿" });
+  platforms.push({ x: 200, y: H - 580, w: 15, h: 25, type: "hazard", color: "#3a2a0a", label: "🌿" });
+
+  // Grabbing root enemies
+  enemies.push({ x: 150, y: H - 160, w: 20, h: 20, type: "root", dir: 1, speed: 0.7, range: 50, origX: 150, emoji: "🌿" });
+  enemies.push({ x: 200, y: H - 400, w: 22, h: 22, type: "root", dir: -1, speed: 0.8, range: 60, origX: 200, emoji: "🌿" });
+  enemies.push({ x: 120, y: H - 580, w: 22, h: 22, type: "root", dir: 1, speed: 0.9, range: 55, origX: 120, emoji: "🌿" });
+
+  platforms.push({ x: 120, y: H - 740, w: 120, h: 20, type: "finish", label: "🏚️ Shrieking Shack" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_3_9_PatronusTraining(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 5; i++) platforms.push({ x: i * 100, y: H - 40, w: 98, h: 40, type: "normal", color: "#2a2a4a" });
-  // Dementor-filled ascending challenge
-  for (let i = 0; i < 14; i++) {
-    const y = H - 120 - i * 60;
-    platforms.push({ x: 30 + ((i * 79) % 320), y, w: 60, h: 12, type: i % 4 === 0 ? "normal" : "normal", color: i % 4 === 0 ? "#aaccff" : "#4a4a6a" });
-  }
-  for (let i = 0; i < 5; i++) enemies.push({ x: 60 + i * 80, y: H - 250 - i * 120, w: 22, h: 22, type: "dementor", dir: i % 2 === 0 ? 1 : -1, speed: 0.9, range: 80, origX: 60 + i * 80, emoji: "👻" });
-  platforms.push({ x: 150, y: H - 950, w: 100, h: 20, type: "finish", label: "✨ Expecto Patronum!" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
-}
 
-// ─── WORLD 4 EXTRA LEVELS ────────────────────────
+  // Lupin's classroom — wide arena floor
+  platforms.push({ x: 0, y: H - 40, w: 500, h: 40, type: "normal", color: "#3a3a4a", label: "📚 Lupin's Classroom" });
+
+  // Training obstacles — desks pushed aside, creating platforms
+  const desks = [
+    { x: 50, y: H - 110, label: "📚 Desk" }, { x: 200, y: H - 140, label: "📚" },
+    { x: 350, y: H - 120, label: "📚" }, { x: 150, y: H - 200, label: "📚" },
+    { x: 300, y: H - 230, label: "📚" }, { x: 80, y: H - 270, label: "📚" },
+    { x: 250, y: H - 310, label: "📚" }, { x: 400, y: H - 280, label: "📚" },
+  ];
+  desks.forEach(d => {
+    platforms.push({ x: d.x, y: d.y, w: 75, h: 14, type: "normal", color: "#5a4a3a", label: d.label });
+  });
+
+  // Boggart-Dementor wardrobe at center
+  platforms.push({ x: 200, y: H - 80, w: 80, h: 40, type: "normal", color: "#2a2a2a", label: "🚪 Wardrobe" });
+
+  // Patronus light platforms — glowing blue safe zones
+  platforms.push({ x: 100, y: H - 170, w: 50, h: 12, type: "normal", color: "#88bbff", label: "✨" });
+  platforms.push({ x: 350, y: H - 250, w: 50, h: 12, type: "normal", color: "#88bbff", label: "✨" });
+  platforms.push({ x: 150, y: H - 350, w: 50, h: 12, type: "normal", color: "#88bbff", label: "✨" });
+
+  // Higher challenge platforms
+  for (let i = 0; i < 5; i++) {
+    platforms.push({
+      x: 50 + i * 100, y: H - 380 - i * 40, w: 60, h: 12,
+      type: i % 2 === 0 ? "normal" : "disappearing", timer: 0, visible: true,
+      color: "#4a4a6a",
+    });
+  }
+
+  // Dementors — progressively more and faster (training waves)
+  enemies.push({ x: 100, y: H - 130, w: 22, h: 22, type: "dementor", dir: 1, speed: 0.5, range: 60, origX: 100, emoji: "👻" });
+  enemies.push({ x: 350, y: H - 160, w: 22, h: 22, type: "dementor", dir: -1, speed: 0.7, range: 70, origX: 350, emoji: "👻" });
+  enemies.push({ x: 200, y: H - 250, w: 24, h: 24, type: "dementor", dir: 1, speed: 0.8, range: 80, origX: 200, emoji: "👻" });
+  enemies.push({ x: 100, y: H - 350, w: 24, h: 24, type: "dementor", dir: -1, speed: 0.9, range: 90, origX: 100, emoji: "👻" });
+  enemies.push({ x: 300, y: H - 450, w: 26, h: 26, type: "dementor", dir: 1, speed: 1.0, range: 100, origX: 300, emoji: "👻" });
+
+  platforms.push({ x: 180, y: H - 600, w: 120, h: 20, type: "finish", label: "✨ Expecto Patronum!" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
+}
 
 function gen_4_5_YuleBall(H: number): LevelData {
   const platforms: Platform[] = [];
