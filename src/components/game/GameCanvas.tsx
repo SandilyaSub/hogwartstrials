@@ -16,10 +16,52 @@ import dracoImg from "@/assets/characters/draco.png";
 import cedricImg from "@/assets/characters/cedric.png";
 import choImg from "@/assets/characters/cho.png";
 
+// Enemy avatars
+import spiderImg from "@/assets/enemies/spider.png";
+import deathEaterImg from "@/assets/enemies/death_eater.png";
+import trollImg from "@/assets/enemies/troll.png";
+import chessImg from "@/assets/enemies/chess.png";
+import quirrellImg from "@/assets/enemies/quirrell.png";
+import snakeImg from "@/assets/enemies/snake.png";
+import werewolfImg from "@/assets/enemies/werewolf.png";
+import pixieImg from "@/assets/enemies/pixie.png";
+import goblinImg from "@/assets/enemies/goblin.png";
+import portraitImg from "@/assets/enemies/portrait.png";
+import centaurImg from "@/assets/enemies/centaur.png";
+import wolfImg from "@/assets/enemies/wolf.png";
+import birdImg from "@/assets/enemies/bird.png";
+import wizardNpcImg from "@/assets/enemies/wizard_npc.png";
+import dementorAvatarImg from "@/assets/enemies/dementor_avatar.png";
+
+// Boss avatars
+import voldemortImg from "@/assets/enemies/voldemort.png";
+import basiliskImg from "@/assets/enemies/basilisk.png";
+import dragonImg from "@/assets/enemies/dragon.png";
+import bellatrixImg from "@/assets/enemies/bellatrix.png";
+import inferiImg from "@/assets/enemies/inferi.png";
+
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
   luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
   draco: dracoImg, cedric: cedricImg, cho: choImg,
+};
+
+const ENEMY_IMAGES: Record<string, string> = {
+  spider: spiderImg, deathEater: deathEaterImg, troll: trollImg,
+  chess: chessImg, quirrell: quirrellImg, snake: snakeImg,
+  werewolf: werewolfImg, pixie: pixieImg, goblin: goblinImg,
+  portrait: portraitImg, centaur: centaurImg, wolf: wolfImg,
+  bird: birdImg, wizard_npc: wizardNpcImg, dementor: dementorAvatarImg,
+};
+
+const BOSS_IMAGES: Record<string, string> = {
+  "Professor Quirrell": quirrellImg,
+  "Basilisk": basiliskImg,
+  "Dementor Swarm": dementorAvatarImg,
+  "Hungarian Horntail": dragonImg,
+  "Bellatrix": bellatrixImg,
+  "Inferi Horde": inferiImg,
+  "Lord Voldemort": voldemortImg,
 };
 
 interface GameCanvasProps {
@@ -1118,15 +1160,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
-      // Draw enemies — emoji only, no boxes
-      // Load dementor image once
-      if (!(window as any).__dementorImage) {
-        const img = new Image();
-        img.src = dementorImg;
-        (window as any).__dementorImage = img;
-      }
-      const dementorImageEl = (window as any).__dementorImage as HTMLImageElement;
-
+      // Draw enemies with avatar images
       enemies.forEach(e => {
         if (e.y < -50) return;
         // Subtle shadow/glow under enemy
@@ -1137,24 +1171,42 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.ellipse(e.x + e.w / 2, e.y + e.h, e.w * 0.6, 4, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
-        // Bobbing animation
         const bob = Math.sin(frameCount * 0.06 + e.origX * 0.1) * 2;
 
-        if (e.type === "dementor" && dementorImageEl.complete) {
-          const imgW = e.w * 2.2;
-          const imgH = e.h * 2.2;
-          ctx.save();
-          ctx.globalAlpha = 0.85;
-          ctx.drawImage(dementorImageEl, e.x + e.w / 2 - imgW / 2, e.y + e.h / 2 - imgH / 2 + bob, imgW, imgH);
-          ctx.restore();
-        } else {
-          const defaultEmojis: Record<string, string> = { spider: "🕷️", deathEater: "💀", troll: "🧌", chess: "♟", quirrell: "🧙" };
-          const emoji = e.emoji || defaultEmojis[e.type] || "👾";
-          const emojiSize = Math.max(18, e.w + 4);
-          ctx.font = `${emojiSize}px serif`;
-          ctx.textAlign = "center";
-          ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + emojiSize * 0.35 + bob);
+        // Try to draw avatar image
+        const enemyImgSrc = ENEMY_IMAGES[e.type];
+        if (enemyImgSrc) {
+          const cacheKey = `__enemyImg_${e.type}`;
+          if (!(window as any)[cacheKey]) {
+            const img = new Image();
+            img.src = enemyImgSrc;
+            (window as any)[cacheKey] = img;
+          }
+          const imgEl = (window as any)[cacheKey] as HTMLImageElement;
+          if (imgEl.complete && imgEl.naturalWidth > 0) {
+            const imgSize = Math.max(e.w, e.h) * 1.8;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(e.x + e.w / 2, e.y + e.h / 2 + bob, imgSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(imgEl, e.x + e.w / 2 - imgSize / 2, e.y + e.h / 2 - imgSize / 2 + bob, imgSize, imgSize);
+            ctx.restore();
+            // Red border ring
+            ctx.strokeStyle = "#ff4040";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(e.x + e.w / 2, e.y + e.h / 2 + bob, imgSize / 2, 0, Math.PI * 2);
+            ctx.stroke();
+            return;
+          }
         }
+        // Fallback to emoji
+        const defaultEmojis: Record<string, string> = { spider: "🕷️", deathEater: "💀", troll: "🧌", chess: "♟", quirrell: "🧙" };
+        const emoji = e.emoji || defaultEmojis[e.type] || "👾";
+        const emojiSize = Math.max(18, e.w + 4);
+        ctx.font = `${emojiSize}px serif`;
+        ctx.textAlign = "center";
+        ctx.fillText(emoji, e.x + e.w / 2, e.y + e.h / 2 + emojiSize * 0.35 + bob);
       });
 
       // ─── Draw Boss ───
@@ -1176,19 +1228,53 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.9, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
-        // Boss emoji (large, no box)
-        if (bossHitFlash > 0) {
-          ctx.save();
-          ctx.globalAlpha = 0.6;
-          ctx.fillStyle = "#fff";
-          ctx.beginPath();
-          ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
+        // Boss avatar image
+        const bossImgSrc = BOSS_IMAGES[bossData.name];
+        let bossDrawn = false;
+        if (bossImgSrc) {
+          const cacheKey = `__bossImg_${bossData.name}`;
+          if (!(window as any)[cacheKey]) {
+            const img = new Image();
+            img.src = bossImgSrc;
+            (window as any)[cacheKey] = img;
+          }
+          const bossImgEl = (window as any)[cacheKey] as HTMLImageElement;
+          if (bossImgEl.complete && bossImgEl.naturalWidth > 0) {
+            const imgSize = bossW * 1.8;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(bossX + bossW / 2, bossY + bossH / 2, imgSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(bossImgEl, bossX + bossW / 2 - imgSize / 2, bossY + bossH / 2 - imgSize / 2, imgSize, imgSize);
+            if (bossHitFlash > 0) {
+              ctx.globalAlpha = 0.5;
+              ctx.fillStyle = "#fff";
+              ctx.fillRect(bossX + bossW / 2 - imgSize / 2, bossY + bossH / 2 - imgSize / 2, imgSize, imgSize);
+            }
+            ctx.restore();
+            // Boss border ring
+            ctx.strokeStyle = bossData.color;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(bossX + bossW / 2, bossY + bossH / 2, imgSize / 2, 0, Math.PI * 2);
+            ctx.stroke();
+            bossDrawn = true;
+          }
         }
-        ctx.font = "36px serif";
-        ctx.textAlign = "center";
-        ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 12);
+        if (!bossDrawn) {
+          if (bossHitFlash > 0) {
+            ctx.save();
+            ctx.globalAlpha = 0.6;
+            ctx.fillStyle = "#fff";
+            ctx.beginPath();
+            ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+          ctx.font = "36px serif";
+          ctx.textAlign = "center";
+          ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 12);
+        }
         // Boss name
         ctx.font = "11px Fredoka, sans-serif";
         ctx.fillStyle = "#fff";
