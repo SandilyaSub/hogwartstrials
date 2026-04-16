@@ -899,14 +899,37 @@ function gen_7_4_FinalClimb(H: number): LevelData {
 function gen_2_5_WhompingWillow(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 8; i++) platforms.push({ x: i * 90, y: H - 40, w: 88, h: 40, type: "normal", color: "#3a5a2a" });
-  // Willow branches - swinging platforms
-  for (let i = 0; i < 12; i++) {
-    const y = H - 120 - i * 60;
-    platforms.push({ x: 60 + (i % 3) * 140, y, w: 70, h: 14, type: "moving", moveRange: 80 + i * 0.2, color: "#5a4a2a", label: i === 0 ? "🌳 Dodge the branches!" : undefined });
-  }
-  for (let i = 0; i < 3; i++) enemies.push({ x: 150 + i * 120, y: H - 300 - i * 120, w: 30, h: 30, type: "troll", dir: 1, speed: 1.2, range: 60, origX: 150 + i * 120, emoji: "🌿" });
-  platforms.push({ x: 180, y: H - 850, w: 100, h: 20, type: "finish", label: "🚗 Flying Car Escape" });
+
+  // Wide grassy ground to start
+  for (let i = 0; i < 10; i++) platforms.push({ x: i * 90, y: H - 40, w: 88, h: 40, type: "normal", color: "#3a5a2a" });
+
+  // Willow branches — wider platforms, gentler movement, more forgiving spacing
+  const branchPositions = [
+    { x: 80, y: H - 120 }, { x: 260, y: H - 120 },
+    { x: 50, y: H - 200 }, { x: 220, y: H - 200 }, { x: 380, y: H - 210 },
+    { x: 100, y: H - 290 }, { x: 300, y: H - 290 },
+    { x: 60, y: H - 370 }, { x: 240, y: H - 380 }, { x: 400, y: H - 370 },
+    { x: 140, y: H - 460 }, { x: 320, y: H - 460 },
+    { x: 80, y: H - 540 }, { x: 280, y: H - 540 },
+    { x: 180, y: H - 620 },
+  ];
+  branchPositions.forEach((b, i) => {
+    // Every 3rd platform is moving (gentle sway), rest are solid
+    const isMoving = i % 3 === 1;
+    platforms.push({
+      x: b.x, y: b.y, w: 90, h: 16,
+      type: isMoving ? "moving" : "normal",
+      moveRange: isMoving ? 40 : undefined,
+      color: "#5a4a2a",
+      label: i === 0 ? "🌳 Dodge the branches!" : undefined,
+    });
+  });
+
+  // Only 2 gentle branch-swipe enemies (slower, smaller range)
+  enemies.push({ x: 200, y: H - 320, w: 24, h: 24, type: "troll", dir: 1, speed: 0.7, range: 40, origX: 200, emoji: "🌿" });
+  enemies.push({ x: 300, y: H - 500, w: 24, h: 24, type: "troll", dir: -1, speed: 0.8, range: 50, origX: 300, emoji: "🌿" });
+
+  platforms.push({ x: 150, y: H - 700, w: 120, h: 22, type: "finish", label: "🚗 Flying Car Escape" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
 }
 
