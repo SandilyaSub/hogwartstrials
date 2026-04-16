@@ -1605,74 +1605,200 @@ function gen_4_9_WandPriori(H: number): LevelData {
 function gen_5_5_RoomOfRequirement(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 7; i++) platforms.push({ x: i * 80, y: H - 40, w: 78, h: 40, type: "normal", color: "#5a4a3a" });
-  // Room morphs - platforms appear and disappear (glitching room, matches story)
-  for (let i = 0; i < 14; i++) {
-    const y = H - 110 - i * 58;
-    platforms.push({ x: 25 + ((i * 77) % 330), y, w: 60, h: 12, type: i % 2 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#7a6a5a", label: i % 4 === 0 ? "🚪" : "" });
-  }
-  // Training dummies from DA sessions
-  enemies.push({ x: 180, y: H - 400, w: 20, h: 20, type: "dummy", dir: 1, speed: 0.5, range: 40, origX: 180, emoji: "🎯" });
-  enemies.push({ x: 250, y: H - 630, w: 20, h: 20, type: "dummy", dir: -1, speed: 0.6, range: 50, origX: 250, emoji: "🎯" });
-  platforms.push({ x: 140, y: H - 920, w: 100, h: 20, type: "finish", label: "🚪 Room Found" });
+
+  // The room materializes around you
+  platforms.push({ x: 0, y: H - 40, w: 200, h: 40, type: "normal", color: "#5a4a3a", label: "🚪 Room of Requirement" });
+
+  // Walls shift — left side morphing
+  const leftWall = [
+    { x: 30, y: H - 110, w: 80 }, { x: 50, y: H - 200, w: 70 },
+    { x: 20, y: H - 290, w: 90 }, { x: 40, y: H - 380, w: 75 },
+  ];
+  leftWall.forEach((p, i) => {
+    platforms.push({ x: p.x, y: p.y, w: p.w, h: 12, type: "disappearing", timer: 0, visible: true, color: "#7a6a5a", label: i === 0 ? "🚪" : "" });
+  });
+
+  // Right side morphing
+  const rightWall = [
+    { x: 280, y: H - 150, w: 80 }, { x: 300, y: H - 240, w: 70 },
+    { x: 270, y: H - 330, w: 85 }, { x: 290, y: H - 420, w: 75 },
+  ];
+  rightWall.forEach(p => {
+    platforms.push({ x: p.x, y: p.y, w: p.w, h: 12, type: "normal", color: "#6a5a4a" });
+  });
+
+  // Central floating objects — the room provides what you need
+  platforms.push({ x: 150, y: H - 170, w: 60, h: 12, type: "moving", color: "#8a7a5a", label: "📚", origX: 150, origY: H - 170, moveDir: 1, moveRange: 40 });
+  platforms.push({ x: 180, y: H - 260, w: 55, h: 12, type: "moving", color: "#8a7a5a", label: "🪑", origX: 180, origY: H - 260, moveDir: -1, moveRange: 50 });
+  platforms.push({ x: 160, y: H - 350, w: 60, h: 12, type: "normal", color: "#8a7a5a", label: "🏺" });
+  platforms.push({ x: 140, y: H - 440, w: 65, h: 12, type: "disappearing", timer: 0, visible: true, color: "#8a7a5a", label: "🪞" });
+
+  // Training dummies
+  enemies.push({ x: 200, y: H - 180, w: 20, h: 20, type: "dummy", dir: 1, speed: 0.5, range: 40, origX: 200, emoji: "🎯" });
+  enemies.push({ x: 100, y: H - 350, w: 20, h: 20, type: "dummy", dir: -1, speed: 0.6, range: 50, origX: 100, emoji: "🎯" });
+
+  platforms.push({ x: 150, y: H - 520, w: 120, h: 20, type: "finish", label: "🚪 Room Found" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_5_6_UmbridgeOffice(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 6; i++) platforms.push({ x: i * 90, y: H - 40, w: 88, h: 40, type: "normal", color: "#cc88aa" });
-  // Pink decorative platforms
-  for (let i = 0; i < 12; i++) {
-    const y = H - 130 - i * 60;
-    platforms.push({ x: 35 + ((i * 73) % 310), y, w: 65, h: 12, type: "normal", color: "#ff99bb" });
-  }
-  for (let i = 0; i < 3; i++) enemies.push({ x: 100 + i * 120, y: H - 300 - i * 130, w: 20, h: 20, type: "cat", dir: 1, speed: 0.8, range: 50, origX: 100 + i * 120, emoji: "🐱" });
-  platforms.push({ x: 150, y: H - 870, w: 100, h: 20, type: "finish", label: "📋 Decree Dodged" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Sickeningly pink office floor
+  platforms.push({ x: 0, y: H - 40, w: 500, h: 40, type: "normal", color: "#cc88aa", label: "🎀 Umbridge's Office" });
+
+  // Doily-covered shelves — pink platforms at different heights
+  const shelves = [
+    { x: 50, y: H - 100, label: "🎀" }, { x: 200, y: H - 120, label: "🍵 Tea" },
+    { x: 350, y: H - 110, label: "🎀" }, { x: 100, y: H - 180, label: "📋 Decree" },
+    { x: 280, y: H - 200, label: "🎀" }, { x: 420, y: H - 170, label: "📋" },
+    { x: 50, y: H - 260, label: "🎀" }, { x: 200, y: H - 290, label: "📋 Decree" },
+    { x: 380, y: H - 270, label: "🎀" }, { x: 120, y: H - 350, label: "🎀" },
+    { x: 300, y: H - 370, label: "📋" },
+  ];
+  shelves.forEach(s => {
+    platforms.push({ x: s.x, y: s.y, w: 70, h: 12, type: "normal", color: "#ff99bb", label: s.label });
+  });
+
+  // Cat plate walls — decorative hazards
+  platforms.push({ x: 150, y: H - 80, w: 20, h: 40, type: "hazard", color: "#ffaacc", label: "🐱" });
+  platforms.push({ x: 350, y: H - 150, w: 20, h: 40, type: "hazard", color: "#ffaacc", label: "🐱" });
+
+  // Cat plates that fly at you, quills that chase
+  enemies.push({ x: 100, y: H - 130, w: 20, h: 20, type: "catPlate", dir: 1, speed: 0.8, range: 60, origX: 100, emoji: "🐱" });
+  enemies.push({ x: 350, y: H - 230, w: 20, h: 20, type: "catPlate", dir: -1, speed: 0.9, range: 70, origX: 350, emoji: "🐱" });
+  enemies.push({ x: 200, y: H - 320, w: 18, h: 18, type: "quill", dir: 1, speed: 1.1, range: 50, origX: 200, emoji: "✒️" });
+
+  platforms.push({ x: 200, y: H - 440, w: 120, h: 20, type: "finish", label: "📋 Decree Dodged" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 function gen_5_7_ThestralFlight(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // High altitude - moving cloud platforms over countryside
-  for (let i = 0; i < 16; i++) {
-    const y = H - 80 - i * 55;
-    platforms.push({ x: 30 + ((i * 89) % 340), y, w: 55, h: 12, type: "moving", moveRange: 70 + i * 0.1, color: "#6a6a8a", label: i % 5 === 0 ? "☁️" : "" });
-  }
-  // Death Eaters chasing (matches story - dodge curses)
-  enemies.push({ x: 150, y: H - 350, w: 22, h: 22, type: "deathEater", dir: 1, speed: 1.4, range: 80, origX: 150, emoji: "💀" });
-  enemies.push({ x: 280, y: H - 600, w: 22, h: 22, type: "deathEater", dir: -1, speed: 1.5, range: 90, origX: 280, emoji: "💀" });
-  platforms.push({ x: 160, y: H - 960, w: 100, h: 20, type: "finish", label: "🏛️ Ministry Arrival" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Hogwarts grounds — mounting the Thestral
+  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#2a3a2a", label: "🦇 Mount Thestral" });
+
+  // Takeoff over the forest
+  const treeTops = [
+    { x: 180, y: H - 80 }, { x: 320, y: H - 120 }, { x: 460, y: H - 170 },
+  ];
+  treeTops.forEach((t, i) => {
+    platforms.push({ x: t.x, y: t.y, w: 70, h: 14, type: "normal", color: "#2a4a2a", label: i === 0 ? "🌲" : "" });
+  });
+
+  // High altitude clouds — English countryside
+  const clouds = [
+    { x: 600, y: H - 230, range: 60 }, { x: 800, y: H - 280, range: 50 },
+    { x: 1000, y: H - 250, range: 70 }, { x: 1200, y: H - 310, range: 55 },
+    { x: 1400, y: H - 270, range: 65 }, { x: 1600, y: H - 330, range: 50 },
+    { x: 1800, y: H - 290, range: 60 }, { x: 2000, y: H - 350, range: 55 },
+  ];
+  clouds.forEach((c, i) => {
+    const p: Platform = {
+      x: c.x, y: c.y, w: 60, h: 12, type: "moving", color: "#6a6a8a",
+      label: i % 3 === 0 ? "☁️" : "", origX: c.x, origY: c.y, moveDir: i % 2 === 0 ? 1 : -1, moveRange: c.range,
+    };
+    platforms.push(p);
+  });
+
+  // Storm clouds — hazards
+  platforms.push({ x: 900, y: H - 220, w: 50, h: 8, type: "hazard", color: "#3a3a5a", label: "⚡" });
+  platforms.push({ x: 1500, y: H - 300, w: 50, h: 8, type: "hazard", color: "#3a3a5a", label: "⚡" });
+
+  // Death Eaters chasing
+  enemies.push({ x: 700, y: H - 260, w: 22, h: 22, type: "deathEater", dir: 1, speed: 1.3, range: 80, origX: 700, emoji: "💀" });
+  enemies.push({ x: 1300, y: H - 300, w: 24, h: 24, type: "deathEater", dir: -1, speed: 1.5, range: 90, origX: 1300, emoji: "💀" });
+  enemies.push({ x: 1900, y: H - 340, w: 24, h: 24, type: "deathEater", dir: 1, speed: 1.6, range: 100, origX: 1900, emoji: "💀" });
+
+  platforms.push({ x: 2200, y: H - 380, w: 120, h: 20, type: "finish", label: "🏛️ Ministry Arrival" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_5_8_VeilChamber(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 5; i++) platforms.push({ x: i * 100, y: H - 40, w: 98, h: 40, type: "normal", color: "#2a2a3a" });
-  // Mysterious veil - dark platforms
-  for (let i = 0; i < 14; i++) {
-    const y = H - 120 - i * 58;
-    platforms.push({ x: 20 + ((i * 81) % 320), y, w: 60, h: 12, type: i % 4 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#3a3a5a" });
-  }
-  for (let i = 0; i < 4; i++) enemies.push({ x: 80 + i * 90, y: H - 280 - i * 140, w: 20, h: 20, type: "deathEater", dir: i % 2 === 0 ? 1 : -1, speed: 1.3, range: 70, origX: 80 + i * 90, emoji: "💀" });
-  platforms.push({ x: 150, y: H - 930, w: 100, h: 20, type: "finish", label: "🌀 Beyond the Veil" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Death Chamber entrance
+  platforms.push({ x: 0, y: H - 40, w: 180, h: 40, type: "normal", color: "#2a2a3a", label: "🌀 Death Chamber" });
+
+  // Stone amphitheatre seating — descending then ascending around the veil
+  const seats = [
+    { x: 200, y: H - 60, w: 80 }, { x: 320, y: H - 80, w: 70 },
+    { x: 440, y: H - 100, w: 80 }, { x: 350, y: H - 140, w: 70 },
+    { x: 220, y: H - 160, w: 80 },
+  ];
+  seats.forEach((s, i) => {
+    platforms.push({ x: s.x, y: s.y, w: s.w, h: 14, type: "normal", color: "#3a3a4a", label: i === 0 ? "🪨 Seats" : "" });
+  });
+
+  // The Archway with the Veil — central hazard (don't fall in!)
+  platforms.push({ x: 280, y: H - 30, w: 100, h: 8, type: "hazard", color: "#1a1a2a", label: "🌀 The Veil" });
+
+  // Floating platforms around the chamber — whispers draw you
+  const floating = [
+    { x: 100, y: H - 200 }, { x: 300, y: H - 240 }, { x: 500, y: H - 220 },
+    { x: 150, y: H - 300 }, { x: 400, y: H - 320 }, { x: 250, y: H - 380 },
+    { x: 450, y: H - 400 }, { x: 150, y: H - 440 }, { x: 350, y: H - 480 },
+  ];
+  floating.forEach((f, i) => {
+    platforms.push({
+      x: f.x, y: f.y, w: 60, h: 12,
+      type: i % 3 === 0 ? "disappearing" : "normal", timer: 0, visible: true,
+      color: "#3a3a5a",
+    });
+  });
+
+  // Death Eaters attacking from all sides
+  enemies.push({ x: 150, y: H - 130, w: 22, h: 22, type: "deathEater", dir: 1, speed: 1.2, range: 70, origX: 150, emoji: "💀" });
+  enemies.push({ x: 400, y: H - 260, w: 22, h: 22, type: "deathEater", dir: -1, speed: 1.3, range: 80, origX: 400, emoji: "💀" });
+  enemies.push({ x: 200, y: H - 400, w: 24, h: 24, type: "deathEater", dir: 1, speed: 1.4, range: 70, origX: 200, emoji: "💀" });
+  // Bellatrix
+  enemies.push({ x: 350, y: H - 450, w: 26, h: 26, type: "bellatrix", dir: -1, speed: 1.6, range: 90, origX: 350, emoji: "🧙‍♀️" });
+
+  platforms.push({ x: 250, y: H - 550, w: 120, h: 20, type: "finish", label: "🌀 Beyond the Veil" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_5_9_DumbledoresArmy(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 6; i++) platforms.push({ x: i * 85, y: H - 40, w: 83, h: 40, type: "normal", color: "#3a4a5a" });
-  // Training room - bouncy combat platforms
-  for (let i = 0; i < 15; i++) {
-    const y = H - 110 - i * 55;
-    platforms.push({ x: 25 + ((i * 69) % 330), y, w: 60, h: 12, type: i % 3 === 0 ? "normal" : "normal", color: i % 3 === 0 ? "#4488ff" : "#5a6a7a" });
-  }
-  for (let i = 0; i < 3; i++) enemies.push({ x: 120 + i * 100, y: H - 350 - i * 120, w: 20, h: 20, type: "dummy", dir: 1, speed: 0.6, range: 40, origX: 120 + i * 100, emoji: "🎯" });
-  platforms.push({ x: 150, y: H - 930, w: 100, h: 20, type: "finish", label: "⚡ DA Trained!" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Room of Requirement — DA training room
+  platforms.push({ x: 0, y: H - 40, w: 500, h: 40, type: "normal", color: "#3a4a5a", label: "⚡ DA Training" });
+
+  // Training stations — each teaches a different skill
+  // Station 1: Disarming — wide platforms
+  platforms.push({ x: 50, y: H - 100, w: 100, h: 14, type: "normal", color: "#4488ff", label: "⚡ Expelliarmus" });
+  platforms.push({ x: 200, y: H - 130, w: 90, h: 14, type: "normal", color: "#5a6a7a" });
+  platforms.push({ x: 350, y: H - 110, w: 100, h: 14, type: "normal", color: "#5a6a7a" });
+
+  // Station 2: Shielding — moving platforms to dodge
+  const shield1: Platform = { x: 100, y: H - 200, w: 70, h: 12, type: "moving", color: "#4488ff", label: "🛡️ Protego", origX: 100, origY: H - 200, moveDir: 1, moveRange: 50 };
+  const shield2: Platform = { x: 300, y: H - 230, w: 70, h: 12, type: "moving", color: "#5a6a7a", origX: 300, origY: H - 230, moveDir: -1, moveRange: 40 };
+  platforms.push(shield1, shield2);
+
+  // Station 3: Patronus — disappearing platforms (concentration)
+  platforms.push({ x: 50, y: H - 300, w: 80, h: 12, type: "disappearing", timer: 0, visible: true, color: "#88bbff", label: "✨ Patronus" });
+  platforms.push({ x: 200, y: H - 340, w: 70, h: 12, type: "normal", color: "#5a6a7a" });
+  platforms.push({ x: 350, y: H - 320, w: 80, h: 12, type: "disappearing", timer: 0, visible: true, color: "#88bbff" });
+
+  // Station 4: Combat — final gauntlet
+  platforms.push({ x: 100, y: H - 410, w: 70, h: 12, type: "normal", color: "#4488ff", label: "⚔️ Combat" });
+  platforms.push({ x: 280, y: H - 440, w: 80, h: 12, type: "normal", color: "#5a6a7a" });
+  platforms.push({ x: 150, y: H - 500, w: 70, h: 12, type: "normal", color: "#5a6a7a" });
+  platforms.push({ x: 350, y: H - 530, w: 80, h: 12, type: "normal", color: "#5a6a7a" });
+
+  // Training dummies at each station
+  enemies.push({ x: 300, y: H - 128, w: 20, h: 20, type: "dummy", dir: 1, speed: 0.5, range: 40, origX: 300, emoji: "🎯" });
+  enemies.push({ x: 200, y: H - 258, w: 20, h: 20, type: "dummy", dir: -1, speed: 0.7, range: 50, origX: 200, emoji: "🎯" });
+  enemies.push({ x: 150, y: H - 368, w: 22, h: 22, type: "dummy", dir: 1, speed: 0.9, range: 60, origX: 150, emoji: "🎯" });
+  enemies.push({ x: 300, y: H - 468, w: 24, h: 24, type: "dummy", dir: -1, speed: 1.0, range: 70, origX: 300, emoji: "🎯" });
+
+  platforms.push({ x: 200, y: H - 600, w: 120, h: 20, type: "finish", label: "⚡ DA Trained!" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 // ─── WORLD 6 EXTRA LEVELS ────────────────────────
@@ -1680,73 +1806,193 @@ function gen_5_9_DumbledoresArmy(H: number): LevelData {
 function gen_6_5_SlugClubParty(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 7; i++) platforms.push({ x: i * 80, y: H - 40, w: 78, h: 40, type: "normal", color: "#4a5a4a" });
-  // Party platforms with chandeliers and curtained alcoves
-  for (let i = 0; i < 12; i++) {
-    const y = H - 120 - i * 62;
-    platforms.push({ x: 40 + ((i * 87) % 320), y, w: 65, h: 12, type: i % 3 === 0 ? "moving" : "normal", moveRange: 40, color: "#8a7a3a", label: i % 3 === 0 ? "🕯️" : "" });
-  }
-  // Floating candelabras and Filch (matches story - gatecrashers being caught)
-  enemies.push({ x: 180, y: H - 350, w: 20, h: 20, type: "candelabra", dir: 1, speed: 0.7, range: 60, origX: 180, emoji: "🕯️" });
-  enemies.push({ x: 300, y: H - 550, w: 22, h: 22, type: "filch", dir: -1, speed: 0.9, range: 70, origX: 300, emoji: "🧹" });
-  platforms.push({ x: 150, y: H - 870, w: 100, h: 20, type: "finish", label: "🥂 Party Over" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Slughorn's office — festive decorations
+  platforms.push({ x: 0, y: H - 40, w: 400, h: 40, type: "normal", color: "#4a5a4a", label: "🥂 Slug Club Party" });
+
+  // Curtained alcoves along the sides
+  platforms.push({ x: 30, y: H - 100, w: 70, h: 14, type: "normal", color: "#6a3a3a", label: "🪟 Alcove" });
+  platforms.push({ x: 300, y: H - 110, w: 70, h: 14, type: "normal", color: "#6a3a3a", label: "🪟" });
+
+  // Floating chandeliers and candles — swaying platforms
+  const chandeliers = [
+    { x: 100, y: H - 170, range: 30 }, { x: 250, y: H - 200, range: 40 },
+    { x: 50, y: H - 260, range: 35 }, { x: 200, y: H - 300, range: 45 },
+    { x: 330, y: H - 280, range: 30 }, { x: 130, y: H - 360, range: 40 },
+    { x: 280, y: H - 400, range: 35 },
+  ];
+  chandeliers.forEach((c, i) => {
+    const p: Platform = {
+      x: c.x, y: c.y, w: 60, h: 12, type: "moving", color: "#8a7a3a",
+      label: i % 2 === 0 ? "🕯️" : "🪔",
+      origX: c.x, origY: c.y, moveDir: i % 2 === 0 ? 1 : -1, moveRange: c.range,
+    };
+    platforms.push(p);
+  });
+
+  // Punch bowl table
+  platforms.push({ x: 150, y: H - 140, w: 100, h: 14, type: "normal", color: "#5a4a3a", label: "🍷 Punch" });
+
+  // Flying candelabras and Filch gatecrashing
+  enemies.push({ x: 180, y: H - 230, w: 20, h: 20, type: "candelabra", dir: 1, speed: 0.7, range: 60, origX: 180, emoji: "🕯️" });
+  enemies.push({ x: 100, y: H - 340, w: 20, h: 20, type: "candelabra", dir: -1, speed: 0.8, range: 50, origX: 100, emoji: "🕯️" });
+  enemies.push({ x: 300, y: H - 380, w: 22, h: 22, type: "filch", dir: -1, speed: 0.9, range: 70, origX: 300, emoji: "🧹" });
+
+  platforms.push({ x: 170, y: H - 480, w: 120, h: 20, type: "finish", label: "🥂 Party Over" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 function gen_6_6_Sectumsempra(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 5; i++) platforms.push({ x: i * 100, y: H - 40, w: 98, h: 40, type: "normal", color: "#3a3a3a" });
-  // Dark bathroom - wet hazards
-  for (let i = 0; i < 14; i++) {
-    const y = H - 110 - i * 56;
-    platforms.push({ x: 20 + ((i * 79) % 340), y, w: 55, h: 12, type: i % 3 === 0 ? "ice" : "normal", color: "#5a6a7a" });
+
+  // Bathroom floor — aftermath of the duel
+  platforms.push({ x: 0, y: H - 40, w: 400, h: 40, type: "normal", color: "#3a3a3a", label: "💧 Flooded Bathroom" });
+
+  // Broken mirrors — reflective platforms
+  platforms.push({ x: 50, y: H - 90, w: 60, h: 14, type: "normal", color: "#8a8aaa", label: "🪞" });
+  platforms.push({ x: 200, y: H - 100, w: 55, h: 14, type: "normal", color: "#8a8aaa", label: "🪞" });
+  platforms.push({ x: 330, y: H - 85, w: 60, h: 14, type: "normal", color: "#8a8aaa", label: "🪞" });
+
+  // Rising water — slippery ice platforms going up
+  for (let i = 0; i < 8; i++) {
+    const side = i % 2 === 0 ? 30 + i * 20 : 250 - i * 15;
+    platforms.push({
+      x: side, y: H - 160 - i * 55, w: 70, h: 12,
+      type: "ice", color: "#5a8aaa",
+      label: i % 3 === 0 ? "💧" : "",
+    });
   }
-  for (let i = 0; i < 2; i++) enemies.push({ x: 150 + i * 120, y: H - 400 - i * 150, w: 22, h: 22, type: "wizard", dir: -1, speed: 1.4, range: 80, origX: 150 + i * 120, emoji: "⚔️" });
-  platforms.push({ x: 160, y: H - 900, w: 100, h: 20, type: "finish", label: "💧 Escape" });
-  return { platforms, enemies, startX: 40, startY: H - 80 };
+
+  // Cursed water drains — hazard areas
+  platforms.push({ x: 150, y: H - 50, w: 80, h: 8, type: "hazard", color: "#882222", label: "🩸" });
+  platforms.push({ x: 100, y: H - 300, w: 60, h: 8, type: "hazard", color: "#882222", label: "🩸" });
+
+  // Draco (duelling) and Myrtle screaming
+  enemies.push({ x: 250, y: H - 128, w: 24, h: 24, type: "wizard", dir: -1, speed: 1.3, range: 80, origX: 250, emoji: "⚔️" });
+  enemies.push({ x: 150, y: H - 350, w: 20, h: 20, type: "myrtle", dir: 1, speed: 0.6, range: 60, origX: 150, emoji: "👻" });
+
+  platforms.push({ x: 150, y: H - 620, w: 120, h: 20, type: "finish", label: "💧 Escape" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 function gen_6_7_PensieveMemories(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Floating memory fragments — silver swirling platforms
-  for (let i = 0; i < 16; i++) {
-    const y = H - 80 - i * 54;
-    platforms.push({ x: 30 + ((i * 71) % 330), y, w: 55, h: 12, type: "moving", moveRange: 50 + i * 0.1, color: "#8888cc", label: i % 4 === 0 ? "💭" : "" });
-  }
+
+  // Dumbledore's office — the Pensieve
+  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#4a4a5a", label: "💭 Pensieve" });
+
+  // Swirling silver memory platforms — each one a different memory
+  const memories = [
+    { x: 180, y: H - 100, label: "💭 Riddle" }, { x: 350, y: H - 140, label: "💭 Slughorn" },
+    { x: 200, y: H - 200, label: "💭 Gaunt" }, { x: 400, y: H - 240, label: "💭 Diary" },
+    { x: 150, y: H - 300, label: "💭 Hepzibah" }, { x: 350, y: H - 340, label: "💭 Cave" },
+    { x: 200, y: H - 400, label: "💭 Hogwarts" }, { x: 400, y: H - 440, label: "💭 Ring" },
+    { x: 150, y: H - 500, label: "💭 Locket" }, { x: 350, y: H - 540, label: "💭 Cup" },
+  ];
+  memories.forEach((m, i) => {
+    const p: Platform = {
+      x: m.x, y: m.y, w: 65, h: 12,
+      type: "moving", color: "#8888cc",
+      label: m.label, origX: m.x, origY: m.y,
+      moveDir: i % 2 === 0 ? 1 : -1, moveRange: 40 + (i % 3) * 15,
+    };
+    platforms.push(p);
+  });
+
+  // Static connecting platforms
+  platforms.push({ x: 280, y: H - 170, w: 50, h: 10, type: "normal", color: "#6a6a8a" });
+  platforms.push({ x: 300, y: H - 270, w: 50, h: 10, type: "normal", color: "#6a6a8a" });
+  platforms.push({ x: 280, y: H - 370, w: 50, h: 10, type: "normal", color: "#6a6a8a" });
+  platforms.push({ x: 300, y: H - 470, w: 50, h: 10, type: "normal", color: "#6a6a8a" });
+
   // Memory echoes — ghostly figures from the past
-  enemies.push({ x: 150, y: H - 400, w: 20, h: 20, type: "memoryEcho", dir: 1, speed: 0.6, range: 60, origX: 150, emoji: "👤" });
-  enemies.push({ x: 280, y: H - 650, w: 20, h: 20, type: "memoryEcho", dir: -1, speed: 0.7, range: 50, origX: 280, emoji: "👤" });
-  platforms.push({ x: 150, y: H - 940, w: 100, h: 20, type: "finish", label: "💭 Memory Found" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+  enemies.push({ x: 300, y: H - 170, w: 20, h: 20, type: "memoryEcho", dir: 1, speed: 0.6, range: 60, origX: 300, emoji: "👤" });
+  enemies.push({ x: 200, y: H - 370, w: 22, h: 22, type: "memoryEcho", dir: -1, speed: 0.7, range: 50, origX: 200, emoji: "👤" });
+  enemies.push({ x: 350, y: H - 500, w: 22, h: 22, type: "memoryEcho", dir: 1, speed: 0.8, range: 55, origX: 350, emoji: "👤" });
+
+  platforms.push({ x: 220, y: H - 620, w: 120, h: 20, type: "finish", label: "💭 Memory Found" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_6_8_LightningTower(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 5; i++) platforms.push({ x: i * 90, y: H - 40, w: 88, h: 40, type: "normal", color: "#3a3a4a" });
-  // Astronomy tower climb
-  for (let i = 0; i < 16; i++) {
-    const y = H - 110 - i * 55;
-    platforms.push({ x: 40 + ((i * 83) % 300), y, w: 55, h: 12, type: i % 4 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#5a5a6a" });
-  }
-  for (let i = 0; i < 3; i++) enemies.push({ x: 100 + i * 100, y: H - 350 - i * 150, w: 20, h: 20, type: "deathEater", dir: 1, speed: 1.2, range: 70, origX: 100 + i * 100, emoji: "💀" });
-  platforms.push({ x: 140, y: H - 960, w: 100, h: 20, type: "finish", label: "⚡ Tower Top" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Base of Astronomy Tower
+  platforms.push({ x: 0, y: H - 40, w: 200, h: 40, type: "normal", color: "#3a3a4a", label: "🏰 Astronomy Tower" });
+
+  // Spiral staircase — alternating sides going up
+  const stairs = [
+    { x: 50, y: H - 100 }, { x: 250, y: H - 150 }, { x: 80, y: H - 200 },
+    { x: 230, y: H - 260 }, { x: 60, y: H - 320 }, { x: 240, y: H - 380 },
+    { x: 70, y: H - 440 }, { x: 220, y: H - 500 }, { x: 80, y: H - 560 },
+    { x: 230, y: H - 620 }, { x: 60, y: H - 680 }, { x: 240, y: H - 740 },
+  ];
+  stairs.forEach((s, i) => {
+    platforms.push({
+      x: s.x, y: s.y, w: 70, h: 14,
+      type: i % 4 === 3 ? "disappearing" : "normal", timer: 0, visible: true,
+      color: "#5a5a6a", label: i % 5 === 0 ? "🪜" : "",
+    });
+  });
+
+  // Crumbling tower sections — moving platforms (the tower is under attack)
+  const crumble1: Platform = { x: 150, y: H - 300, w: 60, h: 12, type: "moving", color: "#6a5a4a", origX: 150, origY: H - 300, moveDir: 1, moveRange: 40 };
+  const crumble2: Platform = { x: 150, y: H - 540, w: 60, h: 12, type: "moving", color: "#6a5a4a", origX: 150, origY: H - 540, moveDir: -1, moveRange: 50 };
+  platforms.push(crumble1, crumble2);
+
+  // Lightning strike hazards
+  platforms.push({ x: 160, y: H - 420, w: 15, h: 40, type: "hazard", color: "#ffcc00", label: "⚡" });
+  platforms.push({ x: 140, y: H - 660, w: 15, h: 40, type: "hazard", color: "#ffcc00", label: "⚡" });
+
+  // Death Eaters climbing the tower
+  enemies.push({ x: 180, y: H - 230, w: 22, h: 22, type: "deathEater", dir: 1, speed: 1.0, range: 60, origX: 180, emoji: "💀" });
+  enemies.push({ x: 150, y: H - 460, w: 22, h: 22, type: "deathEater", dir: -1, speed: 1.2, range: 70, origX: 150, emoji: "💀" });
+  enemies.push({ x: 180, y: H - 700, w: 24, h: 24, type: "deathEater", dir: 1, speed: 1.4, range: 80, origX: 180, emoji: "💀" });
+
+  platforms.push({ x: 120, y: H - 810, w: 120, h: 20, type: "finish", label: "⚡ Tower Top" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 function gen_6_9_FelixFelicis(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 6; i++) platforms.push({ x: i * 85, y: H - 40, w: 83, h: 40, type: "normal", color: "#5a5a2a" });
-  // Lucky golden path - mostly bouncy
-  for (let i = 0; i < 14; i++) {
-    const y = H - 120 - i * 58;
-    platforms.push({ x: 25 + ((i * 77) % 340), y, w: 60, h: 12, type: i % 2 === 0 ? "normal" : "normal", color: i % 2 === 0 ? "#ffdd44" : "#aa9933" });
+
+  // Start — potion takes effect
+  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#5a5a2a", label: "🍀 Lucky!" });
+
+  // Golden lucky path — wide, generous platforms (everything goes right!)
+  const luckyPath = [
+    { x: 180, y: H - 70 }, { x: 340, y: H - 80 }, { x: 500, y: H - 65 },
+    { x: 660, y: H - 85 }, { x: 820, y: H - 70 }, { x: 980, y: H - 90 },
+    { x: 1140, y: H - 75 }, { x: 1300, y: H - 85 }, { x: 1460, y: H - 70 },
+    { x: 1620, y: H - 90 }, { x: 1780, y: H - 80 }, { x: 1940, y: H - 75 },
+  ];
+  luckyPath.forEach((p, i) => {
+    platforms.push({
+      x: p.x, y: p.y, w: 80, h: 14, type: "normal",
+      color: i % 2 === 0 ? "#ffdd44" : "#ccaa33",
+      label: i % 3 === 0 ? "🍀" : i % 3 === 1 ? "✨" : "",
+    });
+  });
+
+  // Higher golden platforms for bonus path
+  for (let i = 0; i < 6; i++) {
+    platforms.push({
+      x: 300 + i * 300, y: H - 150 - (i % 2) * 30, w: 60, h: 12,
+      type: "normal", color: "#ffcc00", label: "⭐",
+    });
   }
-  platforms.push({ x: 155, y: H - 930, w: 100, h: 20, type: "finish", label: "🍀 Liquid Luck!" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Speed run feel — no enemies, just fast platforming with generous platforms
+  // The luck wears off at the end — platforms get trickier
+  platforms.push({ x: 2100, y: H - 100, w: 50, h: 12, type: "disappearing", timer: 0, visible: true, color: "#aa8833", label: "😰" });
+  platforms.push({ x: 2220, y: H - 130, w: 45, h: 12, type: "disappearing", timer: 0, visible: true, color: "#887733", label: "😰" });
+
+  platforms.push({ x: 2350, y: H - 120, w: 120, h: 20, type: "finish", label: "🍀 Liquid Luck!" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 // ─── WORLD 7 EXTRA LEVELS ────────────────────────
@@ -1754,88 +2000,199 @@ function gen_6_9_FelixFelicis(H: number): LevelData {
 function gen_7_5_GringottsVault(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 6; i++) platforms.push({ x: i * 90, y: H - 40, w: 88, h: 40, type: "normal", color: "#5a4a3a" });
-  // Mine cart ride through twisting tunnels (matches story - Thief's Downfall, cursed treasure)
-  for (let i = 0; i < 15; i++) {
-    const y = H - 120 - i * 56;
-    platforms.push({ x: 30 + ((i * 83) % 320), y, w: 60, h: 12, type: i % 4 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: i % 5 === 0 ? "#ffcc44" : "#8a7a5a", label: i % 5 === 0 ? "💰" : "" });
+
+  // Bank lobby
+  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#5a4a3a", label: "🏦 Gringotts" });
+
+  // Mine cart track — fast horizontal then descending
+  for (let i = 0; i < 6; i++) {
+    platforms.push({
+      x: 180 + i * 120, y: H - 60 - i * 15, w: 80, h: 14,
+      type: "normal", color: "#6a5a3a", label: i === 0 ? "🛤️ Cart!" : "",
+    });
   }
-  // Goblins and cursed treasure that multiplies (matches story)
-  enemies.push({ x: 100, y: H - 300, w: 20, h: 20, type: "goblin", dir: 1, speed: 1.1, range: 60, origX: 100, emoji: "👺" });
-  enemies.push({ x: 210, y: H - 450, w: 22, h: 22, type: "goblin", dir: -1, speed: 1.2, range: 65, origX: 210, emoji: "👺" });
-  enemies.push({ x: 320, y: H - 600, w: 24, h: 24, type: "dragon", dir: 1, speed: 0.6, range: 80, origX: 320, emoji: "🐉" });
-  platforms.push({ x: 150, y: H - 940, w: 100, h: 20, type: "finish", label: "💰 Vault Escaped" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Deep vault descent — zigzag
+  const vaultPath = [
+    { x: 700, y: H - 170 }, { x: 550, y: H - 230 }, { x: 400, y: H - 290 },
+    { x: 550, y: H - 350 }, { x: 700, y: H - 410 }, { x: 550, y: H - 470 },
+    { x: 400, y: H - 530 },
+  ];
+  vaultPath.forEach((v, i) => {
+    platforms.push({
+      x: v.x, y: v.y, w: 70, h: 14,
+      type: i % 3 === 0 ? "disappearing" : "normal", timer: 0, visible: true,
+      color: "#8a7a5a", label: i % 2 === 0 ? "💰" : "",
+    });
+  });
+
+  // Thief's Downfall — waterfall hazard
+  platforms.push({ x: 620, y: H - 200, w: 20, h: 60, type: "hazard", color: "#4488cc", label: "💧 Downfall" });
+
+  // Cursed treasure that multiplies — hazard platforms
+  platforms.push({ x: 450, y: H - 260, w: 50, h: 8, type: "hazard", color: "#ffaa00", label: "🏆 Cursed!" });
+  platforms.push({ x: 650, y: H - 380, w: 50, h: 8, type: "hazard", color: "#ffaa00", label: "🏆 Cursed!" });
+
+  // Goblins guarding + dragon at the bottom
+  enemies.push({ x: 600, y: H - 198, w: 20, h: 20, type: "goblin", dir: 1, speed: 1.0, range: 50, origX: 600, emoji: "👺" });
+  enemies.push({ x: 500, y: H - 378, w: 22, h: 22, type: "goblin", dir: -1, speed: 1.1, range: 60, origX: 500, emoji: "👺" });
+  enemies.push({ x: 550, y: H - 500, w: 30, h: 30, type: "dragon", dir: 1, speed: 0.5, range: 80, origX: 550, emoji: "🐉" });
+
+  platforms.push({ x: 450, y: H - 610, w: 120, h: 20, type: "finish", label: "🐉 Ride the Dragon!" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_7_6_RoomOfHiddenThings(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 5; i++) platforms.push({ x: i * 100, y: H - 40, w: 98, h: 40, type: "normal", color: "#4a4a4a" });
-  // Piles of junk - irregular platforms
-  for (let i = 0; i < 14; i++) {
-    const y = H - 100 - i * 58;
-    const w = 40 + (i % 3) * 20;
-    platforms.push({ x: 20 + ((i * 91) % 310), y, w, h: 12, type: "normal", color: "#6a5a4a" });
-  }
-  // Fiendfyre
-  for (let i = 0; i < 2; i++) enemies.push({ x: 130 + i * 150, y: H - 450 - i * 150, w: 26, h: 26, type: "fire", dir: 1, speed: 1.6, range: 90, origX: 130 + i * 150, emoji: "🔥" });
-  platforms.push({ x: 150, y: H - 920, w: 100, h: 20, type: "finish", label: "👑 Diadem Found" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Towering labyrinth of centuries of junk
+  platforms.push({ x: 0, y: H - 40, w: 180, h: 40, type: "normal", color: "#4a4a4a", label: "📦 Room of Hidden Things" });
+
+  // Piles of junk — irregular, varied sizes
+  const junk = [
+    { x: 200, y: H - 70, w: 90, label: "📦 Crate" }, { x: 350, y: H - 90, w: 60, label: "🪑" },
+    { x: 460, y: H - 60, w: 80, label: "📚" }, { x: 150, y: H - 140, w: 70, label: "🧳" },
+    { x: 320, y: H - 170, w: 85, label: "🪞" }, { x: 480, y: H - 150, w: 65, label: "📦" },
+    { x: 100, y: H - 220, w: 75, label: "🧹" }, { x: 280, y: H - 260, w: 90, label: "🏺" },
+    { x: 430, y: H - 240, w: 70, label: "📦" }, { x: 200, y: H - 320, w: 80, label: "🪑" },
+    { x: 380, y: H - 350, w: 65, label: "🧳" }, { x: 120, y: H - 390, w: 85, label: "📚" },
+    { x: 300, y: H - 430, w: 75, label: "📦" }, { x: 450, y: H - 410, w: 70, label: "🪞" },
+  ];
+  junk.forEach(j => {
+    platforms.push({ x: j.x, y: j.y, w: j.w, h: 14, type: "normal", color: "#6a5a4a", label: j.label });
+  });
+
+  // The Diadem — hidden on a high platform
+  platforms.push({ x: 250, y: H - 500, w: 60, h: 12, type: "normal", color: "#aaaacc", label: "👑 Diadem" });
+
+  // Fiendfyre — cursed fire chasing from below (fire enemies)
+  enemies.push({ x: 180, y: H - 100, w: 26, h: 26, type: "fiendfyre", dir: 1, speed: 1.4, range: 100, origX: 180, emoji: "🔥" });
+  enemies.push({ x: 400, y: H - 200, w: 28, h: 28, type: "fiendfyre", dir: -1, speed: 1.5, range: 110, origX: 400, emoji: "🔥" });
+  enemies.push({ x: 250, y: H - 350, w: 30, h: 30, type: "fiendfyre", dir: 1, speed: 1.6, range: 120, origX: 250, emoji: "🔥" });
+
+  platforms.push({ x: 200, y: H - 570, w: 120, h: 20, type: "finish", label: "👑 Diadem Found" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_7_7_ForbiddenForestWalk(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Solemn walk - story says ghostly figures walk beside you
-  for (let i = 0; i < 8; i++) platforms.push({ x: i * 80, y: H - 40, w: 78, h: 40, type: "normal", color: "#2a3a1a" });
-  // Forest path - dark, atmospheric ascending
-  for (let i = 0; i < 13; i++) {
-    const y = H - 120 - i * 58;
-    platforms.push({ x: 25 + ((i * 73) % 340), y, w: 60, h: 12, type: "normal", color: "#3a4a2a", label: i % 4 === 0 ? "🌲" : "" });
-  }
-  // Ghostly companions — parents, Sirius, Lupin (matches story — slower, atmospheric)
-  enemies.push({ x: 80, y: H - 250, w: 20, h: 20, type: "ghost", dir: 1, speed: 0.4, range: 40, origX: 80, emoji: "👤" });
-  enemies.push({ x: 170, y: H - 380, w: 20, h: 20, type: "ghost", dir: -1, speed: 0.4, range: 40, origX: 170, emoji: "👤" });
-  enemies.push({ x: 260, y: H - 510, w: 20, h: 20, type: "ghost", dir: 1, speed: 0.4, range: 40, origX: 260, emoji: "👤" });
-  enemies.push({ x: 350, y: H - 640, w: 20, h: 20, type: "ghost", dir: -1, speed: 0.4, range: 40, origX: 350, emoji: "👤" });
-  platforms.push({ x: 140, y: H - 890, w: 100, h: 20, type: "finish", label: "💎 Resurrection Stone" });
+
+  // The solemn walk — each step heavier
+  platforms.push({ x: 0, y: H - 40, w: 200, h: 40, type: "normal", color: "#1a2a1a", label: "🌲 The Forest" });
+
+  // Long, atmospheric forest path — mostly horizontal, gentle
+  const forestPath = [
+    { x: 220, y: H - 55, label: "🌲" }, { x: 400, y: H - 50, label: "" },
+    { x: 580, y: H - 60, label: "🌲" }, { x: 760, y: H - 50, label: "" },
+    { x: 940, y: H - 55, label: "🌲" }, { x: 1120, y: H - 60, label: "" },
+    { x: 1300, y: H - 50, label: "🌲" }, { x: 1480, y: H - 55, label: "" },
+    { x: 1660, y: H - 60, label: "🌲" }, { x: 1840, y: H - 50, label: "" },
+  ];
+  forestPath.forEach(p => {
+    platforms.push({ x: p.x, y: p.y, w: 80, h: 14, type: "normal", color: "#2a3a1a", label: p.label });
+  });
+
+  // Ghostly companions walk alongside — slow, ethereal (not really threats)
+  // James
+  enemies.push({ x: 300, y: H - 78, w: 20, h: 20, type: "ghostCompanion", dir: 1, speed: 0.3, range: 30, origX: 300, emoji: "👤" });
+  // Lily
+  enemies.push({ x: 700, y: H - 78, w: 20, h: 20, type: "ghostCompanion", dir: -1, speed: 0.3, range: 30, origX: 700, emoji: "👤" });
+  // Sirius
+  enemies.push({ x: 1100, y: H - 78, w: 20, h: 20, type: "ghostCompanion", dir: 1, speed: 0.3, range: 30, origX: 1100, emoji: "👤" });
+  // Lupin
+  enemies.push({ x: 1500, y: H - 78, w: 20, h: 20, type: "ghostCompanion", dir: -1, speed: 0.3, range: 30, origX: 1500, emoji: "👤" });
+
+  // The clearing — Resurrection Stone
+  platforms.push({ x: 2050, y: H - 50, w: 140, h: 20, type: "finish", label: "💎 Resurrection Stone" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_7_8_ElderWandChase(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Fast-paced chase - many moving platforms
-  for (let i = 0; i < 16; i++) {
-    const y = H - 80 - i * 54;
-    platforms.push({ x: 30 + ((i * 79) % 330), y, w: 50, h: 12, type: "moving", moveRange: 80 + i * 0.15, color: "#5a5a5a" });
+
+  // Shattered Hogwarts corridor — the final chase
+  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#4a3a3a", label: "🏰 Hogwarts Ruins" });
+
+  // Ruined corridor — crumbling platforms, fast-paced
+  for (let i = 0; i < 12; i++) {
+    platforms.push({
+      x: 180 + i * 130, y: H - 60 - (i % 3) * 25, w: 65, h: 14,
+      type: i % 4 === 0 ? "disappearing" : i % 3 === 0 ? "moving" : "normal",
+      timer: 0, visible: true, color: "#5a4a3a",
+      origX: 180 + i * 130, origY: H - 60 - (i % 3) * 25,
+      moveDir: i % 2 === 0 ? 1 : -1, moveRange: 40,
+      label: i % 5 === 0 ? "💥" : "",
+    });
   }
-  enemies.push({ x: 180, y: H - 500, w: 24, h: 24, type: "deathEater", dir: -1, speed: 1.8, range: 100, origX: 180, emoji: "💀" });
-  platforms.push({ x: 150, y: H - 940, w: 100, h: 20, type: "finish", label: "🪄 Elder Wand" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Falling debris hazards
+  platforms.push({ x: 500, y: H - 30, w: 60, h: 8, type: "hazard", color: "#5a3a2a", label: "🪨" });
+  platforms.push({ x: 1000, y: H - 30, w: 60, h: 8, type: "hazard", color: "#5a3a2a", label: "🪨" });
+  platforms.push({ x: 1500, y: H - 30, w: 60, h: 8, type: "hazard", color: "#5a3a2a", label: "🪨" });
+
+  // Living statues defending the castle (on your side but in the way)
+  enemies.push({ x: 400, y: H - 88, w: 22, h: 22, type: "statue", dir: 1, speed: 0.8, range: 50, origX: 400, emoji: "🗡️" });
+  // Death Eaters chasing
+  enemies.push({ x: 800, y: H - 98, w: 24, h: 24, type: "deathEater", dir: -1, speed: 1.5, range: 80, origX: 800, emoji: "💀" });
+  enemies.push({ x: 1200, y: H - 88, w: 24, h: 24, type: "deathEater", dir: 1, speed: 1.7, range: 90, origX: 1200, emoji: "💀" });
+  enemies.push({ x: 1600, y: H - 108, w: 26, h: 26, type: "deathEater", dir: -1, speed: 1.8, range: 100, origX: 1600, emoji: "💀" });
+
+  platforms.push({ x: 1800, y: H - 100, w: 120, h: 20, type: "finish", label: "🪄 Elder Wand" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_7_9_BattleOfHogwarts(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 6; i++) platforms.push({ x: i * 90, y: H - 40, w: 88, h: 40, type: "normal", color: "#3a3a3a" });
-  // Ruined castle - chaotic mix of everything (matches story - falling debris, duelling wizards)
-  for (let i = 0; i < 18; i++) {
-    const y = H - 100 - i * 52;
-    const types: Array<Platform["type"]> = ["normal", "moving", "disappearing", "normal", "ice"];
-    const t = types[i % 5];
-    platforms.push({ x: 20 + ((i * 67) % 340), y, w: 55, h: 12, type: t, moveRange: 60, timer: 0, visible: true, color: "#5a4a3a", label: i % 6 === 0 ? "💥" : "" });
-  }
-  // Death Eaters, giants, and living statues (matches story)
-  enemies.push({ x: 50, y: H - 200, w: 20, h: 20, type: "deathEater", dir: 1, speed: 1.0, range: 60, origX: 50, emoji: "💀" });
-  enemies.push({ x: 110, y: H - 310, w: 28, h: 28, type: "giant", dir: -1, speed: 0.6, range: 80, origX: 110, emoji: "🗿" });
-  enemies.push({ x: 170, y: H - 420, w: 20, h: 20, type: "deathEater", dir: 1, speed: 1.2, range: 60, origX: 170, emoji: "💀" });
-  enemies.push({ x: 230, y: H - 530, w: 22, h: 22, type: "statue", dir: -1, speed: 0.8, range: 50, origX: 230, emoji: "🗡️" });
-  enemies.push({ x: 290, y: H - 640, w: 20, h: 20, type: "deathEater", dir: 1, speed: 1.4, range: 70, origX: 290, emoji: "💀" });
-  enemies.push({ x: 350, y: H - 750, w: 28, h: 28, type: "giant", dir: -1, speed: 0.7, range: 90, origX: 350, emoji: "🗿" });
-  platforms.push({ x: 150, y: H - 1020, w: 100, h: 20, type: "finish", label: "⚡ Victory!" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Great Hall entrance — the final battle
+  platforms.push({ x: 0, y: H - 40, w: 500, h: 40, type: "normal", color: "#3a3a3a", label: "⚡ The Great Hall" });
+
+  // Ruined castle interior — chaotic mix of everything
+  // Fallen pillars
+  platforms.push({ x: 100, y: H - 90, w: 40, h: 50, type: "normal", color: "#5a5a5a", label: "🏛️" });
+  platforms.push({ x: 350, y: H - 100, w: 40, h: 60, type: "normal", color: "#5a5a5a", label: "🏛️" });
+
+  // House table debris — platforms at varied heights
+  const debris = [
+    { x: 50, y: H - 130, type: "normal" as const, label: "🟥" },
+    { x: 200, y: H - 150, type: "moving" as const, label: "🟨" },
+    { x: 350, y: H - 140, type: "normal" as const, label: "🟦" },
+    { x: 100, y: H - 210, type: "disappearing" as const, label: "🟩" },
+    { x: 280, y: H - 240, type: "normal" as const, label: "" },
+    { x: 420, y: H - 220, type: "moving" as const, label: "" },
+    { x: 50, y: H - 300, type: "normal" as const, label: "💥" },
+    { x: 200, y: H - 330, type: "ice" as const, label: "" },
+    { x: 380, y: H - 310, type: "normal" as const, label: "" },
+    { x: 130, y: H - 390, type: "disappearing" as const, label: "💥" },
+    { x: 300, y: H - 420, type: "normal" as const, label: "" },
+    { x: 450, y: H - 400, type: "moving" as const, label: "" },
+    { x: 80, y: H - 480, type: "normal" as const, label: "💥" },
+    { x: 250, y: H - 510, type: "normal" as const, label: "" },
+    { x: 400, y: H - 490, type: "disappearing" as const, label: "" },
+    { x: 180, y: H - 570, type: "normal" as const, label: "" },
+    { x: 350, y: H - 600, type: "normal" as const, label: "" },
+  ];
+  debris.forEach(d => {
+    platforms.push({
+      x: d.x, y: d.y, w: 65, h: 12, type: d.type,
+      moveRange: 50, timer: 0, visible: true,
+      color: "#5a4a3a", label: d.label,
+    });
+  });
+
+  // Death Eaters, giants, living statues
+  enemies.push({ x: 150, y: H - 168, w: 22, h: 22, type: "deathEater", dir: 1, speed: 1.0, range: 60, origX: 150, emoji: "💀" });
+  enemies.push({ x: 350, y: H - 268, w: 28, h: 28, type: "giant", dir: -1, speed: 0.6, range: 80, origX: 350, emoji: "🗿" });
+  enemies.push({ x: 100, y: H - 418, w: 22, h: 22, type: "deathEater", dir: 1, speed: 1.2, range: 70, origX: 100, emoji: "💀" });
+  enemies.push({ x: 300, y: H - 518, w: 24, h: 24, type: "statue", dir: -1, speed: 0.8, range: 50, origX: 300, emoji: "🗡️" });
+  enemies.push({ x: 200, y: H - 578, w: 26, h: 26, type: "deathEater", dir: 1, speed: 1.4, range: 80, origX: 200, emoji: "💀" });
+
+  platforms.push({ x: 200, y: H - 680, w: 140, h: 20, type: "finish", label: "⚡ Victory!" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 // ─── Export lookup ────────────────────────────
