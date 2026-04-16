@@ -34,6 +34,15 @@ import wizardNpcImg from "@/assets/enemies/wizard_npc.png";
 import dementorAvatarImg from "@/assets/enemies/dementor_avatar.png";
 
 // Boss avatars
+import bossQuirrellImg from "@/assets/bosses/quirrell.png";
+import bossBasiliskImg from "@/assets/bosses/basilisk.png";
+import bossDementorImg from "@/assets/bosses/dementor.png";
+import bossHorntailImg from "@/assets/bosses/horntail.png";
+import bossUmbridgeImg from "@/assets/bosses/umbridge.png";
+import bossInferiImg from "@/assets/bosses/inferi.png";
+import bossVoldemortImg from "@/assets/bosses/voldemort.png";
+
+// Legacy enemy boss images (kept for enemy sprites)
 import voldemortImg from "@/assets/enemies/voldemort.png";
 import basiliskImg from "@/assets/enemies/basilisk.png";
 import dragonImg from "@/assets/enemies/dragon.png";
@@ -55,13 +64,13 @@ const ENEMY_IMAGES: Record<string, string> = {
 };
 
 const BOSS_IMAGES: Record<string, string> = {
-  "Professor Quirrell": quirrellImg,
-  "Basilisk": basiliskImg,
-  "Dementor Swarm": dementorAvatarImg,
-  "Hungarian Horntail": dragonImg,
-  "Bellatrix": bellatrixImg,
-  "Inferi Horde": inferiImg,
-  "Lord Voldemort": voldemortImg,
+  "Professor Quirrell": bossQuirrellImg,
+  "Basilisk": bossBasiliskImg,
+  "Dementor Swarm": bossDementorImg,
+  "Hungarian Horntail": bossHorntailImg,
+  "Dolores Umbridge": bossUmbridgeImg,
+  "Inferi Horde": bossInferiImg,
+  "Lord Voldemort": bossVoldemortImg,
 };
 
 interface GameCanvasProps {
