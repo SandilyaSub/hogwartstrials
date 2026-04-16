@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import type { DeathReason } from "@/components/game/GameOver";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useGameState } from "@/hooks/useGameState";
@@ -34,6 +35,7 @@ const Index = () => {
 
   // Monday winner overlay
   const [mondayWinner, setMondayWinner] = useState<{ house_color: string; house_name: string; house_emoji: string } | null>(null);
+  const deathReasonRef = useRef<DeathReason>("fall");
 
   useEffect(() => {
     const now = new Date();
@@ -222,7 +224,7 @@ const Index = () => {
             completeLevel(currentLevel.id);
             setScreen("levelComplete");
           }}
-          onDeath={() => setScreen("gameOver")}
+          onDeath={(reason) => { deathReasonRef.current = reason; setScreen("gameOver"); }}
           onBack={() => setScreen("worldmap")}
         />
       );
@@ -263,6 +265,7 @@ const Index = () => {
     case "gameOver":
       return (
         <GameOver
+          deathReason={deathReasonRef.current}
           onRetry={() => startLevel(profile.currentWorld, profile.currentLevel)}
           onWorldMap={() => setScreen("worldmap")}
         />
