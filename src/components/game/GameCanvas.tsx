@@ -6,6 +6,21 @@ import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy,
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
+import harryImg from "@/assets/characters/harry.png";
+import hermioneImg from "@/assets/characters/hermione.png";
+import ronImg from "@/assets/characters/ron.png";
+import lunaImg from "@/assets/characters/luna.png";
+import ginnyImg from "@/assets/characters/ginny.png";
+import nevilleImg from "@/assets/characters/neville.png";
+import dracoImg from "@/assets/characters/draco.png";
+import cedricImg from "@/assets/characters/cedric.png";
+import choImg from "@/assets/characters/cho.png";
+
+const CHARACTER_IMAGES: Record<string, string> = {
+  harry: harryImg, hermione: hermioneImg, ron: ronImg,
+  luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
+  draco: dracoImg, cedric: cedricImg, cho: choImg,
+};
 
 interface GameCanvasProps {
   profile: PlayerProfile;
