@@ -2,6 +2,22 @@ import { WORLDS, MENTOR_QUOTES } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { useState } from "react";
 
+import harryImg from "@/assets/characters/harry.png";
+import hermioneImg from "@/assets/characters/hermione.png";
+import ronImg from "@/assets/characters/ron.png";
+import lunaImg from "@/assets/characters/luna.png";
+import ginnyImg from "@/assets/characters/ginny.png";
+import nevilleImg from "@/assets/characters/neville.png";
+import dracoImg from "@/assets/characters/draco.png";
+import cedricImg from "@/assets/characters/cedric.png";
+import choImg from "@/assets/characters/cho.png";
+
+const CHARACTER_IMAGES: Record<string, string> = {
+  harry: harryImg, hermione: hermioneImg, ron: ronImg,
+  luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
+  draco: dracoImg, cedric: cedricImg, cho: choImg,
+};
+
 interface WorldMapProps {
   profile: PlayerProfile;
   onStartLevel: (worldId: number, levelIdx: number) => void;
@@ -35,9 +51,11 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
         <div className="card-illustrated p-5 mb-5 animate-slide-up">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center text-2xl">
-                {profile.character?.emoji || "⚡"}
-              </div>
+              <img
+                src={CHARACTER_IMAGES[profile.character?.id || "harry"]}
+                alt={profile.character?.name || "Character"}
+                className="w-12 h-12 rounded-2xl object-cover border-2 border-primary/30"
+              />
               <div>
                 <h1 className="font-display text-xl font-semibold text-primary text-glow">
                   {profile.username}
