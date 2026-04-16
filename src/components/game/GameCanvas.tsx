@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import { WORLDS } from "@/lib/gameData";
 import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef, type HouseToken } from "@/lib/levelGenerator";
-import { toggleMusic, isMusicPlaying, startMusic } from "@/lib/musicEngine";
+
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
@@ -112,7 +112,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
   const keysRef = useRef<Set<string>>(new Set());
   const gameLoopRef = useRef<number>(0);
   const [paused, setPaused] = useState(false);
-  const [musicOn, setMusicOn] = useState(isMusicPlaying());
+  
   const tokenPointsRef = useRef(0);
 
   const world = WORLDS[worldId - 1];
