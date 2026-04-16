@@ -567,8 +567,164 @@ function gen_1_7_FlyingKeys(H: number): LevelData {
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
-function gen_1_5_MirrorOfErised(H: number): LevelData {
-  // Boss arena - flat ground, fight Quirrell/Voldemort
+function gen_1_5_FluffyChamber(H: number): LevelData {
+  // Fluffy's Chamber - sneak past the three-headed dog using music-enchanted platforms
+  const platforms: Platform[] = [];
+  const enemies: Enemy[] = [];
+
+  // Entrance corridor
+  platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal", color: "#4a3a2a", label: "🚪 Third Floor" });
+
+  // Corridor approach with suits of armor
+  const corridor = [
+    { x: 160, y: H - 60, w: 80 }, { x: 280, y: H - 55, w: 70 },
+    { x: 400, y: H - 65, w: 75 }, { x: 530, y: H - 55, w: 80 },
+    { x: 660, y: H - 70, w: 70 }, { x: 790, y: H - 60, w: 75 },
+  ];
+  corridor.forEach((p, i) => {
+    platforms.push({ x: p.x, y: p.y, w: p.w, h: 16, type: "normal", color: "#4a4a5a", label: i % 3 === 0 ? "🗡️" : "" });
+  });
+
+  // Fluffy's room - wide area with the sleeping dog
+  platforms.push({ x: 950, y: H - 40, w: 300, h: 40, type: "normal", color: "#3a2a1a", label: "🐕 Fluffy's Chamber" });
+
+  // Fluffy as a patrolling enemy (slow when harp plays)
+  enemies.push({ x: 1050, y: H - 72, w: 40, h: 28, type: "fluffy", dir: 1, speed: 0.4, range: 100, origX: 1050, emoji: "🐕‍🦺" });
+
+  // Enchanted harp platforms (safe zones)
+  platforms.push({ x: 980, y: H - 100, w: 50, h: 12, type: "normal", color: "#c0a040", label: "🎵" });
+  platforms.push({ x: 1100, y: H - 120, w: 50, h: 12, type: "normal", color: "#c0a040", label: "🎵" });
+  platforms.push({ x: 1200, y: H - 90, w: 50, h: 12, type: "normal", color: "#c0a040", label: "🎵" });
+
+  // Path past Fluffy to the trapdoor
+  platforms.push({ x: 1300, y: H - 60, w: 70, h: 16, type: "normal", color: "#3a2a1a" });
+  platforms.push({ x: 1420, y: H - 80, w: 65, h: 16, type: "normal", color: "#3a2a1a" });
+  platforms.push({ x: 1540, y: H - 100, w: 70, h: 16, type: "normal", color: "#3a2a1a" });
+  platforms.push({ x: 1660, y: H - 75, w: 65, h: 16, type: "normal", color: "#3a2a1a" });
+  platforms.push({ x: 1780, y: H - 110, w: 60, h: 16, type: "disappearing", timer: 0, visible: true, color: "#5a4a3a" });
+  platforms.push({ x: 1900, y: H - 90, w: 70, h: 16, type: "normal", color: "#3a2a1a" });
+
+  // More guardian dogs (smaller)
+  enemies.push({ x: 1500, y: H - 108, w: 22, h: 22, type: "fluffy", dir: -1, speed: 0.6, range: 60, origX: 1500, emoji: "🐕" });
+  enemies.push({ x: 1800, y: H - 138, w: 22, h: 22, type: "fluffy", dir: 1, speed: 0.5, range: 50, origX: 1800, emoji: "🐕" });
+
+  // Trapdoor finish
+  platforms.push({ x: 2050, y: H - 120, w: 100, h: 20, type: "finish", label: "🕳️ Trapdoor" });
+
+  return { platforms, enemies, startX: 40, startY: H - 80 };
+}
+
+function gen_1_8_PotionRiddle(H: number): LevelData {
+  // Snape's potion puzzle - fire barriers and potion-colored platforms
+  const platforms: Platform[] = [];
+  const enemies: Enemy[] = [];
+
+  platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal", color: "#3a3a3a", label: "🧪 Snape's Challenge" });
+
+  // Purple flame barriers (hazards)
+  const flamePositions = [250, 550, 850, 1150, 1500, 1800];
+  flamePositions.forEach(x => {
+    platforms.push({ x, y: H - 100, w: 20, h: 80, type: "hazard", color: "#6a1a8a", label: "🔮" });
+  });
+
+  // Black flame barriers
+  platforms.push({ x: 400, y: H - 90, w: 20, h: 70, type: "hazard", color: "#1a1a1a", label: "🔥" });
+  platforms.push({ x: 1000, y: H - 90, w: 20, h: 70, type: "hazard", color: "#1a1a1a", label: "🔥" });
+  platforms.push({ x: 1650, y: H - 90, w: 20, h: 70, type: "hazard", color: "#1a1a1a", label: "🔥" });
+
+  // Potion bottle platforms (safe stepping stones over flames)
+  const potions = [
+    { x: 160, y: H - 80, color: "#2a6a2a", label: "🧪" },
+    { x: 300, y: H - 110, color: "#8a2a2a", label: "☠️" },
+    { x: 430, y: H - 90, color: "#2a2a8a", label: "🧪" },
+    { x: 560, y: H - 120, color: "#2a6a2a", label: "🧪" },
+    { x: 700, y: H - 100, color: "#8a8a2a", label: "🧪" },
+    { x: 830, y: H - 130, color: "#2a6a2a", label: "🧪" },
+    { x: 960, y: H - 110, color: "#8a2a2a", label: "☠️" },
+    { x: 1100, y: H - 140, color: "#2a2a8a", label: "🧪" },
+    { x: 1240, y: H - 120, color: "#2a6a2a", label: "🧪" },
+    { x: 1380, y: H - 150, color: "#8a8a2a", label: "🧪" },
+    { x: 1520, y: H - 130, color: "#2a6a2a", label: "🧪" },
+    { x: 1660, y: H - 160, color: "#2a2a8a", label: "🧪" },
+    { x: 1800, y: H - 140, color: "#2a6a2a", label: "🧪" },
+    { x: 1940, y: H - 170, color: "#8a8a2a", label: "🧪" },
+  ];
+  potions.forEach((p, i) => {
+    platforms.push({
+      x: p.x, y: p.y, w: 55, h: 14,
+      type: i % 5 === 3 ? "disappearing" : "normal",
+      timer: 0, visible: true, color: p.color, label: p.label,
+    });
+  });
+
+  // Poison bottle enemies that float around
+  enemies.push({ x: 350, y: H - 150, w: 18, h: 18, type: "potion", dir: 1, speed: 0.7, range: 60, origX: 350, emoji: "🧪" });
+  enemies.push({ x: 750, y: H - 160, w: 18, h: 18, type: "potion", dir: -1, speed: 0.8, range: 70, origX: 750, emoji: "🧪" });
+  enemies.push({ x: 1300, y: H - 180, w: 20, h: 20, type: "potion", dir: 1, speed: 0.9, range: 80, origX: 1300, emoji: "🧪" });
+  enemies.push({ x: 1700, y: H - 190, w: 20, h: 20, type: "potion", dir: -1, speed: 1.0, range: 75, origX: 1700, emoji: "🧪" });
+
+  platforms.push({ x: 2100, y: H - 180, w: 100, h: 20, type: "finish", label: "🔥 Final Chamber" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
+}
+
+function gen_1_9_ForbiddenCorridor(H: number): LevelData {
+  // The last corridor before the Mirror - enchantments from each professor
+  const platforms: Platform[] = [];
+  const enemies: Enemy[] = [];
+
+  platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal", color: "#3a2a3a", label: "🏰 Final Corridor" });
+
+  // Sprout's section - living vine platforms
+  for (let i = 0; i < 4; i++) {
+    platforms.push({
+      x: 150 + i * 100, y: H - 70 - i * 15, w: 65, h: 14,
+      type: i % 2 === 0 ? "normal" : "disappearing", timer: 0, visible: true,
+      color: "#2a5a1a", label: i === 0 ? "🌿 Sprout" : "🌱",
+    });
+  }
+  enemies.push({ x: 250, y: H - 110, w: 20, h: 20, type: "vine", dir: 1, speed: 0.6, range: 50, origX: 250, emoji: "🌿" });
+
+  // Flitwick's section - floating charm platforms
+  for (let i = 0; i < 4; i++) {
+    const p: Platform = {
+      x: 600 + i * 110, y: H - 100 - i * 20, w: 55, h: 12,
+      type: "moving", color: "#4a4a8a", label: i === 0 ? "✨ Flitwick" : "✨",
+      origX: 600 + i * 110, origY: H - 100 - i * 20,
+      moveDir: i % 2 === 0 ? 1 : -1, moveRange: 30 + i * 10,
+    };
+    platforms.push(p);
+  }
+
+  // McGonagall's section - transfigured platforms that change
+  for (let i = 0; i < 4; i++) {
+    platforms.push({
+      x: 1100 + i * 100, y: H - 120 - i * 15, w: 60, h: 14,
+      type: "disappearing", timer: 0, visible: true,
+      color: "#5a3a3a", label: i === 0 ? "🐱 McGonagall" : "🔄",
+    });
+  }
+  enemies.push({ x: 1200, y: H - 170, w: 20, h: 20, type: "chess", dir: -1, speed: 0.8, range: 60, origX: 1200, emoji: "♟" });
+
+  // Snape's section - dark magic residue
+  for (let i = 0; i < 4; i++) {
+    platforms.push({
+      x: 1550 + i * 100, y: H - 140 - i * 20, w: 55, h: 14,
+      type: "normal", color: "#2a2a2a", label: i === 0 ? "🧪 Snape" : "☠️",
+    });
+  }
+  platforms.push({ x: 1650, y: H - 50, w: 60, h: 10, type: "hazard", color: "#3a1a3a", label: "💀 Curse" });
+  platforms.push({ x: 1850, y: H - 50, w: 60, h: 10, type: "hazard", color: "#3a1a3a", label: "💀 Curse" });
+
+  // Quirrell's dark energy at the end
+  enemies.push({ x: 1750, y: H - 200, w: 22, h: 22, type: "darkMagic", dir: 1, speed: 1.0, range: 70, origX: 1750, emoji: "💀" });
+  enemies.push({ x: 1900, y: H - 180, w: 22, h: 22, type: "darkMagic", dir: -1, speed: 0.9, range: 60, origX: 1900, emoji: "💀" });
+
+  platforms.push({ x: 2050, y: H - 200, w: 100, h: 20, type: "finish", label: "🪞 Mirror Chamber" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
+}
+
+function gen_1_10_MirrorOfErised(H: number): LevelData {
+  // Boss arena - fight Quirrell/Voldemort
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
