@@ -169,6 +169,7 @@ const Index = () => {
           onActivateTheme={(themeId) => {
             saveProfile({ ...profile, activeTheme: themeId });
           }}
+          onSelectCharacter={selectCharacter}
           onBack={() => setScreen("worldmap")}
         />
       );
