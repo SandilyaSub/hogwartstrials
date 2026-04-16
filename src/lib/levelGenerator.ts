@@ -775,7 +775,7 @@ export function getWorldBoss(worldId: number): BossData {
     2: { name: "Basilisk", emoji: "🐍", maxHp: 150, attackSpeed: 60, projectileSpeed: 3.5, color: "#1a4a1a", weakness: "expelliarmus" },
     3: { name: "Dementor Swarm", emoji: "👻", maxHp: 180, attackSpeed: 50, projectileSpeed: 4, color: "#1a1a2a", weakness: "patronus" },
     4: { name: "Hungarian Horntail", emoji: "🐉", maxHp: 200, attackSpeed: 45, projectileSpeed: 4.5, color: "#4a2a0a", weakness: "stupefy" },
-    5: { name: "Bellatrix", emoji: "🧙‍♀️", maxHp: 220, attackSpeed: 40, projectileSpeed: 5, color: "#2a0a2a", weakness: "expelliarmus" },
+    5: { name: "Dolores Umbridge", emoji: "🎀", maxHp: 220, attackSpeed: 40, projectileSpeed: 5, color: "#cc66aa", weakness: "expelliarmus" },
     6: { name: "Inferi Horde", emoji: "💀", maxHp: 250, attackSpeed: 35, projectileSpeed: 4, color: "#0a1a1a", weakness: "stupefy" },
     7: { name: "Lord Voldemort", emoji: "🐍", maxHp: 350, attackSpeed: 25, projectileSpeed: 6, color: "#1a0a0a", weakness: "expelliarmus" },
   };
