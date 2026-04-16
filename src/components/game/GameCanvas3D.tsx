@@ -487,12 +487,6 @@ const GameCanvas3D = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack 
           {touchMode ? "⌨️" : "👆"}
         </button>
         <button
-          onClick={() => { toggleMusic(); setMusicOn(isMusicPlaying()); }}
-          className="px-3 py-1.5 bg-black/60 text-white rounded-lg text-sm hover:bg-black/80"
-        >
-          {musicOn ? "🔊" : "🔇"}
-        </button>
-        <button
           onClick={() => setPaused(p => !p)}
           className="px-3 py-1.5 bg-black/60 text-white rounded-lg text-sm hover:bg-black/80"
         >
