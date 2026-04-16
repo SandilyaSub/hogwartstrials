@@ -1228,19 +1228,53 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.9, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
-        // Boss emoji (large, no box)
-        if (bossHitFlash > 0) {
-          ctx.save();
-          ctx.globalAlpha = 0.6;
-          ctx.fillStyle = "#fff";
-          ctx.beginPath();
-          ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
+        // Boss avatar image
+        const bossImgSrc = BOSS_IMAGES[bossData.name];
+        let bossDrawn = false;
+        if (bossImgSrc) {
+          const cacheKey = `__bossImg_${bossData.name}`;
+          if (!(window as any)[cacheKey]) {
+            const img = new Image();
+            img.src = bossImgSrc;
+            (window as any)[cacheKey] = img;
+          }
+          const bossImgEl = (window as any)[cacheKey] as HTMLImageElement;
+          if (bossImgEl.complete && bossImgEl.naturalWidth > 0) {
+            const imgSize = bossW * 1.8;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(bossX + bossW / 2, bossY + bossH / 2, imgSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(bossImgEl, bossX + bossW / 2 - imgSize / 2, bossY + bossH / 2 - imgSize / 2, imgSize, imgSize);
+            if (bossHitFlash > 0) {
+              ctx.globalAlpha = 0.5;
+              ctx.fillStyle = "#fff";
+              ctx.fillRect(bossX + bossW / 2 - imgSize / 2, bossY + bossH / 2 - imgSize / 2, imgSize, imgSize);
+            }
+            ctx.restore();
+            // Boss border ring
+            ctx.strokeStyle = bossData.color;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(bossX + bossW / 2, bossY + bossH / 2, imgSize / 2, 0, Math.PI * 2);
+            ctx.stroke();
+            bossDrawn = true;
+          }
         }
-        ctx.font = "36px serif";
-        ctx.textAlign = "center";
-        ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 12);
+        if (!bossDrawn) {
+          if (bossHitFlash > 0) {
+            ctx.save();
+            ctx.globalAlpha = 0.6;
+            ctx.fillStyle = "#fff";
+            ctx.beginPath();
+            ctx.arc(bossX + bossW / 2, bossY + bossH / 2, bossW * 0.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          }
+          ctx.font = "36px serif";
+          ctx.textAlign = "center";
+          ctx.fillText(bossData.emoji, bossX + bossW / 2, bossY + bossH / 2 + 12);
+        }
         // Boss name
         ctx.font = "11px Fredoka, sans-serif";
         ctx.fillStyle = "#fff";
