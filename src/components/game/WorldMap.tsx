@@ -2,6 +2,22 @@ import { WORLDS, MENTOR_QUOTES } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { useState } from "react";
 
+import harryImg from "@/assets/characters/harry.png";
+import hermioneImg from "@/assets/characters/hermione.png";
+import ronImg from "@/assets/characters/ron.png";
+import lunaImg from "@/assets/characters/luna.png";
+import ginnyImg from "@/assets/characters/ginny.png";
+import nevilleImg from "@/assets/characters/neville.png";
+import dracoImg from "@/assets/characters/draco.png";
+import cedricImg from "@/assets/characters/cedric.png";
+import choImg from "@/assets/characters/cho.png";
+
+const CHARACTER_IMAGES: Record<string, string> = {
+  harry: harryImg, hermione: hermioneImg, ron: ronImg,
+  luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
+  draco: dracoImg, cedric: cedricImg, cho: choImg,
+};
+
 interface WorldMapProps {
   profile: PlayerProfile;
   onStartLevel: (worldId: number, levelIdx: number) => void;
