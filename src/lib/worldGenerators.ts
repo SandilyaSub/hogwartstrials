@@ -1002,12 +1002,13 @@ function gen_2_9_SwordOfGryffindor(H: number): LevelData {
 function gen_3_5_HippogriffFlight(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Sky-high platforms - flight path
+  // Sky-high platforms - flight path over Hogwarts towers
   for (let i = 0; i < 18; i++) {
     const y = H - 80 - i * 50;
-    platforms.push({ x: 20 + ((i * 73) % 350), y, w: 55, h: 12, type: "moving", moveRange: 60 + i * 0.1, color: "#6699cc" });
+    platforms.push({ x: 20 + ((i * 73) % 350), y, w: 55, h: 12, type: "moving", moveRange: 60 + i * 0.1, color: "#6699cc", label: i % 5 === 0 ? "🏰" : "" });
   }
-  for (let i = 0; i < 3; i++) enemies.push({ x: 100 + i * 130, y: H - 300 - i * 150, w: 20, h: 20, type: "bird", dir: 1, speed: 1.5, range: 80, origX: 100 + i * 130, emoji: "🦅" });
+  // Dementors chasing through the sky (matches story)
+  for (let i = 0; i < 3; i++) enemies.push({ x: 100 + i * 130, y: H - 300 - i * 150, w: 22, h: 22, type: "dementor", dir: 1, speed: 1.2, range: 80, origX: 100 + i * 130, emoji: "👻" });
   platforms.push({ x: 170, y: H - 960, w: 100, h: 20, type: "finish", label: "🦅 Safe Landing" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
 }
@@ -1029,13 +1030,15 @@ function gen_3_6_ShriekingShack(H: number): LevelData {
 function gen_3_7_MaraudersMap(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Hidden passage maze
+  // Hidden passage maze - secret corridors behind paintings
   for (let i = 0; i < 15; i++) {
     const y = H - 100 - i * 55;
     const visible = i % 4 !== 0;
-    platforms.push({ x: 20 + ((i * 71) % 340), y, w: 65, h: 12, type: visible ? "normal" : "disappearing", timer: 0, visible, color: "#8a7a5a" });
+    platforms.push({ x: 20 + ((i * 71) % 340), y, w: 65, h: 12, type: visible ? "normal" : "disappearing", timer: 0, visible, color: "#8a7a5a", label: i % 5 === 0 ? "🗺️" : "" });
   }
-  for (let i = 0; i < 2; i++) enemies.push({ x: 120 + i * 160, y: H - 400 - i * 100, w: 20, h: 20, type: "ghost", dir: -1, speed: 1.0, range: 70, origX: 120 + i * 160, emoji: "👤" });
+  // Filch and Mrs Norris patrol (matches story - secret passages)
+  enemies.push({ x: 120, y: H - 400, w: 20, h: 20, type: "filch", dir: -1, speed: 0.8, range: 70, origX: 120, emoji: "🧹" });
+  enemies.push({ x: 280, y: H - 500, w: 16, h: 16, type: "cat", dir: 1, speed: 1.2, range: 60, origX: 280, emoji: "🐱" });
   platforms.push({ x: 160, y: H - 900, w: 100, h: 20, type: "finish", label: "🗺️ Mischief Managed" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
 }
@@ -1073,11 +1076,14 @@ function gen_4_5_YuleBall(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
   for (let i = 0; i < 8; i++) platforms.push({ x: i * 85, y: H - 40, w: 83, h: 40, type: "normal", color: "#4a3a5a" });
-  // Dance floor - bouncy and moving platforms
+  // Dance floor - bouncy and moving platforms with enchanted decorations
   for (let i = 0; i < 12; i++) {
     const y = H - 120 - i * 60;
-    platforms.push({ x: 40 + ((i * 91) % 320), y, w: 65, h: 12, type: i % 2 === 0 ? "normal" : "moving", moveRange: 50, color: i % 2 === 0 ? "#cc88ff" : "#8866aa" });
+    platforms.push({ x: 40 + ((i * 91) % 320), y, w: 65, h: 12, type: i % 2 === 0 ? "normal" : "moving", moveRange: 50, color: i % 2 === 0 ? "#cc88ff" : "#8866aa", label: i % 4 === 0 ? "💃" : "" });
   }
+  // Waltzing couple obstacles and flying goblets (matches story)
+  enemies.push({ x: 150, y: H - 250, w: 20, h: 20, type: "dancer", dir: 1, speed: 0.6, range: 80, origX: 150, emoji: "💃" });
+  enemies.push({ x: 280, y: H - 450, w: 18, h: 18, type: "goblet", dir: -1, speed: 1.0, range: 50, origX: 280, emoji: "🥂" });
   platforms.push({ x: 160, y: H - 860, w: 100, h: 20, type: "finish", label: "💃 Grand Finale" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
 }
@@ -1089,11 +1095,14 @@ function gen_4_6_TriwizardMaze(H: number): LevelData {
   for (let i = 0; i < 16; i++) {
     const y = H - 80 - i * 55;
     const x = i % 3 === 0 ? 20 : i % 3 === 1 ? 200 : 110;
-    platforms.push({ x, y, w: 80, h: 14, type: "normal", color: "#2a5a2a" });
+    platforms.push({ x, y, w: 80, h: 14, type: "normal", color: "#2a5a2a", label: i % 4 === 0 ? "🌿" : "" });
   }
-  // Walls (decorative obstacles)
+  // Hedge walls
   for (let i = 0; i < 4; i++) platforms.push({ x: 150, y: H - 200 - i * 180, w: 12, h: 60, type: "normal", color: "#1a4a1a" });
-  for (let i = 0; i < 3; i++) enemies.push({ x: 100 + i * 100, y: H - 300 - i * 130, w: 20, h: 20, type: "sphinx", dir: 1, speed: 1.0, range: 60, origX: 100 + i * 100, emoji: "🦁" });
+  // Blast-Ended Skrewts and Sphinx (matches story)
+  enemies.push({ x: 100, y: H - 300, w: 22, h: 22, type: "skrewt", dir: 1, speed: 1.2, range: 60, origX: 100, emoji: "🦂" });
+  enemies.push({ x: 200, y: H - 430, w: 22, h: 22, type: "skrewt", dir: -1, speed: 1.0, range: 50, origX: 200, emoji: "🦂" });
+  enemies.push({ x: 300, y: H - 690, w: 24, h: 24, type: "sphinx", dir: 1, speed: 0.5, range: 40, origX: 300, emoji: "🦁" });
   platforms.push({ x: 140, y: H - 940, w: 100, h: 20, type: "finish", label: "🏆 Triwizard Cup" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
@@ -1101,12 +1110,16 @@ function gen_4_6_TriwizardMaze(H: number): LevelData {
 function gen_4_7_MerpeopleVillage(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Underwater feel - all ice/slippery
+  // Underwater feel - all ice/slippery with kelp and ruins
   for (let i = 0; i < 15; i++) {
     const y = H - 100 - i * 55;
-    platforms.push({ x: 30 + ((i * 67) % 330), y, w: 60, h: 12, type: "ice", color: "#4488aa" });
+    platforms.push({ x: 30 + ((i * 67) % 330), y, w: 60, h: 12, type: "ice", color: "#4488aa", label: i % 4 === 0 ? "🫧" : "" });
   }
-  for (let i = 0; i < 4; i++) enemies.push({ x: 80 + i * 90, y: H - 250 - i * 130, w: 20, h: 20, type: "merperson", dir: i % 2 === 0 ? 1 : -1, speed: 1.1, range: 70, origX: 80 + i * 90, emoji: "🧜" });
+  // Grindylows and Merpeople guards (matches story)
+  enemies.push({ x: 80, y: H - 250, w: 18, h: 18, type: "grindylow", dir: 1, speed: 1.3, range: 60, origX: 80, emoji: "🦑" });
+  enemies.push({ x: 170, y: H - 380, w: 20, h: 20, type: "grindylow", dir: -1, speed: 1.1, range: 70, origX: 170, emoji: "🦑" });
+  enemies.push({ x: 260, y: H - 510, w: 22, h: 22, type: "merperson", dir: 1, speed: 0.9, range: 50, origX: 260, emoji: "🧜" });
+  enemies.push({ x: 350, y: H - 640, w: 22, h: 22, type: "merperson", dir: -1, speed: 1.0, range: 60, origX: 350, emoji: "🧜" });
   platforms.push({ x: 150, y: H - 900, w: 100, h: 20, type: "finish", label: "🫧 Surface!" });
   return { platforms, enemies, startX: 50, startY: H - 80 };
 }
