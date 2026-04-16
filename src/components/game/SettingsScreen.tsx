@@ -1,14 +1,32 @@
 import { useTheme } from "@/hooks/useTheme";
 import { SHOP_ITEMS } from "@/lib/shopData";
+import { CHARACTERS } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
+
+import harryImg from "@/assets/characters/harry.png";
+import hermioneImg from "@/assets/characters/hermione.png";
+import ronImg from "@/assets/characters/ron.png";
+import lunaImg from "@/assets/characters/luna.png";
+import ginnyImg from "@/assets/characters/ginny.png";
+import nevilleImg from "@/assets/characters/neville.png";
+import dracoImg from "@/assets/characters/draco.png";
+import cedricImg from "@/assets/characters/cedric.png";
+import choImg from "@/assets/characters/cho.png";
+
+const CHARACTER_IMAGES: Record<string, string> = {
+  harry: harryImg, hermione: hermioneImg, ron: ronImg,
+  luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
+  draco: dracoImg, cedric: cedricImg, cho: choImg,
+};
 
 interface SettingsScreenProps {
   profile: PlayerProfile;
   onActivateTheme: (themeId: string) => void;
+  onSelectCharacter: (charId: string) => void;
   onBack: () => void;
 }
 
-const SettingsScreen = ({ profile, onActivateTheme, onBack }: SettingsScreenProps) => {
+const SettingsScreen = ({ profile, onActivateTheme, onSelectCharacter, onBack }: SettingsScreenProps) => {
   const { theme, toggleTheme } = useTheme();
 
   const purchasedThemes = SHOP_ITEMS.filter(
@@ -29,8 +47,44 @@ const SettingsScreen = ({ profile, onActivateTheme, onBack }: SettingsScreenProp
           <h1 className="font-display text-2xl font-bold text-primary text-glow">Settings</h1>
         </div>
 
-        {/* Mode Toggle */}
+        {/* Switch Character */}
         <div className="card-illustrated p-5 mb-4 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+          <h2 className="font-display text-lg font-semibold text-foreground mb-3">🧙 Switch Character</h2>
+          <div className="grid grid-cols-3 gap-2">
+            {CHARACTERS.map(char => {
+              const isActive = profile.character?.id === char.id;
+              return (
+                <button
+                  key={char.id}
+                  onClick={() => onSelectCharacter(char.id)}
+                  className={`p-3 rounded-xl flex flex-col items-center gap-2 transition-all duration-300 border-2 ${
+                    isActive
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-secondary/40 hover:border-primary/30"
+                  }`}
+                >
+                  <img
+                    src={CHARACTER_IMAGES[char.id]}
+                    alt={char.name}
+                    className="w-12 h-12 rounded-xl object-cover"
+                    loading="lazy"
+                  />
+                  <span className="font-display text-xs font-medium text-foreground truncate w-full text-center">
+                    {char.name.split(" ")[0]}
+                  </span>
+                  {isActive && (
+                    <span className="text-[10px] font-display font-semibold text-primary px-2 py-0.5 rounded-full bg-primary/10">
+                      ACTIVE
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Mode Toggle */}
+        <div className="card-illustrated p-5 mb-4 animate-slide-up" style={{ animationDelay: "0.1s" }}>
           <h2 className="font-display text-lg font-semibold text-foreground mb-3">🌗 Display Mode</h2>
           <button
             onClick={toggleTheme}
@@ -43,7 +97,7 @@ const SettingsScreen = ({ profile, onActivateTheme, onBack }: SettingsScreenProp
         </div>
 
         {/* Color Themes */}
-        <div className="card-illustrated p-5 mb-4 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+        <div className="card-illustrated p-5 mb-4 animate-slide-up" style={{ animationDelay: "0.15s" }}>
           <h2 className="font-display text-lg font-semibold text-foreground mb-3">🎨 Color Themes</h2>
           <div className="space-y-2">
             <button
