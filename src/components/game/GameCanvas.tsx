@@ -312,7 +312,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             if (px + PLAYER_W > p.x && px < p.x + p.w && py + PLAYER_H > p.y && py < p.y + p.h) {
               if (carInvincible <= 0) {
                 if (hasRevive) { hasRevive = false; carInvincible = 60; }
-                else { handleDeath(); return; }
+                else { handleDeath("hazard"); return; }
               }
             }
           }
@@ -322,7 +322,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           if (px + PLAYER_W > e.x && px < e.x + e.w && py + PLAYER_H > e.y && py < e.y + e.h) {
             if (carInvincible <= 0) {
               if (hasRevive) { hasRevive = false; carInvincible = 60; }
-              else { handleDeath(); return; }
+              else { handleDeath("enemy"); return; }
             }
           }
         }
@@ -333,7 +333,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (p.type === "hazard") {
           if (px + PLAYER_W > p.x && px < p.x + p.w && py + PLAYER_H > p.y && py < p.y + p.h) {
             if (hasRevive) { hasRevive = false; py = p.y - PLAYER_H - 50; vy = jumpPower; }
-            else { handleDeath(); return; }
+            else { handleDeath("hazard"); return; }
           }
           continue;
         }
@@ -359,7 +359,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             e.y = -100;
           } else {
             if (hasRevive) { hasRevive = false; vy = jumpPower; }
-            else { handleDeath(); return; }
+            else { handleDeath("enemy"); return; }
           }
         }
       }
@@ -454,7 +454,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
               playerHp -= proj.damage;
               playerHitFlash = 8;
               projectiles.splice(i, 1);
-              if (playerHp <= 0) { handleDeath(); return; }
+              if (playerHp <= 0) { handleDeath("boss"); return; }
             }
           }
         }
@@ -487,7 +487,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         const deathY = isBoatLevel ? H - 45 : H + 100;
         if (py > deathY) {
           if (hasRevive) { hasRevive = false; py = startY - 100; vy = 0; px = startX; }
-          else { handleDeath(); return; }
+          else { handleDeath(isBoatLevel ? "drown" : "fall"); return; }
         }
       }
 
