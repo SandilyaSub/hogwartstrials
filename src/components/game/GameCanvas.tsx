@@ -1191,12 +1191,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             ctx.clip();
             ctx.drawImage(imgEl, e.x + e.w / 2 - imgSize / 2, e.y + e.h / 2 - imgSize / 2 + bob, imgSize, imgSize);
             ctx.restore();
-            // Red border ring
-            ctx.strokeStyle = "#ff4040";
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(e.x + e.w / 2, e.y + e.h / 2 + bob, imgSize / 2, 0, Math.PI * 2);
-            ctx.stroke();
             return;
           }
         }
@@ -1252,12 +1246,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
               ctx.fillRect(bossX + bossW / 2 - imgSize / 2, bossY + bossH / 2 - imgSize / 2, imgSize, imgSize);
             }
             ctx.restore();
-            // Boss border ring
-            ctx.strokeStyle = bossData.color;
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.arc(bossX + bossW / 2, bossY + bossH / 2, imgSize / 2, 0, Math.PI * 2);
-            ctx.stroke();
             bossDrawn = true;
           }
         }
@@ -1439,12 +1427,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           }
           ctx.restore();
 
-          // Colored border ring
-          ctx.strokeStyle = flash ? "#fff" : charColor;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(cx + PLAYER_W / 2, cy + PLAYER_H / 2, imgSize / 2, 0, Math.PI * 2);
-          ctx.stroke();
 
           // Wand glow below
           ctx.fillStyle = charColor;
