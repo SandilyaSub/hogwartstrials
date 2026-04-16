@@ -1368,10 +1368,24 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             life: 15, color: "rgba(200,200,200,0.6)",
           });
         }
-        // Character emoji in car
-        ctx.font = "14px serif";
-        ctx.textAlign = "center";
-        ctx.fillText(profile.character?.emoji || "⚡", cx + carW / 2, cy + carH / 2 + 4);
+        // Character avatar in car
+        const carCharId = profile.character?.id || "harry";
+        const carImgKey = `__charImg_${carCharId}`;
+        if (!(window as any)[carImgKey]) {
+          const img = new Image();
+          img.src = CHARACTER_IMAGES[carCharId] || CHARACTER_IMAGES.harry;
+          (window as any)[carImgKey] = img;
+        }
+        const carCharImg = (window as any)[carImgKey] as HTMLImageElement;
+        if (carCharImg.complete && carCharImg.naturalWidth > 0) {
+          const avatarSize = 18;
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx + carW / 2, cy + carH / 2, avatarSize / 2, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.drawImage(carCharImg, cx + carW / 2 - avatarSize / 2, cy + carH / 2 - avatarSize / 2, avatarSize, avatarSize);
+          ctx.restore();
+        }
       } else {
         const charId = profile.character?.id || "harry";
         const charColor = profile.character?.color || "#c0392b";
