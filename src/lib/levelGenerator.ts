@@ -72,6 +72,7 @@ export interface LevelData {
   mirrorBoss?: boolean;
   boatLevel?: boolean;
   flyingCar?: boolean;
+  hippogriffFlight?: boolean;
   bossArena?: boolean;
   boss?: BossData;
 }
