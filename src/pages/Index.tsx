@@ -247,14 +247,15 @@ const Index = () => {
       );
 
     case "levelComplete": {
-      const isFinalBoss = profile.currentWorld === 7 && profile.currentLevel === 4;
+      const worldLevelCount = WORLDS[profile.currentWorld - 1]?.levels.length || 10;
+      const isFinalBoss = profile.currentWorld === 7 && profile.currentLevel === worldLevelCount - 1;
       return (
         <LevelComplete
           worldId={profile.currentWorld}
           levelIdx={profile.currentLevel}
           isFinalBoss={isFinalBoss}
           onNextLevel={() => {
-            if (profile.currentLevel < 4) {
+            if (profile.currentLevel < worldLevelCount - 1) {
               startLevel(profile.currentWorld, profile.currentLevel + 1);
             } else if (profile.currentWorld < 7) {
               startLevel(profile.currentWorld + 1, 0);
