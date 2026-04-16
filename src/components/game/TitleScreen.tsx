@@ -1,5 +1,5 @@
 import heroBg from "@/assets/hero-bg.jpg";
-import { startMusic, isMusicPlaying } from "@/lib/musicEngine";
+
 import { useTheme } from "@/hooks/useTheme";
 
 interface TitleScreenProps {
@@ -12,7 +12,6 @@ interface TitleScreenProps {
 const TitleScreen = ({ onNewGame, onContinue, hasSave, onSignOut }: TitleScreenProps) => {
   const { theme, toggleTheme } = useTheme();
   const handleAction = (action: () => void) => {
-    if (!isMusicPlaying()) startMusic();
     action();
   };
 

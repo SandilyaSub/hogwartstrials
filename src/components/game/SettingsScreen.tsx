@@ -5,19 +5,14 @@ import type { PlayerProfile } from "@/hooks/useGameState";
 interface SettingsScreenProps {
   profile: PlayerProfile;
   onActivateTheme: (themeId: string) => void;
-  onActivateSong: (songId: string) => void;
   onBack: () => void;
 }
 
-const SettingsScreen = ({ profile, onActivateTheme, onActivateSong, onBack }: SettingsScreenProps) => {
+const SettingsScreen = ({ profile, onActivateTheme, onBack }: SettingsScreenProps) => {
   const { theme, toggleTheme } = useTheme();
 
   const purchasedThemes = SHOP_ITEMS.filter(
     i => i.type === "theme" && profile.purchasedUpgrades?.[i.id]
-  );
-
-  const ownedSongs = SHOP_ITEMS.filter(
-    i => i.type === "song" && (i.cost === 0 || profile.purchasedUpgrades?.[i.id])
   );
 
   return (
@@ -93,39 +88,6 @@ const SettingsScreen = ({ profile, onActivateTheme, onActivateSong, onBack }: Se
             {purchasedThemes.length === 0 && (
               <p className="text-sm text-muted-foreground font-body text-center py-3">
                 No themes purchased yet. Visit the Shop to buy some! 🏪
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Music */}
-        <div className="card-illustrated p-5 mb-4 animate-slide-up" style={{ animationDelay: "0.15s" }}>
-          <h2 className="font-display text-lg font-semibold text-foreground mb-3">🎵 Music</h2>
-          <div className="space-y-2">
-            {ownedSongs.map(s => (
-              <button
-                key={s.id}
-                onClick={() => onActivateSong(s.id)}
-                className={`w-full p-3.5 rounded-xl text-left flex items-center gap-3 transition-all border-2 ${
-                  (profile.activeSong === s.id || (!profile.activeSong && s.id === "song_default"))
-                    ? "border-primary bg-primary/10"
-                    : "border-border bg-secondary/40 hover:border-primary/30"
-                }`}
-              >
-                <span className="text-xl">{s.emoji}</span>
-                <div className="flex-1">
-                  <p className="font-display text-sm font-medium text-foreground">{s.name}</p>
-                  <p className="text-xs text-muted-foreground font-body">{s.description}</p>
-                </div>
-                {(profile.activeSong === s.id || (!profile.activeSong && s.id === "song_default")) && (
-                  <span className="text-xs font-display font-semibold text-primary px-2.5 py-1 rounded-full bg-primary/10">♪ PLAYING</span>
-                )}
-              </button>
-            ))}
-
-            {ownedSongs.length <= 1 && (
-              <p className="text-sm text-muted-foreground font-body text-center py-3">
-                Buy more songs from the Shop! 🏪
               </p>
             )}
           </div>

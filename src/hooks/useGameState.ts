@@ -19,7 +19,6 @@ export interface PlayerProfile {
   lives: number;
   purchasedUpgrades: Record<string, boolean>;
   activeTheme: string;
-  activeSong: string;
   tutorialCompleted: boolean;
 }
 
@@ -36,7 +35,6 @@ const DEFAULT_PROFILE: PlayerProfile = {
   lives: 3,
   purchasedUpgrades: {},
   activeTheme: "dark",
-  activeSong: "default",
   tutorialCompleted: false,
 };
 
@@ -79,7 +77,6 @@ export function useGameState(user: User | null) {
           lives: data.lives || 3,
           purchasedUpgrades: (data.purchased_upgrades as Record<string, boolean>) || {},
           activeTheme: data.active_theme || "dark",
-          activeSong: (data as any).active_song || "default",
           tutorialCompleted: (data as any).tutorial_completed || false,
         });
       }
@@ -108,7 +105,6 @@ export function useGameState(user: User | null) {
       lives: p.lives,
       purchased_upgrades: p.purchasedUpgrades,
       active_theme: p.activeTheme,
-      active_song: p.activeSong,
       tutorial_completed: p.tutorialCompleted,
     } as any).eq("user_id", user.id);
   }, [user]);
@@ -163,13 +159,11 @@ export function useGameState(user: User | null) {
     if (profile.coins < item.cost) return;
     const newUpgrades = { ...profile.purchasedUpgrades, [item.id]: true };
     const newTheme = item.type === "theme" ? item.id : profile.activeTheme;
-    const newSong = item.type === "song" ? item.id : profile.activeSong;
     saveProfile({
       ...profile,
       coins: profile.coins - item.cost,
       purchasedUpgrades: newUpgrades,
       activeTheme: newTheme,
-      activeSong: newSong,
     });
 
     if (user) {
@@ -183,7 +177,7 @@ export function useGameState(user: User | null) {
   }, [profile, saveProfile, user]);
 
   const resetGame = useCallback(() => {
-    const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme, activeSong: profile.activeSong };
+    const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme };
     saveProfile(reset);
     setScreen("title");
   }, [saveProfile, profile.purchasedUpgrades, profile.activeTheme]);

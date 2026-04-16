@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import { WORLDS } from "@/lib/gameData";
 import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef, type HouseToken } from "@/lib/levelGenerator";
-import { toggleMusic, isMusicPlaying, startMusic } from "@/lib/musicEngine";
+
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
@@ -112,7 +112,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
   const keysRef = useRef<Set<string>>(new Set());
   const gameLoopRef = useRef<number>(0);
   const [paused, setPaused] = useState(false);
-  const [musicOn, setMusicOn] = useState(isMusicPlaying());
+  
   const tokenPointsRef = useRef(0);
 
   const world = WORLDS[worldId - 1];
@@ -1519,12 +1519,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
       {/* Top right controls */}
       <div className="absolute top-2 right-2 z-10 flex gap-2">
-        <button
-          onClick={() => { setMusicOn(m => { toggleMusic(); return !m; }); }}
-          className="text-xs px-2 py-1 rounded bg-card/80 border border-border font-display text-foreground/60 hover:text-foreground"
-        >
-          {musicOn ? "🎵 Music" : "🔇 Music"}
-        </button>
         <button
           onClick={() => { cancelAnimationFrame(gameLoopRef.current); onBack(); }}
           className="text-xs px-2 py-1 rounded bg-card/80 border border-border font-display text-foreground/60 hover:text-foreground"

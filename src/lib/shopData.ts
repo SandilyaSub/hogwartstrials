@@ -4,7 +4,7 @@ export interface ShopItem {
   description: string;
   emoji: string;
   cost: number;
-  type: "upgrade" | "consumable" | "theme" | "song";
+  type: "upgrade" | "consumable" | "theme";
   stat?: string;
   value?: number;
   themeColors?: { primary: string; background: string; card: string };
@@ -105,61 +105,6 @@ export const SHOP_ITEMS: ShopItem[] = [
     themeColors: { primary: "260 60% 65%", background: "260 35% 6%", card: "260 28% 10%" },
   },
 
-  // ─── Songs ───
-  {
-    id: "song_default", name: "Hedwig's Theme", description: "The classic magical melody",
-    emoji: "🦉", cost: 0, type: "song",
-  },
-  {
-    id: "song_adventure", name: "The Quidditch Pitch", description: "An upbeat, soaring adventure tune",
-    emoji: "🧹", cost: 80, type: "song",
-  },
-  {
-    id: "song_dark", name: "The Dark Forest", description: "A mysterious, eerie melody",
-    emoji: "🌑", cost: 80, type: "song",
-  },
-  {
-    id: "song_triumphant", name: "Victory at Hogwarts", description: "A triumphant, heroic fanfare",
-    emoji: "🏆", cost: 100, type: "song",
-  },
-  {
-    id: "song_peaceful", name: "The Great Lake", description: "A calm, peaceful lullaby",
-    emoji: "🌊", cost: 80, type: "song",
-  },
-  {
-    id: "song_battle", name: "Battle of Hogwarts", description: "An intense, driving battle theme",
-    emoji: "⚔️", cost: 120, type: "song",
-  },
-
-  // ─── Premium Songs ───
-  {
-    id: "song_lush_life", name: "Lush Life", description: "A dreamy, uplifting pop melody",
-    emoji: "🌴", cost: 200, type: "song",
-  },
-  {
-    id: "song_touch", name: "Touch", description: "A smooth, soulful groove",
-    emoji: "💫", cost: 200, type: "song",
-  },
-  {
-    id: "song_passo_bem_solto", name: "Passo Bem Solto", description: "A chill, breezy Brazilian vibe",
-    emoji: "🇧🇷", cost: 220, type: "song",
-  },
-  {
-    id: "song_levitating", name: "Levitating", description: "A funky, groovy disco beat",
-    emoji: "🪩", cost: 200, type: "song",
-  },
-  {
-    id: "song_blinding_lights", name: "Blinding Lights", description: "A synth-driven retro banger",
-    emoji: "🌃", cost: 250, type: "song",
-  },
-  {
-    id: "song_dancin", name: "Dancin", description: "A smooth, flowing dance melody",
-    emoji: "🕺", cost: 180, type: "song",
-  },
-  {
-    id: "song_super_shy", name: "Super Shy", description: "A catchy, bouncy K-pop tune",
-    emoji: "🫣", cost: 220, type: "song",
-  },
 ];
 
 export function getShopCategory(type: ShopItem["type"]): string {
@@ -167,6 +112,6 @@ export function getShopCategory(type: ShopItem["type"]): string {
     case "upgrade": return "⬆️ Upgrades";
     case "consumable": return "🧪 Consumables";
     case "theme": return "🎨 Themes";
-    case "song": return "🎵 Songs";
+    
   }
 }
