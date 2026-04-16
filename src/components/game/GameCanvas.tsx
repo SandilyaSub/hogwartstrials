@@ -238,7 +238,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const isDark = levelData.darkLevel || false;
     const isCheckered = levelData.checkered || false;
     const isBoatLevel = levelData.boatLevel || false;
-    const isFlyingCar = levelData.flyingCar || false;
+    const isHippogriffFlight = levelData.hippogriffFlight || false;
+    const isFlyingCar = levelData.flyingCar || isHippogriffFlight;
     const isBossArena = levelData.bossArena || false;
     const bossData = levelData.boss;
 
@@ -647,37 +648,57 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     function draw() {
       // Background
       if (isFlyingCar) {
-        // Rich sky gradient for flying
+        // Sky gradient — sunset for hippogriff, night for car
         const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
-        skyGrad.addColorStop(0, "#020a20");
-        skyGrad.addColorStop(0.2, "#0a1540");
-        skyGrad.addColorStop(0.5, "#1a2a55");
-        skyGrad.addColorStop(0.75, "#2a3a65");
-        skyGrad.addColorStop(1, "#1a3a2a");
+        if (isHippogriffFlight) {
+          skyGrad.addColorStop(0, "#1a1040");
+          skyGrad.addColorStop(0.25, "#3a2065");
+          skyGrad.addColorStop(0.5, "#8a4070");
+          skyGrad.addColorStop(0.75, "#d06040");
+          skyGrad.addColorStop(1, "#f0a030");
+        } else {
+          skyGrad.addColorStop(0, "#020a20");
+          skyGrad.addColorStop(0.2, "#0a1540");
+          skyGrad.addColorStop(0.5, "#1a2a55");
+          skyGrad.addColorStop(0.75, "#2a3a65");
+          skyGrad.addColorStop(1, "#1a3a2a");
+        }
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, W, H);
-        // Moon with atmospheric glow
-        ctx.save();
-        ctx.fillStyle = "rgba(255,240,200,0.03)";
-        ctx.beginPath(); ctx.arc(W - 80, 60, 80, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "rgba(255,240,200,0.06)";
-        ctx.beginPath(); ctx.arc(W - 80, 60, 50, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#e8e0c0";
-        ctx.beginPath(); ctx.arc(W - 80, 60, 25, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#f0e8d0";
-        ctx.beginPath(); ctx.arc(W - 78, 58, 20, 0, Math.PI * 2); ctx.fill();
-        ctx.restore();
+        if (isHippogriffFlight) {
+          // Setting sun
+          ctx.save();
+          ctx.fillStyle = "rgba(255,180,60,0.06)";
+          ctx.beginPath(); ctx.arc(W - 100, H - 40, 100, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "rgba(255,200,80,0.1)";
+          ctx.beginPath(); ctx.arc(W - 100, H - 40, 60, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#ffd060";
+          ctx.beginPath(); ctx.arc(W - 100, H - 40, 30, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+        } else {
+          // Moon with atmospheric glow
+          ctx.save();
+          ctx.fillStyle = "rgba(255,240,200,0.03)";
+          ctx.beginPath(); ctx.arc(W - 80, 60, 80, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "rgba(255,240,200,0.06)";
+          ctx.beginPath(); ctx.arc(W - 80, 60, 50, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#e8e0c0";
+          ctx.beginPath(); ctx.arc(W - 80, 60, 25, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#f0e8d0";
+          ctx.beginPath(); ctx.arc(W - 78, 58, 20, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+        }
         // Scrolling hills (parallax layers)
-        drawMountains(H - 30, "rgba(10,30,15,0.8)", 0.1, 1);
-        drawMountains(H - 15, "rgba(8,20,10,0.9)", 0.2, 3);
+        drawMountains(H - 30, isHippogriffFlight ? "rgba(40,20,50,0.7)" : "rgba(10,30,15,0.8)", 0.1, 1);
+        drawMountains(H - 15, isHippogriffFlight ? "rgba(30,15,40,0.8)" : "rgba(8,20,10,0.9)", 0.2, 3);
         // Ground silhouette with trees
-        ctx.fillStyle = "#0a1a0a";
+        ctx.fillStyle = isHippogriffFlight ? "#1a0a20" : "#0a1a0a";
         for (let i = -1; i < W / 40 + 2; i++) {
           const gx = (i * 40 - (cameraX * 0.3) % 40);
           const gh = 20 + ((i * 37 + 13) % 30);
           ctx.fillRect(gx, H - gh, 42, gh);
         }
-        drawTreeLine(H - 20, "#0d1f0d", 0.25, 20, 7);
+        drawTreeLine(H - 20, isHippogriffFlight ? "#150a1a" : "#0d1f0d", 0.25, 20, 7);
       } else {
         const [c1, c2] = theme.bgColors;
         const grad = ctx.createLinearGradient(0, 0, 0, H);
@@ -1326,62 +1347,185 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
       // Draw player
       if (isFlyingCar) {
-        // Draw flying car
         const cx = px, cy = py;
-        const carW = 50, carH = 28;
-        // Car body
-        ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
-        ctx.beginPath();
-        ctx.moveTo(cx, cy + carH * 0.3);
-        ctx.lineTo(cx + 8, cy);
-        ctx.lineTo(cx + carW - 5, cy);
-        ctx.lineTo(cx + carW, cy + carH * 0.3);
-        ctx.lineTo(cx + carW + 5, cy + carH * 0.6);
-        ctx.lineTo(cx + carW, cy + carH);
-        ctx.lineTo(cx, cy + carH);
-        ctx.lineTo(cx - 3, cy + carH * 0.6);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = "#2a6aaa";
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        // Windows
-        ctx.fillStyle = "#aaddff";
-        ctx.fillRect(cx + 12, cy + 3, 14, 10);
-        ctx.fillRect(cx + 28, cy + 3, 12, 10);
-        // Wheels (flying, so they spin)
-        ctx.fillStyle = "#222";
-        ctx.beginPath();
-        ctx.arc(cx + 12, cy + carH + 2, 5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(cx + carW - 10, cy + carH + 2, 5, 0, Math.PI * 2);
-        ctx.fill();
-        // Exhaust particles
-        if (frameCount % 2 === 0) {
-          particles.push({
-            x: cx - 5, y: cy + carH * 0.6,
-            vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1.5,
-            life: 15, color: "rgba(200,200,200,0.6)",
-          });
-        }
-        // Character avatar in car
-        const carCharId = profile.character?.id || "harry";
-        const carImgKey = `__charImg_${carCharId}`;
-        if (!(window as any)[carImgKey]) {
-          const img = new Image();
-          img.src = CHARACTER_IMAGES[carCharId] || CHARACTER_IMAGES.harry;
-          (window as any)[carImgKey] = img;
-        }
-        const carCharImg = (window as any)[carImgKey] as HTMLImageElement;
-        if (carCharImg.complete && carCharImg.naturalWidth > 0) {
-          const avatarSize = 18;
+        if (isHippogriffFlight) {
+          // Draw Buckbeak the Hippogriff
+          const hW = 56, hH = 34;
+          const bobY = Math.sin(frameCount * 0.08) * 3;
+          const flash = carInvincible > 0 && frameCount % 4 < 2;
           ctx.save();
+          ctx.translate(cx, cy + bobY);
+
+          // Wing flap animation
+          const wingAngle = Math.sin(frameCount * 0.15) * 0.3;
+
+          // Left wing (back)
+          ctx.save();
+          ctx.translate(hW * 0.4, hH * 0.3);
+          ctx.rotate(-wingAngle - 0.2);
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#8B7355";
           ctx.beginPath();
-          ctx.arc(cx + carW / 2, cy + carH / 2, avatarSize / 2, 0, Math.PI * 2);
-          ctx.clip();
-          ctx.drawImage(carCharImg, cx + carW / 2 - avatarSize / 2, cy + carH / 2 - avatarSize / 2, avatarSize, avatarSize);
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(-30, -25, -45, -15);
+          ctx.quadraticCurveTo(-35, 0, 0, 5);
+          ctx.closePath();
+          ctx.fill();
           ctx.restore();
+
+          // Right wing (back)
+          ctx.save();
+          ctx.translate(hW * 0.4, hH * 0.3);
+          ctx.rotate(wingAngle + 0.2);
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#8B7355";
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(30, -25, 45, -15);
+          ctx.quadraticCurveTo(35, 0, 0, 5);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+
+          // Body
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#A0896C";
+          ctx.beginPath();
+          ctx.ellipse(hW * 0.45, hH * 0.55, hW * 0.32, hH * 0.35, -0.1, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Head
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#C4A97D";
+          ctx.beginPath();
+          ctx.arc(hW * 0.82, hH * 0.25, 8, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Beak
+          ctx.fillStyle = "#E8A020";
+          ctx.beginPath();
+          ctx.moveTo(hW * 0.9, hH * 0.22);
+          ctx.lineTo(hW + 6, hH * 0.2);
+          ctx.lineTo(hW * 0.9, hH * 0.32);
+          ctx.closePath();
+          ctx.fill();
+
+          // Eye
+          ctx.fillStyle = "#FF8C00";
+          ctx.beginPath();
+          ctx.arc(hW * 0.85, hH * 0.22, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#000";
+          ctx.beginPath();
+          ctx.arc(hW * 0.85, hH * 0.22, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Tail feathers
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#6B5B3A";
+          for (let t = 0; t < 3; t++) {
+            ctx.beginPath();
+            ctx.moveTo(hW * 0.05, hH * 0.5);
+            ctx.quadraticCurveTo(-12, hH * 0.3 + t * 8, -20, hH * 0.4 + t * 6);
+            ctx.quadraticCurveTo(-10, hH * 0.5 + t * 4, hW * 0.1, hH * 0.6);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          // Talons
+          ctx.strokeStyle = "#555";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(hW * 0.35, hH * 0.85);
+          ctx.lineTo(hW * 0.3, hH + 5);
+          ctx.moveTo(hW * 0.55, hH * 0.85);
+          ctx.lineTo(hW * 0.5, hH + 5);
+          ctx.stroke();
+
+          // Character riding on top
+          const charId = profile.character?.id || "harry";
+          const imgKey = `__charImg_${charId}`;
+          if (!(window as any)[imgKey]) {
+            const img = new Image();
+            img.src = CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
+            (window as any)[imgKey] = img;
+          }
+          const charImg = (window as any)[imgKey] as HTMLImageElement;
+          if (charImg.complete && charImg.naturalWidth > 0) {
+            const avatarSize = 20;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(hW * 0.45, hH * 0.1, avatarSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(charImg, hW * 0.45 - avatarSize / 2, hH * 0.1 - avatarSize / 2, avatarSize, avatarSize);
+            ctx.restore();
+          }
+
+          ctx.restore();
+
+          // Wind trail particles
+          if (frameCount % 2 === 0) {
+            particles.push({
+              x: cx - 5, y: cy + hH * 0.5 + bobY,
+              vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1,
+              life: 12, color: "rgba(200,220,255,0.4)",
+            });
+          }
+          // Feather particles occasionally
+          if (frameCount % 20 === 0) {
+            particles.push({
+              x: cx + hW * 0.3, y: cy + hH * 0.3 + bobY,
+              vx: -1 - Math.random(), vy: 0.5 + Math.random(),
+              life: 30, color: "rgba(160,137,108,0.6)",
+            });
+          }
+        } else {
+          // Draw flying car (original)
+          const carW = 50, carH = 28;
+          ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
+          ctx.beginPath();
+          ctx.moveTo(cx, cy + carH * 0.3);
+          ctx.lineTo(cx + 8, cy);
+          ctx.lineTo(cx + carW - 5, cy);
+          ctx.lineTo(cx + carW, cy + carH * 0.3);
+          ctx.lineTo(cx + carW + 5, cy + carH * 0.6);
+          ctx.lineTo(cx + carW, cy + carH);
+          ctx.lineTo(cx, cy + carH);
+          ctx.lineTo(cx - 3, cy + carH * 0.6);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = "#2a6aaa";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.fillStyle = "#aaddff";
+          ctx.fillRect(cx + 12, cy + 3, 14, 10);
+          ctx.fillRect(cx + 28, cy + 3, 12, 10);
+          ctx.fillStyle = "#222";
+          ctx.beginPath();
+          ctx.arc(cx + 12, cy + carH + 2, 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(cx + carW - 10, cy + carH + 2, 5, 0, Math.PI * 2);
+          ctx.fill();
+          if (frameCount % 2 === 0) {
+            particles.push({
+              x: cx - 5, y: cy + carH * 0.6,
+              vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1.5,
+              life: 15, color: "rgba(200,200,200,0.6)",
+            });
+          }
+          const carCharId = profile.character?.id || "harry";
+          const carImgKey = `__charImg_${carCharId}`;
+          if (!(window as any)[carImgKey]) {
+            const img = new Image();
+            img.src = CHARACTER_IMAGES[carCharId] || CHARACTER_IMAGES.harry;
+            (window as any)[carImgKey] = img;
+          }
+          const carCharImg = (window as any)[carImgKey] as HTMLImageElement;
+          if (carCharImg.complete && carCharImg.naturalWidth > 0) {
+            const avatarSize = 18;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx + carW / 2, cy + carH / 2, avatarSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(carCharImg, cx + carW / 2 - avatarSize / 2, cy + carH / 2 - avatarSize / 2, avatarSize, avatarSize);
+            ctx.restore();
+          }
         }
       } else {
         const charId = profile.character?.id || "harry";

@@ -1146,49 +1146,52 @@ function gen_3_5_HippogriffFlight(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Starting on the pumpkin patch near Hagrid's hut
-  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#4a5a2a", label: "🎃 Hagrid's Hut" });
+  // Invisible floor and ceiling boundaries
+  platforms.push({ x: 0, y: H - 30, w: 10000, h: 30, type: "hazard", color: "transparent" });
+  platforms.push({ x: 0, y: 0, w: 10000, h: 10, type: "hazard", color: "transparent" });
 
-  // Buckbeak takeoff run — ground platforms getting higher
-  const takeoff = [
-    { x: 180, y: H - 60 }, { x: 310, y: H - 90 }, { x: 440, y: H - 130 },
-    { x: 570, y: H - 180 }, { x: 700, y: H - 240 },
-  ];
-  takeoff.forEach((t, i) => {
-    platforms.push({ x: t.x, y: t.y, w: 80, h: 14, type: "normal", color: "#5a4a2a", label: i === 0 ? "🦅 Run!" : "" });
-  });
-
-  // Airborne — Hogwarts towers as platforms
-  const towers = [
-    { x: 850, y: H - 300, label: "🏰 Tower" }, { x: 1050, y: H - 350, label: "🏰" },
-    { x: 1250, y: H - 280, label: "🏰" }, { x: 1450, y: H - 370, label: "🏰" },
-    { x: 1650, y: H - 320, label: "🏰" }, { x: 1850, y: H - 390, label: "🏰" },
-  ];
-  towers.forEach(t => {
-    platforms.push({ x: t.x, y: t.y, w: 70, h: 14, type: "normal", color: "#5a5a6a", label: t.label });
-  });
-
-  // Cloud platforms — moving (wind)
-  const clouds = [
-    { x: 950, y: H - 380, range: 50 }, { x: 1150, y: H - 420, range: 60 },
-    { x: 1350, y: H - 340, range: 45 }, { x: 1550, y: H - 430, range: 55 },
-    { x: 1750, y: H - 360, range: 50 },
-  ];
-  clouds.forEach((c, i) => {
-    const p: Platform = {
-      x: c.x, y: c.y, w: 55, h: 12, type: "moving", color: "#8899bb",
-      label: "☁️", origX: c.x, origY: c.y, moveDir: i % 2 === 0 ? 1 : -1, moveRange: c.range,
-    };
-    platforms.push(p);
-  });
+  // Storm clouds to dodge
+  for (let i = 0; i < 28; i++) {
+    const x = 500 + i * 300 + (i % 3) * 70;
+    const y = 40 + ((i * 151) % (H - 120));
+    const w = 55 + (i % 3) * 20;
+    const h = 22 + (i % 2) * 10;
+    platforms.push({ x, y, w, h, type: "hazard", color: "#6a6a8a", label: "⛈️" });
+  }
 
   // Dementors chasing through the sky
-  enemies.push({ x: 900, y: H - 340, w: 22, h: 22, type: "dementor", dir: 1, speed: 1.0, range: 80, origX: 900, emoji: "👻" });
-  enemies.push({ x: 1300, y: H - 400, w: 24, h: 24, type: "dementor", dir: -1, speed: 1.2, range: 90, origX: 1300, emoji: "👻" });
-  enemies.push({ x: 1700, y: H - 380, w: 24, h: 24, type: "dementor", dir: 1, speed: 1.3, range: 100, origX: 1700, emoji: "👻" });
+  for (let i = 0; i < 12; i++) {
+    const x = 700 + i * 650;
+    const y = 50 + ((i * 197) % (H - 130));
+    enemies.push({
+      x, y, w: 24, h: 24, type: "dementor",
+      dir: -1, speed: 1.2 + (i % 3) * 0.3, range: 120,
+      origX: x, emoji: "👻",
+    });
+  }
 
-  platforms.push({ x: 2000, y: H - 400, w: 120, h: 20, type: "finish", label: "🦅 Safe Landing" });
-  return { platforms, enemies, startX: 40, startY: H - 80 };
+  // Hogwarts tower tops poking up
+  for (let i = 0; i < 6; i++) {
+    const x = 1000 + i * 1400;
+    platforms.push({
+      x, y: H - 90, w: 60, h: 60, type: "hazard",
+      color: "#5a5a6a", label: "🏰",
+    });
+  }
+
+  // Mountain peaks
+  for (let i = 0; i < 4; i++) {
+    const x = 2000 + i * 2000;
+    platforms.push({
+      x, y: H - 110, w: 80, h: 80, type: "hazard",
+      color: "#4a4a3a", label: "⛰️",
+    });
+  }
+
+  // Safe landing at Hagrid's hut
+  platforms.push({ x: 9200, y: H / 2 - 30, w: 120, h: 60, type: "finish", label: "🦅 Safe Landing" });
+
+  return { platforms, enemies, startX: 60, startY: H / 2, hippogriffFlight: true };
 }
 
 function gen_3_6_ShriekingShack(H: number): LevelData {
