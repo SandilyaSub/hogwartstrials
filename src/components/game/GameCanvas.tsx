@@ -6,6 +6,21 @@ import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy,
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
+import harryImg from "@/assets/characters/harry.png";
+import hermioneImg from "@/assets/characters/hermione.png";
+import ronImg from "@/assets/characters/ron.png";
+import lunaImg from "@/assets/characters/luna.png";
+import ginnyImg from "@/assets/characters/ginny.png";
+import nevilleImg from "@/assets/characters/neville.png";
+import dracoImg from "@/assets/characters/draco.png";
+import cedricImg from "@/assets/characters/cedric.png";
+import choImg from "@/assets/characters/cho.png";
+
+const CHARACTER_IMAGES: Record<string, string> = {
+  harry: harryImg, hermione: hermioneImg, ron: ronImg,
+  luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
+  draco: dracoImg, cedric: cedricImg, cho: choImg,
+};
 
 interface GameCanvasProps {
   profile: PlayerProfile;
@@ -1276,8 +1291,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         const charColor = profile.character?.color || "#c0392b";
         const flash = playerHitFlash > 0;
         const facingLeft = vx < -0.3;
-        const walking = Math.abs(vx) > 0.5;
-        const walkCycle = walking ? Math.floor(frameCount / 6) % 4 : 0;
         const cx = px, cy = py;
 
         // Shadow
@@ -1296,70 +1309,56 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.translate(-cx, 0);
         }
 
-        // ─── Character-Specific Pixel Art ───
-        const skinColor = flash ? "#fff" : "#f0d0a0";
-        const robeColor = flash ? "#fff" : charColor;
-        const darkRobe = flash ? "#ddd" : shadeColor(charColor, -30);
+        // Draw character avatar image
+        const imgKey = `__charImg_${charId}`;
+        if (!(window as any)[imgKey]) {
+          const img = new Image();
+          img.src = CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
+          (window as any)[imgKey] = img;
+        }
+        const charImg = (window as any)[imgKey] as HTMLImageElement;
 
-        // Robe / Body
-        ctx.fillStyle = robeColor;
-        ctx.beginPath();
-        ctx.moveTo(cx + 4, cy + 10);
-        ctx.lineTo(cx + PLAYER_W - 4, cy + 10);
-        ctx.lineTo(cx + PLAYER_W - 2, cy + PLAYER_H - 4);
-        ctx.lineTo(cx + 2, cy + PLAYER_H - 4);
-        ctx.closePath();
-        ctx.fill();
+        if (charImg.complete && charImg.naturalWidth > 0) {
+          // Draw circular clipped avatar
+          const imgSize = Math.max(PLAYER_W, PLAYER_H) + 4;
+          const imgX = cx + PLAYER_W / 2 - imgSize / 2;
+          const imgY = cy + PLAYER_H / 2 - imgSize / 2;
 
-        // Robe shading (side fold)
-        ctx.fillStyle = darkRobe;
-        ctx.fillRect(cx + PLAYER_W - 8, cy + 14, 3, PLAYER_H - 20);
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(cx + PLAYER_W / 2, cy + PLAYER_H / 2, imgSize / 2, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.drawImage(charImg, imgX, imgY, imgSize, imgSize);
 
-        // Belt/sash
-        ctx.fillStyle = flash ? "#ccc" : "#5a4020";
-        ctx.fillRect(cx + 4, cy + 18, PLAYER_W - 8, 2);
+          // Flash overlay when hit
+          if (flash) {
+            ctx.globalAlpha = 0.5;
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(imgX, imgY, imgSize, imgSize);
+            ctx.globalAlpha = 1;
+          }
+          ctx.restore();
 
-        // Head
-        ctx.fillStyle = skinColor;
-        ctx.beginPath();
-        ctx.arc(cx + PLAYER_W / 2, cy + 6, 7, 0, Math.PI * 2);
-        ctx.fill();
+          // Colored border ring
+          ctx.strokeStyle = flash ? "#fff" : charColor;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(cx + PLAYER_W / 2, cy + PLAYER_H / 2, imgSize / 2, 0, Math.PI * 2);
+          ctx.stroke();
 
-        // Hair — unique per character
-        const hairColor = getHairColor(charId);
-        ctx.fillStyle = flash ? "#ddd" : hairColor;
-        ctx.beginPath();
-        ctx.arc(cx + PLAYER_W / 2, cy + 4, 7, Math.PI, 0);
-        ctx.fill();
-
-        // Extra hair details per character
-        drawCharacterDetails(ctx, cx, cy, charId, PLAYER_W, flash);
-
-        // Eyes
-        ctx.fillStyle = "#222";
-        ctx.fillRect(cx + 8, cy + 5, 2, 2);
-        ctx.fillRect(cx + 14, cy + 5, 2, 2);
-
-        // Feet (walking animation)
-        ctx.fillStyle = flash ? "#ccc" : "#3a2a1a";
-        const footOffset = walkCycle === 1 ? 2 : walkCycle === 3 ? -2 : 0;
-        ctx.fillRect(cx + 4 + footOffset, cy + PLAYER_H - 4, 6, 4);
-        ctx.fillRect(cx + PLAYER_W - 10 - footOffset, cy + PLAYER_H - 4, 6, 4);
-
-        // Wand in hand
-        ctx.fillStyle = flash ? "#fff" : "#8B6914";
-        ctx.save();
-        ctx.translate(cx + PLAYER_W - 4, cy + 16);
-        ctx.rotate(0.3 + Math.sin(frameCount * 0.08) * 0.1);
-        ctx.fillRect(0, -1, 10, 2);
-        // Wand tip glow
-        ctx.fillStyle = charColor;
-        ctx.globalAlpha = 0.6 + Math.sin(frameCount * 0.15) * 0.3;
-        ctx.beginPath();
-        ctx.arc(10, 0, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.restore();
+          // Wand glow below
+          ctx.fillStyle = charColor;
+          ctx.globalAlpha = 0.4 + Math.sin(frameCount * 0.15) * 0.3;
+          ctx.beginPath();
+          ctx.arc(cx + PLAYER_W - 2, cy + PLAYER_H / 2 + 4, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        } else {
+          // Fallback emoji while loading
+          ctx.font = `${PLAYER_H}px serif`;
+          ctx.textAlign = "center";
+          ctx.fillText(profile.character?.emoji || "⚡", cx + PLAYER_W / 2, cy + PLAYER_H - 2);
+        }
 
         ctx.restore();
       }
