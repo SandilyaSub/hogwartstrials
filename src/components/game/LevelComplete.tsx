@@ -11,7 +11,8 @@ interface LevelCompleteProps {
 const LevelComplete = ({ worldId, levelIdx, isFinalBoss, onNextLevel, onWorldMap }: LevelCompleteProps) => {
   const world = WORLDS[worldId - 1];
   const level = world.levels[levelIdx];
-  const isWorldComplete = levelIdx === 4;
+  const isWorldComplete = levelIdx === world.levels.length - 1;
+  const isBossLevel = level.isBoss;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 overflow-y-auto">
@@ -34,7 +35,7 @@ const LevelComplete = ({ worldId, levelIdx, isFinalBoss, onNextLevel, onWorldMap
           </div>
 
           <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary/12 text-primary font-display font-semibold text-sm">
-            +{levelIdx === 4 ? 50 : 20} 🪙
+            +{isBossLevel ? 50 : 20} 🪙
           </div>
 
           <div className="flex flex-col gap-3 pt-2">
