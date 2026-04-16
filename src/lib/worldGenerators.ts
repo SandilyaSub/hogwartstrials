@@ -952,14 +952,16 @@ function gen_2_6_MoaningMyrtleBathroom(H: number): LevelData {
 function gen_2_7_AragogLair(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 6; i++) platforms.push({ x: i * 90, y: H - 40, w: 88, h: 40, type: "normal", color: "#2a3a1a" });
-  // Web platforms
+  // Wider ground
+  for (let i = 0; i < 7; i++) platforms.push({ x: i * 80, y: H - 40, w: 78, h: 40, type: "normal", color: "#2a3a1a" });
+  // Web platforms – wider, fewer disappearing
   for (let i = 0; i < 14; i++) {
-    const y = H - 110 - i * 55;
-    platforms.push({ x: 30 + ((i * 83) % 350), y, w: 55, h: 10, type: i % 4 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#aaa" });
+    const y = H - 100 - i * 50;
+    platforms.push({ x: 30 + ((i * 83) % 350), y, w: 80, h: 12, type: i % 6 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#aaa" });
   }
-  for (let i = 0; i < 5; i++) enemies.push({ x: 80 + i * 80, y: H - 200 - i * 100, w: 18, h: 18, type: "spider", dir: 1, speed: 1.0 + i * 0.2, range: 50, origX: 80 + i * 80, emoji: "🕷️" });
-  platforms.push({ x: 140, y: H - 880, w: 100, h: 20, type: "finish", label: "🕸️ Escape the Lair" });
+  // Fewer, slower spiders
+  for (let i = 0; i < 3; i++) enemies.push({ x: 80 + i * 120, y: H - 200 - i * 150, w: 18, h: 18, type: "spider", dir: 1, speed: 0.6 + i * 0.15, range: 40, origX: 80 + i * 120, emoji: "🕷️" });
+  platforms.push({ x: 140, y: H - 750, w: 120, h: 20, type: "finish", label: "🕸️ Escape the Lair" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
