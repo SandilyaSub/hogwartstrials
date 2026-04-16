@@ -1377,86 +1377,230 @@ function gen_3_9_PatronusTraining(H: number): LevelData {
 function gen_4_5_YuleBall(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 8; i++) platforms.push({ x: i * 85, y: H - 40, w: 83, h: 40, type: "normal", color: "#4a3a5a" });
-  // Dance floor - bouncy and moving platforms with enchanted decorations
-  for (let i = 0; i < 12; i++) {
-    const y = H - 120 - i * 60;
-    platforms.push({ x: 40 + ((i * 91) % 320), y, w: 65, h: 12, type: i % 2 === 0 ? "normal" : "moving", moveRange: 50, color: i % 2 === 0 ? "#cc88ff" : "#8866aa", label: i % 4 === 0 ? "💃" : "" });
-  }
-  // Waltzing couple obstacles and flying goblets (matches story)
-  enemies.push({ x: 150, y: H - 250, w: 20, h: 20, type: "dancer", dir: 1, speed: 0.6, range: 80, origX: 150, emoji: "💃" });
-  enemies.push({ x: 280, y: H - 450, w: 18, h: 18, type: "goblet", dir: -1, speed: 1.0, range: 50, origX: 280, emoji: "🥂" });
-  platforms.push({ x: 160, y: H - 860, w: 100, h: 20, type: "finish", label: "💃 Grand Finale" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Great Hall dance floor
+  platforms.push({ x: 0, y: H - 40, w: 600, h: 40, type: "normal", color: "#4a3a5a", label: "💃 Great Hall" });
+
+  // Ice sculpture decorations (hazards)
+  platforms.push({ x: 150, y: H - 80, w: 25, h: 40, type: "hazard", color: "#aaccee", label: "🧊" });
+  platforms.push({ x: 400, y: H - 80, w: 25, h: 40, type: "hazard", color: "#aaccee", label: "🧊" });
+
+  // Enchanted dance floor tiles — moving platforms
+  const danceTiles = [
+    { x: 50, y: H - 100, range: 40 }, { x: 200, y: H - 120, range: 50 },
+    { x: 350, y: H - 110, range: 35 }, { x: 500, y: H - 130, range: 45 },
+  ];
+  danceTiles.forEach((dt, i) => {
+    const p: Platform = {
+      x: dt.x, y: dt.y, w: 70, h: 12, type: "moving", color: "#cc88ff",
+      label: i === 0 ? "🎵" : "", origX: dt.x, origY: dt.y, moveDir: i % 2 === 0 ? 1 : -1, moveRange: dt.range,
+    };
+    platforms.push(p);
+  });
+
+  // Floating candles and chandelier platforms (higher tier)
+  const chandeliers = [
+    { x: 100, y: H - 200, label: "🕯️" }, { x: 300, y: H - 230, label: "🕯️" },
+    { x: 500, y: H - 210, label: "🕯️" }, { x: 200, y: H - 280, label: "🕯️" },
+    { x: 400, y: H - 300, label: "🕯️" },
+  ];
+  chandeliers.forEach(c => {
+    platforms.push({ x: c.x, y: c.y, w: 60, h: 12, type: "normal", color: "#aa8844", label: c.label });
+  });
+
+  // Balcony platforms (even higher)
+  platforms.push({ x: 50, y: H - 350, w: 90, h: 14, type: "normal", color: "#5a4a6a", label: "🏛️ Balcony" });
+  platforms.push({ x: 250, y: H - 380, w: 80, h: 14, type: "normal", color: "#5a4a6a" });
+  platforms.push({ x: 450, y: H - 360, w: 90, h: 14, type: "normal", color: "#5a4a6a" });
+
+  // Waltzing couples, flying goblets, Peeves
+  enemies.push({ x: 100, y: H - 68, w: 24, h: 24, type: "dancer", dir: 1, speed: 0.5, range: 100, origX: 100, emoji: "💃" });
+  enemies.push({ x: 350, y: H - 68, w: 24, h: 24, type: "dancer", dir: -1, speed: 0.6, range: 80, origX: 350, emoji: "🕺" });
+  enemies.push({ x: 250, y: H - 250, w: 18, h: 18, type: "goblet", dir: 1, speed: 1.2, range: 60, origX: 250, emoji: "🥂" });
+  enemies.push({ x: 400, y: H - 330, w: 18, h: 18, type: "goblet", dir: -1, speed: 1.0, range: 50, origX: 400, emoji: "🥂" });
+
+  platforms.push({ x: 200, y: H - 440, w: 120, h: 20, type: "finish", label: "💃 Grand Finale" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 function gen_4_6_TriwizardMaze(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Hedge maze - narrow corridors
-  for (let i = 0; i < 16; i++) {
-    const y = H - 80 - i * 55;
-    const x = i % 3 === 0 ? 20 : i % 3 === 1 ? 200 : 110;
-    platforms.push({ x, y, w: 80, h: 14, type: "normal", color: "#2a5a2a", label: i % 4 === 0 ? "🌿" : "" });
-  }
-  // Hedge walls
-  for (let i = 0; i < 4; i++) platforms.push({ x: 150, y: H - 200 - i * 180, w: 12, h: 60, type: "normal", color: "#1a4a1a" });
-  // Blast-Ended Skrewts and Sphinx (matches story)
-  enemies.push({ x: 100, y: H - 300, w: 22, h: 22, type: "skrewt", dir: 1, speed: 1.2, range: 60, origX: 100, emoji: "🦂" });
-  enemies.push({ x: 200, y: H - 430, w: 22, h: 22, type: "skrewt", dir: -1, speed: 1.0, range: 50, origX: 200, emoji: "🦂" });
-  enemies.push({ x: 300, y: H - 690, w: 24, h: 24, type: "sphinx", dir: 1, speed: 0.5, range: 40, origX: 300, emoji: "🦁" });
-  platforms.push({ x: 140, y: H - 940, w: 100, h: 20, type: "finish", label: "🏆 Triwizard Cup" });
+
+  // Maze entrance
+  platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal", color: "#1a3a1a", label: "🌿 Maze" });
+
+  // Hedge corridors — alternating left and right paths creating a maze feel
+  // Path zigzags horizontally first, then ascends
+  const mazePath = [
+    { x: 140, y: H - 55, w: 100 }, { x: 280, y: H - 60, w: 90 },
+    { x: 420, y: H - 50, w: 100 }, { x: 560, y: H - 65, w: 80 },
+    { x: 700, y: H - 55, w: 100 }, { x: 840, y: H - 70, w: 90 },
+    // Now ascend
+    { x: 750, y: H - 130, w: 80 }, { x: 600, y: H - 160, w: 90 },
+    { x: 450, y: H - 190, w: 80 }, { x: 300, y: H - 220, w: 90 },
+    { x: 150, y: H - 250, w: 80 }, { x: 300, y: H - 310, w: 90 },
+    { x: 500, y: H - 340, w: 80 }, { x: 650, y: H - 380, w: 90 },
+  ];
+  mazePath.forEach((p, i) => {
+    platforms.push({
+      x: p.x, y: p.y, w: p.w, h: 14, type: "normal",
+      color: "#2a5a2a", label: i % 4 === 0 ? "🌿" : "",
+    });
+  });
+
+  // Hedge walls (tall barriers you must go around)
+  platforms.push({ x: 350, y: H - 50, w: 14, h: 50, type: "normal", color: "#1a4a1a" });
+  platforms.push({ x: 650, y: H - 60, w: 14, h: 55, type: "normal", color: "#1a4a1a" });
+  platforms.push({ x: 400, y: H - 200, w: 14, h: 50, type: "normal", color: "#1a4a1a" });
+
+  // Golden mist — hazard zones (inverts your vision in the story)
+  platforms.push({ x: 500, y: H - 80, w: 60, h: 8, type: "hazard", color: "#ccaa44", label: "✨ Mist" });
+  platforms.push({ x: 200, y: H - 280, w: 60, h: 8, type: "hazard", color: "#ccaa44", label: "✨ Mist" });
+
+  // Blast-Ended Skrewts lurking in dead ends
+  enemies.push({ x: 500, y: H - 78, w: 22, h: 22, type: "skrewt", dir: 1, speed: 1.0, range: 60, origX: 500, emoji: "🦂" });
+  enemies.push({ x: 350, y: H - 248, w: 24, h: 24, type: "skrewt", dir: -1, speed: 1.2, range: 70, origX: 350, emoji: "🦂" });
+  // Sphinx guarding final path
+  enemies.push({ x: 550, y: H - 368, w: 26, h: 26, type: "sphinx", dir: 1, speed: 0.4, range: 40, origX: 550, emoji: "🦁" });
+
+  platforms.push({ x: 750, y: H - 440, w: 100, h: 20, type: "finish", label: "🏆 Triwizard Cup" });
   return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_4_7_MerpeopleVillage(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  // Underwater feel - all ice/slippery with kelp and ruins
-  for (let i = 0; i < 15; i++) {
-    const y = H - 100 - i * 55;
-    platforms.push({ x: 30 + ((i * 67) % 330), y, w: 60, h: 12, type: "ice", color: "#4488aa", label: i % 4 === 0 ? "🫧" : "" });
+
+  // Lake surface — you dive in
+  platforms.push({ x: 0, y: H - 40, w: 140, h: 40, type: "normal", color: "#3a5a7a", label: "🌊 Dive!" });
+
+  // Descending underwater — kelp forests and stone ruins
+  const descent = [
+    { x: 160, y: H - 80, w: 80, label: "🌿 Kelp" },
+    { x: 300, y: H - 120, w: 70, label: "🪨" },
+    { x: 180, y: H - 170, w: 90, label: "🌿" },
+    { x: 350, y: H - 210, w: 70, label: "🏛️ Ruin" },
+    { x: 120, y: H - 260, w: 80, label: "🌿" },
+  ];
+  descent.forEach(d => {
+    platforms.push({ x: d.x, y: d.y, w: d.w, h: 12, type: "ice", color: "#4488aa", label: d.label });
+  });
+
+  // Merpeople village — stone hut platforms
+  const huts = [
+    { x: 80, y: H - 320, label: "🏠" }, { x: 250, y: H - 350, label: "🏠" },
+    { x: 400, y: H - 330, label: "🏠" }, { x: 150, y: H - 400, label: "🏠" },
+    { x: 320, y: H - 430, label: "🏠" },
+  ];
+  huts.forEach(h => {
+    platforms.push({ x: h.x, y: h.y, w: 75, h: 14, type: "normal", color: "#5a6a7a", label: h.label });
+  });
+
+  // Hostage rescue area — central platform
+  platforms.push({ x: 200, y: H - 500, w: 100, h: 14, type: "normal", color: "#4a5a6a", label: "🧑 Rescue!" });
+
+  // Ascent back to surface
+  for (let i = 0; i < 5; i++) {
+    platforms.push({
+      x: 100 + i * 80, y: H - 560 - i * 50, w: 60, h: 12,
+      type: "ice", color: "#5599bb", label: i === 0 ? "🫧 Up!" : "🫧",
+    });
   }
-  // Grindylows and Merpeople guards (matches story)
-  enemies.push({ x: 80, y: H - 250, w: 18, h: 18, type: "grindylow", dir: 1, speed: 1.3, range: 60, origX: 80, emoji: "🦑" });
-  enemies.push({ x: 170, y: H - 380, w: 20, h: 20, type: "grindylow", dir: -1, speed: 1.1, range: 70, origX: 170, emoji: "🦑" });
-  enemies.push({ x: 260, y: H - 510, w: 22, h: 22, type: "merperson", dir: 1, speed: 0.9, range: 50, origX: 260, emoji: "🧜" });
-  enemies.push({ x: 350, y: H - 640, w: 22, h: 22, type: "merperson", dir: -1, speed: 1.0, range: 60, origX: 350, emoji: "🧜" });
-  platforms.push({ x: 150, y: H - 900, w: 100, h: 20, type: "finish", label: "🫧 Surface!" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Grindylows grabbing at you
+  enemies.push({ x: 250, y: H - 150, w: 18, h: 18, type: "grindylow", dir: 1, speed: 1.2, range: 60, origX: 250, emoji: "🦑" });
+  enemies.push({ x: 350, y: H - 300, w: 20, h: 20, type: "grindylow", dir: -1, speed: 1.3, range: 70, origX: 350, emoji: "🦑" });
+  // Merpeople guards
+  enemies.push({ x: 150, y: H - 380, w: 22, h: 22, type: "merperson", dir: 1, speed: 0.8, range: 50, origX: 150, emoji: "🧜" });
+  enemies.push({ x: 300, y: H - 460, w: 22, h: 22, type: "merperson", dir: -1, speed: 0.9, range: 60, origX: 300, emoji: "🧜" });
+
+  platforms.push({ x: 350, y: H - 810, w: 100, h: 20, type: "finish", label: "🫧 Surface!" });
+  return { platforms, enemies, startX: 40, startY: H - 80 };
 }
 
 function gen_4_8_PortkeyField(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 6; i++) platforms.push({ x: i * 90, y: H - 40, w: 88, h: 40, type: "normal", color: "#4a5a3a" });
-  // Teleporting platforms
-  for (let i = 0; i < 13; i++) {
-    const y = H - 130 - i * 58;
-    platforms.push({ x: 20 + ((i * 83) % 340), y, w: 55, h: 12, type: i % 3 === 0 ? "disappearing" : "normal", timer: 0, visible: true, color: "#6a8a4a" });
-  }
-  enemies.push({ x: 200, y: H - 500, w: 24, h: 24, type: "deathEater", dir: -1, speed: 1.4, range: 80, origX: 200, emoji: "💀" });
-  platforms.push({ x: 160, y: H - 880, w: 100, h: 20, type: "finish", label: "🔑 Grab the Portkey" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
+
+  // Open field — scattered mundane objects
+  platforms.push({ x: 0, y: H - 40, w: 200, h: 40, type: "normal", color: "#4a5a3a", label: "🏕️ Campsite" });
+
+  // Ground level — field with scattered "Portkey" objects
+  const portkeys = [
+    { x: 220, y: H - 55, label: "👢 Boot" }, { x: 380, y: H - 50, label: "🫖 Kettle" },
+    { x: 540, y: H - 60, label: "📰 Paper" }, { x: 700, y: H - 50, label: "🧤 Glove" },
+    { x: 860, y: H - 55, label: "🔧 Wrench" }, { x: 1020, y: H - 50, label: "🎩 Hat" },
+  ];
+  portkeys.forEach(pk => {
+    platforms.push({
+      x: pk.x, y: pk.y, w: 70, h: 14,
+      type: "disappearing", timer: 0, visible: true,
+      color: "#6a8a4a", label: pk.label,
+    });
+  });
+
+  // Teleported platforms — appearing at different heights (touching portkeys "teleports" you)
+  const teleported = [
+    { x: 300, y: H - 130 }, { x: 500, y: H - 180 }, { x: 200, y: H - 230 },
+    { x: 650, y: H - 160 }, { x: 400, y: H - 280 }, { x: 750, y: H - 250 },
+    { x: 300, y: H - 330 }, { x: 550, y: H - 380 }, { x: 150, y: H - 350 },
+    { x: 700, y: H - 420 },
+  ];
+  teleported.forEach((t, i) => {
+    platforms.push({
+      x: t.x, y: t.y, w: 60, h: 12,
+      type: i % 3 === 0 ? "moving" : "normal",
+      color: i % 3 === 0 ? "#aabb55" : "#5a6a3a",
+      origX: t.x, origY: t.y, moveDir: i % 2 === 0 ? 1 : -1, moveRange: 30,
+    });
+  });
+
+  // Death Eater at the higher levels
+  enemies.push({ x: 400, y: H - 200, w: 22, h: 22, type: "deathEater", dir: -1, speed: 1.2, range: 70, origX: 400, emoji: "💀" });
+  enemies.push({ x: 600, y: H - 350, w: 24, h: 24, type: "deathEater", dir: 1, speed: 1.4, range: 80, origX: 600, emoji: "💀" });
+
+  platforms.push({ x: 400, y: H - 480, w: 120, h: 20, type: "finish", label: "🔑 Grab the Portkey" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
 }
 
 function gen_4_9_WandPriori(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
-  for (let i = 0; i < 5; i++) platforms.push({ x: i * 100, y: H - 40, w: 98, h: 40, type: "normal", color: "#3a3a3a" });
-  // Wand beam platforms ascending in spiral
-  for (let i = 0; i < 16; i++) {
-    const angle = i * 0.8;
-    const x = 180 + Math.sin(angle) * 120;
-    const y = H - 120 - i * 52;
-    platforms.push({ x, y, w: 50, h: 12, type: "normal", color: "#ffcc44" });
-  }
-  enemies.push({ x: 180, y: H - 600, w: 30, h: 30, type: "voldemort", dir: 1, speed: 0.5, range: 100, origX: 180, emoji: "🐍" });
-  platforms.push({ x: 150, y: H - 950, w: 100, h: 20, type: "finish", label: "✨ Priori Incantatem" });
-  return { platforms, enemies, startX: 50, startY: H - 80 };
-}
 
-// ─── WORLD 5 EXTRA LEVELS ────────────────────────
+  // Graveyard floor — Priori Incantatem begins
+  platforms.push({ x: 0, y: H - 40, w: 400, h: 40, type: "normal", color: "#2a2a2a", label: "⚡ Priori Incantatem" });
+
+  // Tombstones as cover
+  platforms.push({ x: 50, y: H - 90, w: 40, h: 50, type: "normal", color: "#5a5a5a", label: "🪦" });
+  platforms.push({ x: 200, y: H - 100, w: 40, h: 60, type: "normal", color: "#5a5a5a", label: "🪦" });
+  platforms.push({ x: 320, y: H - 85, w: 40, h: 45, type: "normal", color: "#5a5a5a", label: "🪦" });
+
+  // Wand beam spiral — golden light platforms ascending in a helix
+  for (let i = 0; i < 16; i++) {
+    const angle = i * 0.7;
+    const x = 200 + Math.sin(angle) * 130;
+    const y = H - 140 - i * 45;
+    platforms.push({
+      x, y, w: 55, h: 12, type: "normal",
+      color: i % 2 === 0 ? "#ffcc44" : "#ddaa33",
+      label: i % 3 === 0 ? "✨" : "",
+    });
+  }
+
+  // Ghostly echo platforms — the spectral figures from the wand
+  platforms.push({ x: 100, y: H - 300, w: 50, h: 12, type: "disappearing", timer: 0, visible: true, color: "#aabbcc", label: "👤 Echo" });
+  platforms.push({ x: 300, y: H - 450, w: 50, h: 12, type: "disappearing", timer: 0, visible: true, color: "#aabbcc", label: "👤 Echo" });
+
+  // Dark magic enemies — Voldemort's spells
+  enemies.push({ x: 150, y: H - 200, w: 20, h: 20, type: "darkSpell", dir: 1, speed: 1.2, range: 80, origX: 150, emoji: "💀" });
+  enemies.push({ x: 280, y: H - 400, w: 22, h: 22, type: "darkSpell", dir: -1, speed: 1.4, range: 90, origX: 280, emoji: "💀" });
+  // Voldemort himself at the top
+  enemies.push({ x: 200, y: H - 600, w: 30, h: 30, type: "voldemort", dir: 1, speed: 0.5, range: 100, origX: 200, emoji: "🐍" });
+
+  platforms.push({ x: 150, y: H - 850, w: 120, h: 20, type: "finish", label: "✨ Escape!" });
+  return { platforms, enemies, startX: 60, startY: H - 80 };
+}
 
 function gen_5_5_RoomOfRequirement(H: number): LevelData {
   const platforms: Platform[] = [];
