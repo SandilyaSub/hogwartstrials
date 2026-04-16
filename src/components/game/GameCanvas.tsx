@@ -553,8 +553,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       } else if (!isBossArena) {
         cameraX += (px - W / 3 - cameraX) * 0.1;
         if (cameraX < 0) cameraX = 0;
-        // Vertical camera: always keep player visible, follow upward smoothly
-        const targetCameraY = Math.min(0, -(py - H * 0.4));
+        // Vertical camera: follow player up and down smoothly
+        const targetCameraY = -(py - H * 0.4);
         cameraY += (targetCameraY - cameraY) * 0.12;
       } else {
         cameraX = 0; // Fixed camera for boss arena
