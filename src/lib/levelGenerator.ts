@@ -1,5 +1,12 @@
 // Themed level generator for each world/level
 import { getWorldLevelGenerator } from "./worldGenerators";
+import quirrellAvatar from "@/assets/bosses/quirrell.png";
+import basiliskAvatar from "@/assets/bosses/basilisk.png";
+import dementorAvatar from "@/assets/bosses/dementor.png";
+import horntailAvatar from "@/assets/bosses/horntail.png";
+import umbridgeAvatar from "@/assets/bosses/umbridge.png";
+import inferiAvatar from "@/assets/bosses/inferi.png";
+import voldemortAvatar from "@/assets/bosses/voldemort.png";
 
 export interface Platform {
   x: number; y: number; w: number; h: number;
@@ -27,6 +34,7 @@ export interface BossData {
   attackSpeed: number;    // frames between attacks
   projectileSpeed: number;
   color: string;
+  avatar?: string;
   spellResistance?: string; // spell type boss is resistant to
   weakness?: string;         // spell type boss is weak to
 }
