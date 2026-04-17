@@ -2230,16 +2230,16 @@ export function getWorldLevelGenerator(worldId: number, levelIdx: number, H: num
     "3-6": gen_3_7_MaraudersMap,
     "3-7": gen_3_8_WillowTunnel,
     "3-8": gen_3_9_PatronusTraining,
-    // World 4
-    "4-0": gen_4_1_DragonArena,
-    "4-1": gen_4_2_CliffJumps,
-    "4-2": gen_4_3_UnderwaterMaze,
-    "4-3": gen_4_4_Graveyard,
-    "4-4": gen_4_5_YuleBall,
-    "4-5": gen_4_6_TriwizardMaze,
-    "4-6": gen_4_7_MerpeopleVillage,
-    "4-7": gen_4_8_PortkeyField,
-    "4-8": gen_4_9_WandPriori,
+    // World 4 (book chronological order)
+    "4-0": gen_4_8_PortkeyField,        // Portkey Field (Quidditch World Cup)
+    "4-1": gen_4_2_CliffJumps,          // Cliff Jumps (school arrivals)
+    "4-2": gen_4_1_DragonArena,         // Dragon Arena (First Task)
+    "4-3": gen_4_5_YuleBall,            // Yule Ball
+    "4-4": gen_4_3_UnderwaterMaze,      // Underwater Maze (Second Task)
+    "4-5": gen_4_7_MerpeopleVillage,    // Merpeople Village
+    "4-6": gen_4_6_TriwizardMaze,       // Triwizard Maze (Third Task)
+    "4-7": gen_4_4_Graveyard,           // Graveyard
+    "4-8": gen_4_9_WandPriori,          // Priori Incantatem
     // World 5 (book chronological order)
     "5-0": gen_5_6_UmbridgeOffice,        // Umbridge's Office
     "5-1": gen_5_5_RoomOfRequirement,      // Room of Requirement

@@ -126,17 +126,17 @@ export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
     "3-7": { bgColors: ["#050a05", "#0a150a"], platformColor: "#3a3a2a", platformHighlight: "#5a5a4a", ambientParticles: { color: "hsl(100, 30%, 30%)", count: 3 } },
     "3-8": { bgColors: ["#0a0810", "#15101a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(270, 40%, 45%)", count: 6 } },
     "3-9": { bgColors: ["#0a0a1a", "#0a0a2a"], platformColor: "#3a2a4a", platformHighlight: "#5a4a6a", ambientParticles: { color: "hsl(260, 50%, 40%)", count: 10 } },
-    // World 4 - Goblet of Fire
-    "4-0": { bgColors: ["#1a0a00", "#2a1505"], platformColor: "#5a3a1a", platformHighlight: "#8a5a3a", ambientParticles: { color: "hsl(20, 70%, 50%)", count: 6 } },
-    "4-1": { bgColors: ["#0a0a15", "#15152a"], platformColor: "#5a5a5a", platformHighlight: "#8a8a8a", ambientParticles: { color: "hsl(200, 20%, 50%)", count: 4 } },
-    "4-2": { bgColors: ["#020815", "#04162a"], platformColor: "#1a3a5a", platformHighlight: "#3a7aaa", ambientParticles: { color: "hsl(200, 80%, 55%)", count: 12 } }, // Black Lake underwater - deep & murky
-    "4-3": { bgColors: ["#0a0808", "#151010"], platformColor: "#3a3a3a", platformHighlight: "#5a5a5a", ambientParticles: { color: "hsl(0, 0%, 30%)", count: 3 } },
-    "4-4": { bgColors: ["#1a100a", "#2a1a10"], platformColor: "#6a5a3a", platformHighlight: "#8a7a5a", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 5 } },
-    "4-5": { bgColors: ["#0a100a", "#0a1a0a"], platformColor: "#2a4a2a", platformHighlight: "#4a6a4a", ambientParticles: { color: "hsl(120, 40%, 35%)", count: 5 } },
-    "4-6": { bgColors: ["#051020", "#0a1a35"], platformColor: "#3a5a7a", platformHighlight: "#5a8aaa", ambientParticles: { color: "hsl(200, 40%, 40%)", count: 7 } },
-    "4-7": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(280, 40%, 45%)", count: 6 } },
-    "4-8": { bgColors: ["#100a10", "#1a0a1a"], platformColor: "#5a3a5a", platformHighlight: "#7a5a7a", ambientParticles: { color: "hsl(300, 40%, 45%)", count: 7 } },
-    "4-9": { bgColors: ["#1a0a00", "#2a1500"], platformColor: "#5a3a1a", platformHighlight: "#7a5a3a", ambientParticles: { color: "hsl(15, 80%, 50%)", count: 10 } },
+    // World 4 - Goblet of Fire (book chronological order)
+    "4-0": { bgColors: ["#100a05", "#1a1a10"], platformColor: "#4a3a2a", platformHighlight: "#7a5a3a", ambientParticles: { color: "hsl(40, 60%, 50%)", count: 7 } }, // Portkey Field - dawn campsite
+    "4-1": { bgColors: ["#0a0a15", "#15152a"], platformColor: "#5a5a5a", platformHighlight: "#8a8a8a", ambientParticles: { color: "hsl(200, 20%, 50%)", count: 4 } }, // Cliff Jumps
+    "4-2": { bgColors: ["#1a0a00", "#2a1505"], platformColor: "#5a3a1a", platformHighlight: "#8a5a3a", ambientParticles: { color: "hsl(20, 70%, 50%)", count: 8 } }, // Dragon Arena - fire
+    "4-3": { bgColors: ["#0a0815", "#15102a"], platformColor: "#3a3a5a", platformHighlight: "#aacae8", ambientParticles: { color: "hsl(220, 60%, 75%)", count: 8 } }, // Yule Ball - icy ballroom
+    "4-4": { bgColors: ["#020815", "#04162a"], platformColor: "#1a3a5a", platformHighlight: "#3a7aaa", ambientParticles: { color: "hsl(200, 80%, 55%)", count: 12 } }, // Black Lake underwater
+    "4-5": { bgColors: ["#020812", "#031020"], platformColor: "#1a3a4a", platformHighlight: "#2a6a8a", ambientParticles: { color: "hsl(180, 70%, 50%)", count: 10 } }, // Merpeople Village - deep
+    "4-6": { bgColors: ["#0a100a", "#0a1a0a"], platformColor: "#2a4a2a", platformHighlight: "#4a6a4a", ambientParticles: { color: "hsl(120, 40%, 35%)", count: 5 } }, // Triwizard Maze
+    "4-7": { bgColors: ["#0a0808", "#151010"], platformColor: "#3a3a3a", platformHighlight: "#5a5a5a", ambientParticles: { color: "hsl(0, 0%, 30%)", count: 4 } }, // Graveyard
+    "4-8": { bgColors: ["#100a10", "#1a0a1a"], platformColor: "#5a3a5a", platformHighlight: "#caa030", ambientParticles: { color: "hsl(45, 80%, 55%)", count: 10 } }, // Priori Incantatem - golden
+    "4-9": { bgColors: ["#1a0a00", "#2a1500"], platformColor: "#5a3a1a", platformHighlight: "#7a5a3a", ambientParticles: { color: "hsl(15, 80%, 50%)", count: 10 } }, // Boss
     // World 5 - Order of the Phoenix (book chronological order)
     "5-0": { bgColors: ["#3a1a25", "#5a2538"], platformColor: "#aa4a6a", platformHighlight: "#e08aa0", ambientParticles: { color: "hsl(330, 50%, 60%)", count: 6 } }, // Umbridge's pink office
     "5-1": { bgColors: ["#1a1008", "#2a1a10"], platformColor: "#5a4a3a", platformHighlight: "#7a6a5a", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 6 } }, // Room of Requirement (warm wood)
