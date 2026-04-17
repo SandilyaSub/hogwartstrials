@@ -2240,16 +2240,16 @@ export function getWorldLevelGenerator(worldId: number, levelIdx: number, H: num
     "4-6": gen_4_7_MerpeopleVillage,
     "4-7": gen_4_8_PortkeyField,
     "4-8": gen_4_9_WandPriori,
-    // World 5
-    "5-0": gen_5_1_MinistryHall,
-    "5-1": gen_5_2_ProphecyRoom,
-    "5-2": gen_5_3_TrainingPuzzles,
-    "5-3": gen_5_4_ChaosCorridor,
-    "5-4": gen_5_5_RoomOfRequirement,
-    "5-5": gen_5_6_UmbridgeOffice,
-    "5-6": gen_5_7_ThestralFlight,
-    "5-7": gen_5_8_VeilChamber,
-    "5-8": gen_5_9_DumbledoresArmy,
+    // World 5 (book chronological order)
+    "5-0": gen_5_6_UmbridgeOffice,        // Umbridge's Office
+    "5-1": gen_5_5_RoomOfRequirement,      // Room of Requirement
+    "5-2": gen_5_3_TrainingPuzzles,        // D.A. Training
+    "5-3": gen_5_9_DumbledoresArmy,        // Dumbledore's Army
+    "5-4": gen_5_4_ChaosCorridor,          // Chaos Corridor
+    "5-5": gen_5_7_ThestralFlight,         // Thestral Flight (auto-scroll)
+    "5-6": gen_5_1_MinistryHall,           // Ministry Hall
+    "5-7": gen_5_2_ProphecyRoom,           // Hall of Prophecy
+    "5-8": gen_5_8_VeilChamber,            // Veil Chamber
     // World 6
     "6-0": gen_6_1_PotionPuzzle,
     "6-1": gen_6_2_TowerJumps,
