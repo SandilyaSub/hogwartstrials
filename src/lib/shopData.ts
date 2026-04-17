@@ -290,6 +290,50 @@ export const SHOP_ITEMS: ShopItem[] = [
     id: "acc_aura_dark", name: "Dark Mark Aura", description: "Sinister green-black smoke",
     emoji: "💚", cost: 700, type: "accessory", accessoryEmoji: "🐍", accessorySlot: "aura",
   },
+  {
+    id: "acc_scarf_blue", name: "Ravenclaw Scarf", description: "Bronze & blue knit",
+    emoji: "🧣", cost: 175, type: "accessory", accessoryEmoji: "🧣", accessorySlot: "scarf",
+  },
+  {
+    id: "acc_scarf_green", name: "Slytherin Scarf", description: "Silver & emerald knit",
+    emoji: "🧣", cost: 175, type: "accessory", accessoryEmoji: "🧣", accessorySlot: "scarf",
+  },
+  {
+    id: "acc_scarf_yellow", name: "Hufflepuff Scarf", description: "Black & sunshine yellow",
+    emoji: "🧣", cost: 175, type: "accessory", accessoryEmoji: "🧣", accessorySlot: "scarf",
+  },
+  {
+    id: "acc_top_hat", name: "Top Hat", description: "A dapper formal hat",
+    emoji: "🎩", cost: 250, type: "accessory", accessoryEmoji: "🎩", accessorySlot: "hat",
+  },
+  {
+    id: "acc_party_hat", name: "Party Hat", description: "Time to celebrate!",
+    emoji: "🥳", cost: 200, type: "accessory", accessoryEmoji: "🥳", accessorySlot: "hat",
+  },
+  {
+    id: "acc_halo", name: "Angelic Halo", description: "A divine glowing halo",
+    emoji: "😇", cost: 800, type: "accessory", accessoryEmoji: "😇", accessorySlot: "hat",
+  },
+  {
+    id: "acc_horns", name: "Devil Horns", description: "Embrace the dark side",
+    emoji: "😈", cost: 800, type: "accessory", accessoryEmoji: "😈", accessorySlot: "hat",
+  },
+  {
+    id: "acc_aura_rainbow", name: "Rainbow Aura", description: "Shimmering colors of the wizard pride",
+    emoji: "🌈", cost: 750, type: "accessory", accessoryEmoji: "🌈", accessorySlot: "aura",
+  },
+  {
+    id: "acc_aura_lightning", name: "Lightning Aura", description: "Crackling electric energy",
+    emoji: "⚡", cost: 700, type: "accessory", accessoryEmoji: "⚡", accessorySlot: "aura",
+  },
+  {
+    id: "acc_aura_ice", name: "Frostbite Aura", description: "A chilling icy mist surrounds you",
+    emoji: "❄️", cost: 650, type: "accessory", accessoryEmoji: "❄️", accessorySlot: "aura",
+  },
+  {
+    id: "acc_monocle", name: "Wizard Monocle", description: "A scholarly accessory",
+    emoji: "🧐", cost: 200, type: "accessory", accessoryEmoji: "🧐", accessorySlot: "glasses",
+  },
 
 ];
 
