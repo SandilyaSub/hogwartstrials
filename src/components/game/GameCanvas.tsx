@@ -224,6 +224,10 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let shopCoinMultiplier = 1;
     let shopHasMagnet = false;
     let shopHasShield = false;
+    let shopHasSuperJump = false;
+    let shopHasInvisibility = false;
+    let shopHasTimeTurner = false;
+    let shopHasFloat = false;
 
     if (upgrades["jump_boost_1"]) shopJumpBoost += 1;
     if (upgrades["jump_boost_2"]) shopJumpBoost += 2;
@@ -232,9 +236,22 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     if (upgrades["double_coins"]) shopCoinMultiplier = 2;
     if (upgrades["magnet"]) shopHasMagnet = true;
     if (upgrades["shield"]) shopHasShield = true;
+    if (upgrades["super_jump"]) shopHasSuperJump = true;
+    if (upgrades["invisibility"]) shopHasInvisibility = true;
+    if (upgrades["time_turner"]) shopHasTimeTurner = true;
+    if (upgrades["nimbus"]) shopHasFloat = true;
 
-    const jumpPower = BASE_JUMP - houseBoosts.jump * 1.5 - (petEffect.type === "jump" ? petEffect.value : 0) - shopJumpBoost * 1.5;
+    // Super jump multiplies jump power by 1.5
+    const superJumpMult = shopHasSuperJump ? 1.5 : 1;
+    const jumpPower = (BASE_JUMP - houseBoosts.jump * 1.5 - (petEffect.type === "jump" ? petEffect.value : 0) - shopJumpBoost * 1.5) * superJumpMult;
     const speed = BASE_SPEED + houseBoosts.speed * 0.5 + (petEffect.type === "speed" ? petEffect.value * 0.5 : 0) + shopSpeedBoost * 0.5;
+
+    // Invisibility: enemies ignore the player for the first 10s of the level (600 frames @ 60fps)
+    let invisibilityFrames = shopHasInvisibility ? 600 : 0;
+    // Nimbus float: after a jump, briefly halve gravity for a floaty feel
+    let floatFrames = 0;
+    // Time-Turner: rewind to start once if you fall to your death
+    let timeTurnerCharges = shopHasTimeTurner ? 1 : 0;
 
     const levelData = generateLevel(worldId, levelIdx, 3000, H);
     const { platforms, enemies, startX, startY } = levelData;
