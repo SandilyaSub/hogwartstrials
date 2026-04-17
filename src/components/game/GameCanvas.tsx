@@ -712,11 +712,12 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         // Sky gradient — sunset for hippogriff, stormy midnight for thestral, night for car
         const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
         if (isHippogriffFlight) {
-          skyGrad.addColorStop(0, "#1a1040");
-          skyGrad.addColorStop(0.25, "#3a2065");
-          skyGrad.addColorStop(0.5, "#8a4070");
-          skyGrad.addColorStop(0.75, "#d06040");
-          skyGrad.addColorStop(1, "#f0a030");
+          // Nighttime sky — deep indigo to midnight blue
+          skyGrad.addColorStop(0, "#050818");
+          skyGrad.addColorStop(0.3, "#0c1230");
+          skyGrad.addColorStop(0.6, "#1a2050");
+          skyGrad.addColorStop(0.85, "#2a2860");
+          skyGrad.addColorStop(1, "#1a1838");
         } else if (isThestralFlight) {
           skyGrad.addColorStop(0, "#000005");
           skyGrad.addColorStop(0.3, "#0a0a20");
@@ -733,14 +734,24 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, W, H);
         if (isHippogriffFlight) {
-          // Setting sun
+          // Stars
+          for (let i = 0; i < 70; i++) {
+            const sx = (i * 149 + (cameraX * 0.04)) % W;
+            const sy = (i * 83) % (H * 0.65);
+            const tw = 0.5 + Math.sin(frameCount * 0.04 + i * 0.7) * 0.4;
+            ctx.fillStyle = `rgba(240,240,255,${tw})`;
+            ctx.fillRect(sx, sy, 2, 2);
+          }
+          // Full bright moon
           ctx.save();
-          ctx.fillStyle = "rgba(255,180,60,0.06)";
-          ctx.beginPath(); ctx.arc(W - 100, H - 40, 100, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "rgba(255,200,80,0.1)";
-          ctx.beginPath(); ctx.arc(W - 100, H - 40, 60, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#ffd060";
-          ctx.beginPath(); ctx.arc(W - 100, H - 40, 30, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "rgba(255,250,220,0.06)";
+          ctx.beginPath(); ctx.arc(W - 100, 80, 90, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "rgba(255,250,220,0.12)";
+          ctx.beginPath(); ctx.arc(W - 100, 80, 55, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff8dc";
+          ctx.beginPath(); ctx.arc(W - 100, 80, 32, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#f5eec0";
+          ctx.beginPath(); ctx.arc(W - 96, 76, 26, 0, Math.PI * 2); ctx.fill();
           ctx.restore();
         } else if (isThestralFlight) {
           // Stars
@@ -779,18 +790,18 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.restore();
         }
         // Scrolling hills (parallax layers)
-        const mtnA = isHippogriffFlight ? "rgba(40,20,50,0.7)" : isThestralFlight ? "rgba(15,15,30,0.85)" : "rgba(10,30,15,0.8)";
-        const mtnB = isHippogriffFlight ? "rgba(30,15,40,0.8)" : isThestralFlight ? "rgba(8,8,20,0.95)" : "rgba(8,20,10,0.9)";
+        const mtnA = isHippogriffFlight ? "rgba(20,25,55,0.75)" : isThestralFlight ? "rgba(15,15,30,0.85)" : "rgba(10,30,15,0.8)";
+        const mtnB = isHippogriffFlight ? "rgba(12,15,38,0.9)" : isThestralFlight ? "rgba(8,8,20,0.95)" : "rgba(8,20,10,0.9)";
         drawMountains(H - 30, mtnA, 0.1, 1);
         drawMountains(H - 15, mtnB, 0.2, 3);
         // Ground silhouette with trees
-        ctx.fillStyle = isHippogriffFlight ? "#1a0a20" : isThestralFlight ? "#050510" : "#0a1a0a";
+        ctx.fillStyle = isHippogriffFlight ? "#080c1a" : isThestralFlight ? "#050510" : "#0a1a0a";
         for (let i = -1; i < W / 40 + 2; i++) {
           const gx = (i * 40 - (cameraX * 0.3) % 40);
           const gh = 20 + ((i * 37 + 13) % 30);
           ctx.fillRect(gx, H - gh, 42, gh);
         }
-        const treeColor = isHippogriffFlight ? "#150a1a" : isThestralFlight ? "#02020a" : "#0d1f0d";
+        const treeColor = isHippogriffFlight ? "#04060f" : isThestralFlight ? "#02020a" : "#0d1f0d";
         drawTreeLine(H - 20, treeColor, 0.25, 20, 7);
       } else {
         const [c1, c2] = theme.bgColors;
