@@ -8,6 +8,17 @@ import { SHOP_ITEMS, PREMIUM_CHARACTER_IMAGES, ACCESSORY_IMAGES } from "@/lib/sh
 import { getFinishLandmark } from "@/lib/finishLandmarks";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
+import bgWorld1 from "@/assets/worlds/bg_world1.jpg";
+import bgWorld2 from "@/assets/worlds/bg_world2.jpg";
+import bgWorld3 from "@/assets/worlds/bg_world3.jpg";
+import bgWorld4 from "@/assets/worlds/bg_world4.jpg";
+import bgWorld5 from "@/assets/worlds/bg_world5.jpg";
+import bgWorld6 from "@/assets/worlds/bg_world6.jpg";
+import bgWorld7 from "@/assets/worlds/bg_world7.jpg";
+const WORLD_BACKGROUNDS: Record<number, string> = {
+  1: bgWorld1, 2: bgWorld2, 3: bgWorld3, 4: bgWorld4,
+  5: bgWorld5, 6: bgWorld6, 7: bgWorld7,
+};
 import harryImg from "@/assets/characters/harry.png";
 import hermioneImg from "@/assets/characters/hermione.png";
 import ronImg from "@/assets/characters/ron.png";
@@ -884,7 +895,41 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
 
-        // Parallax background scenery based on world
+        // Painted world background (parallax, slow scroll)
+        const bgSrc = WORLD_BACKGROUNDS[worldId];
+        if (bgSrc) {
+          const bgKey = `__worldBg_${worldId}`;
+          if (!(window as any)[bgKey]) {
+            const bImg = new Image();
+            bImg.src = bgSrc;
+            (window as any)[bgKey] = bImg;
+          }
+          const bImg = (window as any)[bgKey] as HTMLImageElement;
+          if (bImg.complete && bImg.naturalWidth > 0) {
+            // Cover-fit then tile horizontally with slow parallax
+            const scale = H / bImg.naturalHeight;
+            const drawW = bImg.naturalWidth * scale;
+            const parallax = 0.15;
+            let offset = -((cameraX * parallax) % drawW);
+            if (offset > 0) offset -= drawW;
+            ctx.save();
+            ctx.globalAlpha = 0.85;
+            for (let x = offset; x < W; x += drawW) {
+              ctx.drawImage(bImg, x, 0, drawW, H);
+            }
+            // Subtle dark vignette/tint to keep gameplay readable
+            const tint = ctx.createLinearGradient(0, 0, 0, H);
+            tint.addColorStop(0, "rgba(0,0,0,0.15)");
+            tint.addColorStop(0.6, "rgba(0,0,0,0.05)");
+            tint.addColorStop(1, "rgba(0,0,0,0.55)");
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = tint;
+            ctx.fillRect(0, 0, W, H);
+            ctx.restore();
+          }
+        }
+
+        // Parallax background scenery based on world (silhouettes layered over painting)
         if (worldId === 1) {
           // Hogwarts silhouette
           drawMountains(H * 0.7, "rgba(15,10,25,0.4)", 0.05, 0);
