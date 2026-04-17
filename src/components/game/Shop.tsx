@@ -1,4 +1,4 @@
-import { SHOP_ITEMS, getShopCategory, PREMIUM_CHARACTER_IMAGES, type ShopItem } from "@/lib/shopData";
+import { SHOP_ITEMS, getShopCategory, PREMIUM_CHARACTER_IMAGES, ACCESSORY_IMAGES, type ShopItem } from "@/lib/shopData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 
 interface ShopProps {
@@ -74,6 +74,15 @@ const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
                             width={56}
                             height={56}
                             className="w-14 h-14 rounded-xl object-cover border-2 border-border shrink-0"
+                          />
+                        ) : item.type === "accessory" && ACCESSORY_IMAGES[item.id] ? (
+                          <img
+                            src={ACCESSORY_IMAGES[item.id]}
+                            alt={item.name}
+                            loading="lazy"
+                            width={56}
+                            height={56}
+                            className="w-14 h-14 rounded-xl object-contain bg-secondary/40 border-2 border-border shrink-0 p-1"
                           />
                         ) : (
                           <span className="text-3xl">{item.emoji}</span>
