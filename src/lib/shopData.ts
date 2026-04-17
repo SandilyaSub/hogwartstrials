@@ -39,7 +39,7 @@ export const SHOP_ITEMS: ShopItem[] = [
   },
   {
     id: "magnet", name: "Accio Coins", description: "Strong magnetic pull — coins fly fast from far away",
-    emoji: "🧲", cost: 200, type: "upgrade", stat: "magnet", value: 1,
+    emoji: "🧲", cost: 400, type: "upgrade", stat: "magnet", value: 1,
   },
 
   // ─── Consumables ───
@@ -65,7 +65,7 @@ export const SHOP_ITEMS: ShopItem[] = [
   },
   {
     id: "nimbus", name: "Nimbus 2000", description: "Float much longer after jumping — glide across gaps",
-    emoji: "🧹", cost: 180, type: "consumable", stat: "float", value: 1,
+    emoji: "🧹", cost: 350, type: "consumable", stat: "float", value: 1,
   },
 
   // ─── Themes ───
