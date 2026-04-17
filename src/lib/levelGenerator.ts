@@ -875,7 +875,14 @@ export function generateLevel(worldId: number, levelIdx: number, canvasW: number
   if (!data.houseTokens || data.houseTokens.length === 0) {
     data.houseTokens = generateHouseTokens(data.platforms);
   }
-  
+
+  // Auto-generate scattered shop coins (skip for boss arenas and flight levels — those have other dynamics)
+  if (!data.coins && !data.bossArena && !data.flyingCar && !data.hippogriffFlight && !data.thestralFlight) {
+    data.coins = generateCoins(data.platforms);
+  } else if (!data.coins) {
+    data.coins = [];
+  }
+
   return data;
 }
 
