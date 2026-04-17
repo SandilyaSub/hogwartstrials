@@ -1,5 +1,6 @@
 import { SHOP_ITEMS, getShopCategory, PREMIUM_CHARACTER_IMAGES, ACCESSORY_IMAGES, type ShopItem } from "@/lib/shopData";
 import type { PlayerProfile } from "@/hooks/useGameState";
+import GoldCoin from "./GoldCoin";
 
 interface ShopProps {
   profile: PlayerProfile;
@@ -23,7 +24,9 @@ const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
             <p className="text-sm text-muted-foreground font-body">Spend your coins on upgrades & themes</p>
           </div>
           <div className="text-right">
-            <p className="font-display text-xl font-bold text-primary">🪙 {profile.coins}</p>
+            <p className="font-display text-xl font-bold text-primary inline-flex items-center gap-1.5">
+              <GoldCoin size={20} /> {profile.coins}
+            </p>
             <p className="text-xs text-muted-foreground font-body">coins</p>
           </div>
         </div>
@@ -97,8 +100,8 @@ const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
                               {isActiveTheme || isActiveCharacter || isActiveAccessory ? "ACTIVE" : toggleableOwned ? "TAP" : "OWNED"}
                             </span>
                           ) : (
-                            <span className={`text-sm font-display font-bold ${canAfford ? "text-primary" : "text-muted-foreground"}`}>
-                              🪙 {item.cost}
+                            <span className={`text-sm font-display font-bold inline-flex items-center gap-1 ${canAfford ? "text-primary" : "text-muted-foreground"}`}>
+                              <GoldCoin size={14} /> {item.cost}
                             </span>
                           )}
                         </div>
