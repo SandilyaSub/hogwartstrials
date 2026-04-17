@@ -128,7 +128,7 @@ export function useGameState(user: User | null) {
     saveProfile({ ...profile, pet });
   }, [profile, saveProfile]);
 
-  const completeLevel = useCallback((levelId: string) => {
+  const completeLevel = useCallback((levelId: string, bonusCoins: number = 0) => {
     const completed = [...new Set([...profile.completedLevels, levelId])];
     const world = WORLDS.find(w => w.levels.some(l => l.id === levelId));
     const levelIdx = world?.levels.findIndex(l => l.id === levelId) ?? -1;
@@ -142,11 +142,15 @@ export function useGameState(user: User | null) {
       });
     }
 
+    const baseCoins = (levelIdx === (world ? world.levels.length - 1 : -1) ? 50 : 20);
+    const multiplier = profile.purchasedUpgrades?.["double_coins"] ? 2 : 1;
+    const earned = baseCoins * multiplier + bonusCoins * multiplier;
+
     saveProfile({
       ...profile,
       completedLevels: completed,
       unlockedPets: newPets,
-      coins: profile.coins + (levelIdx === (world ? world.levels.length - 1 : -1) ? 50 : 20) * (profile.purchasedUpgrades?.["double_coins"] ? 2 : 1),
+      coins: profile.coins + earned,
     });
   }, [profile, saveProfile]);
 

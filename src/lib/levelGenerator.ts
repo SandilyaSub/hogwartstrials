@@ -61,10 +61,17 @@ export interface HouseToken {
   points: number; // typically 5-15
 }
 
+export interface Coin {
+  x: number; y: number;
+  collected: boolean;
+  value: number; // shop coins awarded (1-3)
+}
+
 export interface LevelData {
   platforms: Platform[];
   enemies: Enemy[];
   houseTokens?: HouseToken[];
+  coins?: Coin[];
   startX: number;
   startY: number;
   darkLevel?: boolean;
@@ -814,7 +821,31 @@ function generateHouseTokens(platforms: Platform[]): HouseToken[] {
   return tokens;
 }
 
-// ─── Main Generator ────────────────────────────
+// Generate scattered shop coins (separate from house tokens) — these are pulled by the Accio Coins magnet
+function generateCoins(platforms: Platform[]): Coin[] {
+  const coins: Coin[] = [];
+  const eligible = platforms.filter(p =>
+    p.type === "normal" || p.type === "moving" || p.type === "ice"
+  );
+  eligible.forEach((p, i) => {
+    // Skip platforms that already host a house token (those are at i % 3 === 1)
+    if (i % 3 === 1) return;
+    if (coins.length >= 14) return;
+    // Place 1-3 coins above the platform in a small arc
+    const count = 1 + (i % 3);
+    for (let k = 0; k < count; k++) {
+      const offset = (k - (count - 1) / 2) * 22;
+      coins.push({
+        x: p.x + p.w / 2 + offset,
+        y: p.y - 28 - Math.abs(offset) * 0.4,
+        collected: false,
+        value: 1,
+      });
+    }
+  });
+  return coins;
+}
+
 
 export function generateLevel(worldId: number, levelIdx: number, canvasW: number, canvasH: number): LevelData {
   let data: LevelData;
@@ -844,7 +875,14 @@ export function generateLevel(worldId: number, levelIdx: number, canvasW: number
   if (!data.houseTokens || data.houseTokens.length === 0) {
     data.houseTokens = generateHouseTokens(data.platforms);
   }
-  
+
+  // Auto-generate scattered shop coins (skip for boss arenas and flight levels — those have other dynamics)
+  if (!data.coins && !data.bossArena && !data.flyingCar && !data.hippogriffFlight && !data.thestralFlight) {
+    data.coins = generateCoins(data.platforms);
+  } else if (!data.coins) {
+    data.coins = [];
+  }
+
   return data;
 }
 

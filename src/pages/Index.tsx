@@ -221,8 +221,8 @@ const Index = () => {
           profile={profile}
           worldId={profile.currentWorld}
           levelIdx={profile.currentLevel}
-          onComplete={() => {
-            completeLevel(currentLevel.id);
+          onComplete={(bonusCoins) => {
+            completeLevel(currentLevel.id, bonusCoins || 0);
             setScreen("levelComplete");
           }}
           onDeath={(reason) => { deathReasonRef.current = reason; setScreen("gameOver"); }}

@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback, useState } from "react";
 import type { DeathReason } from "./GameOver";
 import { WORLDS } from "@/lib/gameData";
-import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef, type HouseToken } from "@/lib/levelGenerator";
+import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef, type HouseToken, type Coin } from "@/lib/levelGenerator";
 
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { supabase } from "@/integrations/supabase/client";
@@ -81,7 +81,7 @@ interface GameCanvasProps {
   profile: PlayerProfile;
   worldId: number;
   levelIdx: number;
-  onComplete: () => void;
+  onComplete: (bonusCoins?: number) => void;
   onDeath: (reason: DeathReason) => void;
   onBack: () => void;
 }
@@ -185,6 +185,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
   const [paused, setPaused] = useState(false);
   
   const tokenPointsRef = useRef(0);
+  const collectedCoinsRef = useRef(0);
 
   const world = WORLDS[worldId - 1];
   const level = world.levels[levelIdx];
@@ -197,8 +198,10 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     if (pts > 0 && profile.house?.id) {
       supabase.rpc("add_house_points", { p_house_id: profile.house.id, p_points: pts }).then(() => {});
     }
+    const bonusCoins = collectedCoinsRef.current;
     tokenPointsRef.current = 0;
-    onComplete();
+    collectedCoinsRef.current = 0;
+    onComplete(bonusCoins);
   }, [onComplete, profile.house?.id]);
 
   const handleDeath = useCallback((reason: DeathReason = "fall") => {
@@ -256,6 +259,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const levelData = generateLevel(worldId, levelIdx, 3000, H);
     const { platforms, enemies, startX, startY } = levelData;
     const houseTokens: HouseToken[] = levelData.houseTokens || [];
+    const coins: Coin[] = levelData.coins || [];
+    let collectedCoins = 0;
     const isDark = levelData.darkLevel || false;
     const isCheckered = levelData.checkered || false;
     const isBoatLevel = levelData.boatLevel || false;
@@ -577,6 +582,38 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
               x: token.x, y: token.y,
               vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.5) * 5,
               life: 25, color: profile.house?.id === "gryffindor" ? "#c0392b" : profile.house?.id === "slytherin" ? "#27ae60" : profile.house?.id === "ravenclaw" ? "#2980b9" : "#f39c12",
+            });
+          }
+        }
+      });
+
+      // Shop coin collection (with Accio Coins magnet pull)
+      const COIN_MAGNET_RANGE = 140;
+      const COIN_MAGNET_PULL = 0.18;
+      coins.forEach(coin => {
+        if (coin.collected) return;
+        const cx = px + PLAYER_W / 2;
+        const cy = py + PLAYER_H / 2;
+        const dx = cx - coin.x;
+        const dy = cy - coin.y;
+
+        if (shopHasMagnet) {
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < COIN_MAGNET_RANGE && dist > 0) {
+            coin.x += (dx / dist) * Math.max(2, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
+            coin.y += (dy / dist) * Math.max(2, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
+          }
+        }
+
+        if (Math.abs(cx - coin.x) < 20 && Math.abs(cy - coin.y) < 20) {
+          coin.collected = true;
+          collectedCoins += coin.value;
+          collectedCoinsRef.current = collectedCoins;
+          for (let i = 0; i < 6; i++) {
+            particles.push({
+              x: coin.x, y: coin.y,
+              vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4,
+              life: 22, color: "#ffd24a",
             });
           }
         }
@@ -1281,7 +1318,49 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
-      // Draw enemies with avatar images
+      // Draw shop coins (gold) — these are pulled by Accio Coins magnet
+      coins.forEach(coin => {
+        if (coin.collected) return;
+        const cx = coin.x, cy = coin.y;
+        const bob = Math.sin(frameCount * 0.12 + cx * 0.05) * 2;
+        const spin = Math.abs(Math.sin(frameCount * 0.08 + cx * 0.02));
+        // Outer glow
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = "#ffd24a";
+        ctx.beginPath();
+        ctx.arc(cx, cy + bob, 11, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Coin face (squashed for spin)
+        ctx.save();
+        ctx.fillStyle = "#f5b800";
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + bob, 7 * (0.3 + spin * 0.7), 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#8a5a00";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        // Inner highlight
+        if (spin > 0.4) {
+          ctx.fillStyle = "#fff5b0";
+          ctx.font = "bold 8px Fredoka, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("G", cx, cy + bob + 3);
+        }
+        ctx.restore();
+
+        // Sparkle trail
+        if (frameCount % 14 === 0) {
+          particles.push({
+            x: cx + (Math.random() - 0.5) * 8, y: cy + bob,
+            vx: (Math.random() - 0.5) * 0.8, vy: -Math.random() * 1.2,
+            life: 12, color: "#ffe680",
+          });
+        }
+      });
+
+
       enemies.forEach(e => {
         if (e.y < -50) return;
         // Subtle shadow/glow under enemy
@@ -1705,6 +1784,19 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillStyle = houseColor;
         ctx.textAlign = "center";
         ctx.fillText(`🪙 ${collected}/${totalTokens}  (+${collectedTokenPoints} pts)`, W / 2, 24);
+      }
+
+      // Shop coin counter (gold coins collected this level)
+      if (coins.length > 0) {
+        const coinsGot = coins.filter(c => c.collected).length;
+        ctx.save();
+        ctx.fillStyle = "#ffd24a";
+        ctx.font = "bold 14px Fredoka, sans-serif";
+        ctx.textAlign = "right";
+        ctx.shadowColor = "rgba(0,0,0,0.6)";
+        ctx.shadowBlur = 4;
+        ctx.fillText(`🟡 ${coinsGot}/${coins.length}`, W - 12, 24);
+        ctx.restore();
       }
 
       if (isBossArena) {
