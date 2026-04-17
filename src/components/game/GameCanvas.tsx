@@ -734,14 +734,24 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillStyle = skyGrad;
         ctx.fillRect(0, 0, W, H);
         if (isHippogriffFlight) {
-          // Setting sun
+          // Stars
+          for (let i = 0; i < 70; i++) {
+            const sx = (i * 149 + (cameraX * 0.04)) % W;
+            const sy = (i * 83) % (H * 0.65);
+            const tw = 0.5 + Math.sin(frameCount * 0.04 + i * 0.7) * 0.4;
+            ctx.fillStyle = `rgba(240,240,255,${tw})`;
+            ctx.fillRect(sx, sy, 2, 2);
+          }
+          // Full bright moon
           ctx.save();
-          ctx.fillStyle = "rgba(255,180,60,0.06)";
-          ctx.beginPath(); ctx.arc(W - 100, H - 40, 100, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "rgba(255,200,80,0.1)";
-          ctx.beginPath(); ctx.arc(W - 100, H - 40, 60, 0, Math.PI * 2); ctx.fill();
-          ctx.fillStyle = "#ffd060";
-          ctx.beginPath(); ctx.arc(W - 100, H - 40, 30, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "rgba(255,250,220,0.06)";
+          ctx.beginPath(); ctx.arc(W - 100, 80, 90, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "rgba(255,250,220,0.12)";
+          ctx.beginPath(); ctx.arc(W - 100, 80, 55, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff8dc";
+          ctx.beginPath(); ctx.arc(W - 100, 80, 32, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#f5eec0";
+          ctx.beginPath(); ctx.arc(W - 96, 76, 26, 0, Math.PI * 2); ctx.fill();
           ctx.restore();
         } else if (isThestralFlight) {
           // Stars
