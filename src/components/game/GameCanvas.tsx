@@ -8,6 +8,17 @@ import { SHOP_ITEMS, PREMIUM_CHARACTER_IMAGES, ACCESSORY_IMAGES } from "@/lib/sh
 import { getFinishLandmark } from "@/lib/finishLandmarks";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
+import bgWorld1 from "@/assets/worlds/bg_world1.jpg";
+import bgWorld2 from "@/assets/worlds/bg_world2.jpg";
+import bgWorld3 from "@/assets/worlds/bg_world3.jpg";
+import bgWorld4 from "@/assets/worlds/bg_world4.jpg";
+import bgWorld5 from "@/assets/worlds/bg_world5.jpg";
+import bgWorld6 from "@/assets/worlds/bg_world6.jpg";
+import bgWorld7 from "@/assets/worlds/bg_world7.jpg";
+const WORLD_BACKGROUNDS: Record<number, string> = {
+  1: bgWorld1, 2: bgWorld2, 3: bgWorld3, 4: bgWorld4,
+  5: bgWorld5, 6: bgWorld6, 7: bgWorld7,
+};
 import harryImg from "@/assets/characters/harry.png";
 import hermioneImg from "@/assets/characters/hermione.png";
 import ronImg from "@/assets/characters/ron.png";
