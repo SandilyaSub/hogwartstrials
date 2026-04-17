@@ -371,53 +371,48 @@ function gen_3_4_IceLake(H: number): LevelData {
 // ─── WORLD 4: Goblet of Fire ────────────────────────
 
 function gen_4_1_DragonArena(H: number): LevelData {
+  // First Task — Harry rides his Firebolt around the Triwizard arena to face
+  // the Hungarian Horntail and snatch the Golden Egg.
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Invisible floor and ceiling boundaries (same pattern as hippogriff/thestral flight)
+  // Invisible flight boundaries (floor & ceiling)
   platforms.push({ x: 0, y: H - 30, w: 10000, h: 30, type: "hazard", color: "transparent" });
   platforms.push({ x: 0, y: 0, w: 10000, h: 10, type: "hazard", color: "transparent" });
 
-  // Floating fireballs to dodge — main hazard
-  for (let i = 0; i < 28; i++) {
-    const x = 500 + i * 300 + (i % 3) * 70;
+  // Dragon fire-breath columns guarding the arena
+  for (let i = 0; i < 22; i++) {
+    const x = 500 + i * 380 + (i % 3) * 60;
     const y = 40 + ((i * 151) % (H - 120));
-    const w = 40 + (i % 3) * 14;
-    const h = 30 + (i % 2) * 10;
+    const w = 38 + (i % 3) * 12;
+    const h = 28 + (i % 2) * 10;
     platforms.push({ x, y, w, h, type: "hazard", color: "#cc4a0a", label: "🔥" });
   }
 
-  // Rival wild dragons swooping at you
-  for (let i = 0; i < 12; i++) {
-    const x = 700 + i * 650;
-    const y = 50 + ((i * 197) % (H - 130));
+  // The Hungarian Horntail — repeated swoops along the path
+  for (let i = 0; i < 10; i++) {
+    const x = 800 + i * 800;
+    const y = 60 + ((i * 197) % (H - 140));
     enemies.push({
-      x, y, w: 26, h: 26, type: "dragon",
-      dir: -1, speed: 1.1 + (i % 3) * 0.3, range: 130,
-      origX: x, emoji: "🐉",
+      x, y, w: 34, h: 34, type: "dragon",
+      dir: -1, speed: 1.0 + (i % 3) * 0.3, range: 140,
+      origX: x, emoji: "🐲",
     });
   }
 
-  // Ember puffs from below — short vertical hazards rising from the arena floor
-  for (let i = 0; i < 6; i++) {
-    const x = 1100 + i * 1400;
-    const y = 60 + ((i * 211) % (H - 260));
-    platforms.push({ x, y, w: 24, h: 60, type: "hazard", color: "#ff8a2a", label: "🔥" });
-  }
-
-  // Jagged rocky peaks below — Triwizard arena spires
-  for (let i = 0; i < 8; i++) {
-    const x = 1500 + i * 950;
+  // Spectator stand spires jutting up from the arena floor
+  for (let i = 0; i < 7; i++) {
+    const x = 1500 + i * 1100;
     platforms.push({
       x, y: H - 90, w: 60, h: 90, type: "hazard",
       color: "#3a2a1a", label: "⛰️",
     });
   }
 
-  // Goal — snatch the Golden Egg
+  // Golden Egg — the prize at the end of the run
   platforms.push({ x: 9200, y: H / 2 - 30, w: 140, h: 60, type: "finish", label: "🥚 Golden Egg" });
 
-  return { platforms, enemies, startX: 60, startY: H / 2, dragonFlight: true };
+  return { platforms, enemies, startX: 60, startY: H / 2, broomFlight: true };
 }
 
 function gen_4_2_CliffJumps(H: number): LevelData {
@@ -2021,48 +2016,49 @@ function gen_6_9_FelixFelicis(H: number): LevelData {
 // ─── WORLD 7 EXTRA LEVELS ────────────────────────
 
 function gen_7_5_GringottsVault(H: number): LevelData {
+  // Bank Escape — riding the half-blind Ukrainian Ironbelly out of Gringotts
+  // and over the rooftops of London. A side-scrolling dragon flight.
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Bank lobby
-  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#5a4a3a", label: "🏦 Gringotts" });
+  // Invisible flight boundaries
+  platforms.push({ x: 0, y: H - 30, w: 10000, h: 30, type: "hazard", color: "transparent" });
+  platforms.push({ x: 0, y: 0, w: 10000, h: 10, type: "hazard", color: "transparent" });
 
-  // Mine cart track — fast horizontal then descending
-  for (let i = 0; i < 6; i++) {
+  // Falling debris and broken stonework from the smashed Gringotts dome
+  for (let i = 0; i < 24; i++) {
+    const x = 400 + i * 340 + (i % 3) * 50;
+    const y = 50 + ((i * 173) % (H - 130));
     platforms.push({
-      x: 180 + i * 120, y: H - 60 - i * 15, w: 80, h: 14,
-      type: "normal", color: "#6a5a3a", label: i === 0 ? "🛤️ Cart!" : "",
+      x, y, w: 38 + (i % 3) * 10, h: 24 + (i % 2) * 8,
+      type: "hazard", color: "#7a6a4a", label: "🧱",
     });
   }
 
-  // Deep vault descent — zigzag
-  const vaultPath = [
-    { x: 700, y: H - 170 }, { x: 550, y: H - 230 }, { x: 400, y: H - 290 },
-    { x: 550, y: H - 350 }, { x: 700, y: H - 410 }, { x: 550, y: H - 470 },
-    { x: 400, y: H - 530 },
-  ];
-  vaultPath.forEach((v, i) => {
-    platforms.push({
-      x: v.x, y: v.y, w: 70, h: 14,
-      type: i % 3 === 0 ? "disappearing" : "normal", timer: 0, visible: true,
-      color: "#8a7a5a", label: i % 2 === 0 ? "💰" : "",
+  // Curse-Breaker spell volleys from goblins below
+  for (let i = 0; i < 14; i++) {
+    const x = 700 + i * 620;
+    const y = 80 + ((i * 211) % (H - 200));
+    enemies.push({
+      x, y, w: 22, h: 22, type: "goblin",
+      dir: -1, speed: 1.2 + (i % 3) * 0.3, range: 120,
+      origX: x, emoji: "👺",
     });
-  });
+  }
 
-  // Thief's Downfall — waterfall hazard
-  platforms.push({ x: 620, y: H - 200, w: 20, h: 60, type: "hazard", color: "#4488cc", label: "💧 Downfall" });
+  // London chimney spires & church steeples to weave around
+  for (let i = 0; i < 8; i++) {
+    const x = 1500 + i * 1000;
+    platforms.push({
+      x, y: H - 100, w: 60, h: 100, type: "hazard",
+      color: "#2a2a3a", label: "🏛️",
+    });
+  }
 
-  // Cursed treasure that multiplies — hazard platforms
-  platforms.push({ x: 450, y: H - 260, w: 50, h: 8, type: "hazard", color: "#ffaa00", label: "🏆 Cursed!" });
-  platforms.push({ x: 650, y: H - 380, w: 50, h: 8, type: "hazard", color: "#ffaa00", label: "🏆 Cursed!" });
+  // Goal — break free over the Thames and dive into the wilderness
+  platforms.push({ x: 9200, y: H / 2 - 30, w: 140, h: 60, type: "finish", label: "🐉 Free!" });
 
-  // Goblins guarding + dragon at the bottom
-  enemies.push({ x: 600, y: H - 198, w: 20, h: 20, type: "goblin", dir: 1, speed: 1.0, range: 50, origX: 600, emoji: "👺" });
-  enemies.push({ x: 500, y: H - 378, w: 22, h: 22, type: "goblin", dir: -1, speed: 1.1, range: 60, origX: 500, emoji: "👺" });
-  enemies.push({ x: 550, y: H - 500, w: 30, h: 30, type: "dragon", dir: 1, speed: 0.5, range: 80, origX: 550, emoji: "🐉" });
-
-  platforms.push({ x: 450, y: H - 610, w: 120, h: 20, type: "finish", label: "🐉 Ride the Dragon!" });
-  return { platforms, enemies, startX: 40, startY: H - 80 };
+  return { platforms, enemies, startX: 60, startY: H / 2, dragonFlight: true };
 }
 
 function gen_7_6_RoomOfHiddenThings(H: number): LevelData {
