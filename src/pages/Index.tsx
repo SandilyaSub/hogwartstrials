@@ -191,6 +191,27 @@ const Index = () => {
           onActivate={(item) => {
             if (item.type === "theme") {
               saveProfile({ ...profile, activeTheme: item.id });
+            } else if (item.type === "character") {
+              // Toggle premium character skin (deselect to revert to base character)
+              const next = profile.activeCharacterSkin === item.id ? undefined : item.id;
+              saveProfile({ ...profile, activeCharacterSkin: next });
+            } else if (item.type === "accessory") {
+              // Toggle accessory: replace any other accessory in the same slot
+              const current = profile.activeAccessories || [];
+              const isOn = current.includes(item.id);
+              let next: string[];
+              if (isOn) {
+                next = current.filter(id => id !== item.id);
+              } else {
+                // Remove others sharing the same slot
+                const slot = item.accessorySlot;
+                const filtered = current.filter(id => {
+                  const other = SHOP_ITEMS.find(s => s.id === id);
+                  return other?.accessorySlot !== slot;
+                });
+                next = [...filtered, item.id];
+              }
+              saveProfile({ ...profile, activeAccessories: next });
             }
           }}
           onBack={() => setScreen("worldmap")}
