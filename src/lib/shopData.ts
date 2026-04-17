@@ -1,3 +1,24 @@
+// Premium character portraits
+import dumbledoreImg from "@/assets/characters/premium/dumbledore.png";
+import snapeImg from "@/assets/characters/premium/snape.png";
+import voldemortImg from "@/assets/characters/premium/voldemort.png";
+import dobbyImg from "@/assets/characters/premium/dobby.png";
+import hagridImg from "@/assets/characters/premium/hagrid.png";
+import harryGoldImg from "@/assets/characters/premium/harry_gold.png";
+import hermioneYuleImg from "@/assets/characters/premium/hermione_yule.png";
+import darkHarryImg from "@/assets/characters/premium/dark_harry.png";
+
+export const PREMIUM_CHARACTER_IMAGES: Record<string, string> = {
+  char_dumbledore: dumbledoreImg,
+  char_snape: snapeImg,
+  char_voldemort: voldemortImg,
+  char_dobby: dobbyImg,
+  char_hagrid: hagridImg,
+  char_harry_gold: harryGoldImg,
+  char_hermione_yule: hermioneYuleImg,
+  char_dark_harry: darkHarryImg,
+};
+
 export interface ShopItem {
   id: string;
   name: string;
