@@ -1,4 +1,4 @@
-import { SHOP_ITEMS, getShopCategory, type ShopItem } from "@/lib/shopData";
+import { SHOP_ITEMS, getShopCategory, PREMIUM_CHARACTER_IMAGES, type ShopItem } from "@/lib/shopData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 
 interface ShopProps {
@@ -66,10 +66,21 @@ const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
                       style={{ animationDelay: `${i * 0.05}s` }}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-3xl">{item.emoji}</span>
-                        <div className="flex-1">
-                          <h4 className="font-display font-semibold text-foreground text-sm">{item.name}</h4>
-                          <p className="text-xs text-muted-foreground font-body">{item.description}</p>
+                        {item.type === "character" && PREMIUM_CHARACTER_IMAGES[item.id] ? (
+                          <img
+                            src={PREMIUM_CHARACTER_IMAGES[item.id]}
+                            alt={item.name}
+                            loading="lazy"
+                            width={56}
+                            height={56}
+                            className="w-14 h-14 rounded-xl object-cover border-2 border-border shrink-0"
+                          />
+                        ) : (
+                          <span className="text-3xl">{item.emoji}</span>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-display font-semibold text-foreground text-sm truncate">{item.name}</h4>
+                          <p className="text-xs text-muted-foreground font-body line-clamp-2">{item.description}</p>
                         </div>
                         <div className="text-right">
                           {owned ? (
