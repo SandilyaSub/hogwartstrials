@@ -224,6 +224,10 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let shopCoinMultiplier = 1;
     let shopHasMagnet = false;
     let shopHasShield = false;
+    let shopHasSuperJump = false;
+    let shopHasInvisibility = false;
+    let shopHasTimeTurner = false;
+    let shopHasFloat = false;
 
     if (upgrades["jump_boost_1"]) shopJumpBoost += 1;
     if (upgrades["jump_boost_2"]) shopJumpBoost += 2;
@@ -232,9 +236,22 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     if (upgrades["double_coins"]) shopCoinMultiplier = 2;
     if (upgrades["magnet"]) shopHasMagnet = true;
     if (upgrades["shield"]) shopHasShield = true;
+    if (upgrades["super_jump"]) shopHasSuperJump = true;
+    if (upgrades["invisibility"]) shopHasInvisibility = true;
+    if (upgrades["time_turner"]) shopHasTimeTurner = true;
+    if (upgrades["nimbus"]) shopHasFloat = true;
 
-    const jumpPower = BASE_JUMP - houseBoosts.jump * 1.5 - (petEffect.type === "jump" ? petEffect.value : 0) - shopJumpBoost * 1.5;
+    // Super jump multiplies jump power by 1.5
+    const superJumpMult = shopHasSuperJump ? 1.5 : 1;
+    const jumpPower = (BASE_JUMP - houseBoosts.jump * 1.5 - (petEffect.type === "jump" ? petEffect.value : 0) - shopJumpBoost * 1.5) * superJumpMult;
     const speed = BASE_SPEED + houseBoosts.speed * 0.5 + (petEffect.type === "speed" ? petEffect.value * 0.5 : 0) + shopSpeedBoost * 0.5;
+
+    // Invisibility: enemies ignore the player for the first 10s of the level (600 frames @ 60fps)
+    let invisibilityFrames = shopHasInvisibility ? 600 : 0;
+    // Nimbus float: after a jump, briefly halve gravity for a floaty feel
+    let floatFrames = 0;
+    // Time-Turner: rewind to start once if you fall to your death
+    let timeTurnerCharges = shopHasTimeTurner ? 1 : 0;
 
     const levelData = generateLevel(worldId, levelIdx, 3000, H);
     const { platforms, enemies, startX, startY } = levelData;
@@ -343,12 +360,17 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (jump && onGround) {
           vy = jumpPower;
           onGround = false;
+          // Nimbus: float briefly after jumping
+          if (shopHasFloat) floatFrames = 30;
           for (let i = 0; i < 5; i++) {
             particles.push({ x: px + PLAYER_W / 2, y: py + PLAYER_H, vx: (Math.random() - 0.5) * 3, vy: Math.random() * -2, life: 20, color: "hsl(45, 80%, 55%)" });
           }
         }
 
-        vy += GRAVITY;
+        // Apply gravity (Nimbus: half gravity while floating, only when going up or near apex)
+        const gravityMult = floatFrames > 0 && vy < 2 ? 0.4 : 1;
+        if (floatFrames > 0) floatFrames--;
+        vy += GRAVITY * gravityMult;
         px += vx;
         py += vy;
       }
@@ -424,11 +446,15 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       }
 
       // Enemy collision
+      if (invisibilityFrames > 0) invisibilityFrames--;
       for (const e of enemies) {
         if (px + PLAYER_W > e.x && px < e.x + e.w && py + PLAYER_H > e.y && py < e.y + e.h) {
           if (vy > 0 && py + PLAYER_H - e.y < 10) {
             vy = jumpPower * 0.7;
             e.y = -100;
+          } else if (invisibilityFrames > 0) {
+            // Invisibility cloak active — enemies can't hurt you
+            continue;
           } else {
             if (hasRevive) { hasRevive = false; vy = jumpPower; }
             else { handleDeath("enemy"); return; }
@@ -535,14 +561,29 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (playerHitFlash > 0) playerHitFlash--;
       }
 
-      // House token collection
+      // House token collection (with magnet pull if Accio Coins is owned)
+      const MAGNET_RANGE = 140;
+      const MAGNET_PULL = 0.18;
       houseTokens.forEach(token => {
         if (token.collected) return;
-        const dx = (px + PLAYER_W / 2) - token.x;
-        const dy = (py + PLAYER_H / 2) - token.y;
-        if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+        const cx = px + PLAYER_W / 2;
+        const cy = py + PLAYER_H / 2;
+        const dx = cx - token.x;
+        const dy = cy - token.y;
+
+        // Magnet effect: pull tokens toward the player when within range
+        if (shopHasMagnet) {
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAGNET_RANGE && dist > 0) {
+            token.x += (dx / dist) * Math.max(2, (MAGNET_RANGE - dist) * MAGNET_PULL);
+            token.y += (dy / dist) * Math.max(2, (MAGNET_RANGE - dist) * MAGNET_PULL);
+          }
+        }
+
+        if (Math.abs(cx - token.x) < 22 && Math.abs(cy - token.y) < 22) {
           token.collected = true;
-          collectedTokenPoints += token.points;
+          // Apply double-coins multiplier per token as well
+          collectedTokenPoints += token.points * shopCoinMultiplier;
           tokenPointsRef.current = collectedTokenPoints;
           for (let i = 0; i < 8; i++) {
             particles.push({
@@ -558,8 +599,23 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       if (!isFlyingCar) {
         const deathY = isBoatLevel ? H - 45 : H + 100;
         if (py > deathY) {
-          if (hasRevive) { hasRevive = false; py = startY - 100; vy = 0; px = startX; }
-          else { handleDeath(isBoatLevel ? "drown" : "fall"); return; }
+          if (timeTurnerCharges > 0) {
+            timeTurnerCharges--;
+            px = startX; py = startY; vx = 0; vy = 0;
+            // Visual rewind sparkles
+            for (let i = 0; i < 30; i++) {
+              particles.push({
+                x: startX + (Math.random() - 0.5) * 60,
+                y: startY + (Math.random() - 0.5) * 60,
+                vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4,
+                life: 40, color: "hsl(45, 90%, 65%)",
+              });
+            }
+          } else if (hasRevive) {
+            hasRevive = false; py = startY - 100; vy = 0; px = startX;
+          } else {
+            handleDeath(isBoatLevel ? "drown" : "fall"); return;
+          }
         }
       }
 
