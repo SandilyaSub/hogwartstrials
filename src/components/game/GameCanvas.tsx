@@ -56,6 +56,7 @@ import inferiImg from "@/assets/enemies/inferi.png";
 import hippogriffMountImg from "@/assets/pets/hippogriff.png";
 import thestralMountImg from "@/assets/pets/thestral.png";
 import dragonMountImg from "@/assets/pets/dragon_mount.png";
+import fireboltMountImg from "@/assets/pets/firebolt_broom.png";
 
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
@@ -289,7 +290,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const isHippogriffFlight = levelData.hippogriffFlight || false;
     const isThestralFlight = levelData.thestralFlight || false;
     const isDragonFlight = levelData.dragonFlight || false;
-    const isFlyingCar = levelData.flyingCar || isHippogriffFlight || isThestralFlight || isDragonFlight;
+    const isBroomFlight = levelData.broomFlight || false;
+    const isFlyingCar = levelData.flyingCar || isHippogriffFlight || isThestralFlight || isDragonFlight || isBroomFlight;
     const isBossArena = levelData.bossArena || false;
     const bossData = levelData.boss;
 
@@ -778,6 +780,13 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           skyGrad.addColorStop(0.6, "#5a1a08");
           skyGrad.addColorStop(0.85, "#a8430a");
           skyGrad.addColorStop(1, "#d86a18");
+        } else if (isBroomFlight) {
+          // Bright Triwizard arena daytime sky — pale gold to warm orange
+          skyGrad.addColorStop(0, "#7ab8e8");
+          skyGrad.addColorStop(0.3, "#a8d0ea");
+          skyGrad.addColorStop(0.6, "#f0d088");
+          skyGrad.addColorStop(0.85, "#e89a4a");
+          skyGrad.addColorStop(1, "#a85a2a");
         } else {
           skyGrad.addColorStop(0, "#020a20");
           skyGrad.addColorStop(0.2, "#0a1540");
@@ -1672,10 +1681,18 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       // Draw player
       if (isFlyingCar) {
         const cx = px, cy = py;
-        if (isHippogriffFlight || isThestralFlight || isDragonFlight) {
-          // Use the pre-made mount avatar (hippogriff / thestral / dragon)
-          const mountSrc = isHippogriffFlight ? hippogriffMountImg : isThestralFlight ? thestralMountImg : dragonMountImg;
-          const mountKey = isHippogriffFlight ? "__mountImg_hippogriff" : isThestralFlight ? "__mountImg_thestral" : "__mountImg_dragon";
+        if (isHippogriffFlight || isThestralFlight || isDragonFlight || isBroomFlight) {
+          // Use the pre-made mount avatar (hippogriff / thestral / dragon / firebolt)
+          const mountSrc =
+            isHippogriffFlight ? hippogriffMountImg :
+            isThestralFlight ? thestralMountImg :
+            isDragonFlight ? dragonMountImg :
+            fireboltMountImg;
+          const mountKey =
+            isHippogriffFlight ? "__mountImg_hippogriff" :
+            isThestralFlight ? "__mountImg_thestral" :
+            isDragonFlight ? "__mountImg_dragon" :
+            "__mountImg_firebolt";
           if (!(window as any)[mountKey]) {
             const img = new Image();
             img.src = mountSrc;
@@ -1683,10 +1700,10 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           }
           const mountImg = (window as any)[mountKey] as HTMLImageElement;
 
-          // Dragon is bigger than the lighter mounts
-          const mW = isDragonFlight ? 90 : 72;
-          const mH = isDragonFlight ? 70 : 56;
-          const bobFreq = isHippogriffFlight ? 0.08 : isThestralFlight ? 0.09 : 0.07;
+          // Dragon is bigger than the lighter mounts; broom is slim
+          const mW = isDragonFlight ? 90 : isBroomFlight ? 80 : 72;
+          const mH = isDragonFlight ? 70 : isBroomFlight ? 44 : 56;
+          const bobFreq = isHippogriffFlight ? 0.08 : isThestralFlight ? 0.09 : isBroomFlight ? 0.11 : 0.07;
           const bobY = Math.sin(frameCount * bobFreq) * (isDragonFlight ? 4 : 3);
           const flash = carInvincible > 0 && frameCount % 4 < 2;
           ctx.save();
@@ -1722,9 +1739,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           const charImg = (window as any)[imgKey] as HTMLImageElement;
           if (charImg.complete && charImg.naturalWidth > 0) {
             const avatarSize = isDragonFlight ? 26 : 22;
-            // Position rider on the dragon's back (a touch lower & more centered)
-            const riderX = isDragonFlight ? mW * 0.42 : mW * 0.48;
-            const riderY = isDragonFlight ? mH * 0.30 : mH * 0.22;
+            // Position rider — centered on broom handle, slightly back on flying mounts.
+            const riderX = isDragonFlight ? mW * 0.42 : isBroomFlight ? mW * 0.55 : mW * 0.48;
+            const riderY = isDragonFlight ? mH * 0.30 : isBroomFlight ? mH * 0.10 : mH * 0.22;
             ctx.save();
             ctx.beginPath();
             ctx.arc(riderX, riderY, avatarSize / 2, 0, Math.PI * 2);
