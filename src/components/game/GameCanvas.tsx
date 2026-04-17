@@ -5,6 +5,7 @@ import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy,
 
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { SHOP_ITEMS, PREMIUM_CHARACTER_IMAGES, ACCESSORY_IMAGES } from "@/lib/shopData";
+import { getFinishLandmark } from "@/lib/finishLandmarks";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
 import harryImg from "@/assets/characters/harry.png";
@@ -1306,6 +1307,28 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
         // Labels for finish, hazards, dock
         if (p.type === "finish") {
+          // Themed landmark sprite above the finish platform
+          const landmarkSrc = getFinishLandmark(worldId, levelIdx);
+          if (landmarkSrc) {
+            const lmKey = `__finishImg_${worldId}_${levelIdx}`;
+            if (!(window as any)[lmKey]) {
+              const img = new Image();
+              img.src = landmarkSrc;
+              (window as any)[lmKey] = img;
+            }
+            const lmImg = (window as any)[lmKey] as HTMLImageElement;
+            if (lmImg.complete && lmImg.naturalWidth > 0) {
+              const lmH = 110;
+              const lmW = 110;
+              const lmX = p.x + p.w / 2 - lmW / 2;
+              const lmY = p.y - lmH - 4;
+              ctx.save();
+              ctx.shadowColor = "#ffd700";
+              ctx.shadowBlur = 18 + Math.sin(frameCount * 0.05) * 6;
+              ctx.drawImage(lmImg, lmX, lmY, lmW, lmH);
+              ctx.restore();
+            }
+          }
           ctx.save();
           ctx.fillStyle = "#ffd700";
           ctx.font = "bold 14px Fredoka, sans-serif";
