@@ -360,12 +360,17 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (jump && onGround) {
           vy = jumpPower;
           onGround = false;
+          // Nimbus: float briefly after jumping
+          if (shopHasFloat) floatFrames = 30;
           for (let i = 0; i < 5; i++) {
             particles.push({ x: px + PLAYER_W / 2, y: py + PLAYER_H, vx: (Math.random() - 0.5) * 3, vy: Math.random() * -2, life: 20, color: "hsl(45, 80%, 55%)" });
           }
         }
 
-        vy += GRAVITY;
+        // Apply gravity (Nimbus: half gravity while floating, only when going up or near apex)
+        const gravityMult = floatFrames > 0 && vy < 2 ? 0.4 : 1;
+        if (floatFrames > 0) floatFrames--;
+        vy += GRAVITY * gravityMult;
         px += vx;
         py += vy;
       }
