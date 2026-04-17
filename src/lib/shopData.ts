@@ -4,10 +4,15 @@ export interface ShopItem {
   description: string;
   emoji: string;
   cost: number;
-  type: "upgrade" | "consumable" | "theme";
+  type: "upgrade" | "consumable" | "theme" | "character" | "accessory";
   stat?: string;
   value?: number;
   themeColors?: { primary: string; background: string; card: string };
+  /** For character variants: tint color drawn around the avatar */
+  characterTint?: string;
+  /** For accessories: emoji drawn on the player + render slot */
+  accessoryEmoji?: string;
+  accessorySlot?: "hat" | "glasses" | "scarf" | "aura";
 }
 
 export const SHOP_ITEMS: ShopItem[] = [
@@ -33,8 +38,8 @@ export const SHOP_ITEMS: ShopItem[] = [
     emoji: "🪙", cost: 150, type: "upgrade", stat: "coinMultiplier", value: 2,
   },
   {
-    id: "magnet", name: "Accio Coins", description: "Coins fly towards you",
-    emoji: "🧲", cost: 100, type: "upgrade", stat: "magnet", value: 1,
+    id: "magnet", name: "Accio Coins", description: "Strong magnetic pull — coins fly fast from far away",
+    emoji: "🧲", cost: 200, type: "upgrade", stat: "magnet", value: 1,
   },
 
   // ─── Consumables ───
@@ -59,8 +64,8 @@ export const SHOP_ITEMS: ShopItem[] = [
     emoji: "⏳", cost: 90, type: "consumable", stat: "timeTurner", value: 1,
   },
   {
-    id: "nimbus", name: "Nimbus 2000", description: "Float briefly after jumping",
-    emoji: "🧹", cost: 75, type: "consumable", stat: "float", value: 1,
+    id: "nimbus", name: "Nimbus 2000", description: "Float much longer after jumping — glide across gaps",
+    emoji: "🧹", cost: 180, type: "consumable", stat: "float", value: 1,
   },
 
   // ─── Themes ───
@@ -105,6 +110,78 @@ export const SHOP_ITEMS: ShopItem[] = [
     themeColors: { primary: "260 60% 65%", background: "260 35% 6%", card: "260 28% 10%" },
   },
 
+  // ─── Legendary Characters (premium variants) ───
+  {
+    id: "char_dumbledore", name: "Albus Dumbledore", description: "The greatest wizard. Wisdom radiates.",
+    emoji: "🧙‍♂️", cost: 500, type: "character", characterTint: "#e8d57a",
+  },
+  {
+    id: "char_snape", name: "Severus Snape", description: "Master of potions, robed in shadow.",
+    emoji: "🦇", cost: 450, type: "character", characterTint: "#1a1a2e",
+  },
+  {
+    id: "char_voldemort", name: "Lord Voldemort", description: "He Who Must Not Be Named. Pure evil.",
+    emoji: "💀", cost: 800, type: "character", characterTint: "#5a1f5a",
+  },
+  {
+    id: "char_dobby", name: "Dobby the House Elf", description: "A free elf! Loyal companion.",
+    emoji: "🧦", cost: 350, type: "character", characterTint: "#9bb87a",
+  },
+  {
+    id: "char_hagrid", name: "Rubeus Hagrid", description: "The lovable half-giant gamekeeper.",
+    emoji: "🧔", cost: 400, type: "character", characterTint: "#6b4423",
+  },
+  {
+    id: "char_harry_gold", name: "Golden Harry", description: "Harry shimmering in pure gold. Flex!",
+    emoji: "👑", cost: 600, type: "character", characterTint: "#ffd700",
+  },
+  {
+    id: "char_hermione_yule", name: "Yule Ball Hermione", description: "Hermione in her elegant pink gown.",
+    emoji: "💃", cost: 380, type: "character", characterTint: "#ff9bc7",
+  },
+  {
+    id: "char_dark_harry", name: "Dark Lord Harry", description: "What if Harry chose darkness?",
+    emoji: "🌑", cost: 550, type: "character", characterTint: "#3a0a3a",
+  },
+
+  // ─── Accessories (worn on top of any character) ───
+  {
+    id: "acc_sorting_hat", name: "Sorting Hat", description: "The legendary talking hat",
+    emoji: "🎩", cost: 80, type: "accessory", accessoryEmoji: "🎩", accessorySlot: "hat",
+  },
+  {
+    id: "acc_crown", name: "Triwizard Crown", description: "Wear the champion's crown",
+    emoji: "👑", cost: 150, type: "accessory", accessoryEmoji: "👑", accessorySlot: "hat",
+  },
+  {
+    id: "acc_witch_hat", name: "Pointed Witch Hat", description: "A classic pointed wizard hat",
+    emoji: "🧙", cost: 60, type: "accessory", accessoryEmoji: "🎓", accessorySlot: "hat",
+  },
+  {
+    id: "acc_glasses", name: "Round Glasses", description: "Harry's iconic round spectacles",
+    emoji: "👓", cost: 50, type: "accessory", accessoryEmoji: "👓", accessorySlot: "glasses",
+  },
+  {
+    id: "acc_sunglasses", name: "Cool Shades", description: "Look ice-cool dueling Death Eaters",
+    emoji: "🕶️", cost: 90, type: "accessory", accessoryEmoji: "🕶️", accessorySlot: "glasses",
+  },
+  {
+    id: "acc_scarf_red", name: "Gryffindor Scarf", description: "Bold red & gold knit",
+    emoji: "🧣", cost: 70, type: "accessory", accessoryEmoji: "🧣", accessorySlot: "scarf",
+  },
+  {
+    id: "acc_aura_fire", name: "Fiendfyre Aura", description: "Burning red aura surrounds you",
+    emoji: "🔥", cost: 220, type: "accessory", accessoryEmoji: "🔥", accessorySlot: "aura",
+  },
+  {
+    id: "acc_aura_patronus", name: "Patronus Aura", description: "Silver-blue ethereal glow",
+    emoji: "✨", cost: 250, type: "accessory", accessoryEmoji: "✨", accessorySlot: "aura",
+  },
+  {
+    id: "acc_aura_dark", name: "Dark Mark Aura", description: "Sinister green-black smoke",
+    emoji: "💚", cost: 280, type: "accessory", accessoryEmoji: "🐍", accessorySlot: "aura",
+  },
+
 ];
 
 export function getShopCategory(type: ShopItem["type"]): string {
@@ -112,6 +189,7 @@ export function getShopCategory(type: ShopItem["type"]): string {
     case "upgrade": return "⬆️ Upgrades";
     case "consumable": return "🧪 Consumables";
     case "theme": return "🎨 Themes";
-    
+    case "character": return "🌟 Legendary Characters";
+    case "accessory": return "🎩 Accessories";
   }
 }

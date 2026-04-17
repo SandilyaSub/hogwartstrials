@@ -4,6 +4,7 @@ import { WORLDS } from "@/lib/gameData";
 import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef, type HouseToken, type Coin } from "@/lib/levelGenerator";
 
 import type { PlayerProfile } from "@/hooks/useGameState";
+import { SHOP_ITEMS } from "@/lib/shopData";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
 import harryImg from "@/assets/characters/harry.png";
@@ -365,8 +366,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (jump && onGround) {
           vy = jumpPower;
           onGround = false;
-          // Nimbus: float briefly after jumping
-          if (shopHasFloat) floatFrames = 30;
+          // Nimbus: float much longer after jumping (buffed: was 30, now 90 frames = 1.5s glide)
+          if (shopHasFloat) floatFrames = 90;
           for (let i = 0; i < 5; i++) {
             particles.push({ x: px + PLAYER_W / 2, y: py + PLAYER_H, vx: (Math.random() - 0.5) * 3, vy: Math.random() * -2, life: 20, color: "hsl(45, 80%, 55%)" });
           }
@@ -587,9 +588,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
-      // Shop coin collection (with Accio Coins magnet pull)
-      const COIN_MAGNET_RANGE = 140;
-      const COIN_MAGNET_PULL = 0.18;
+      // Shop coin collection (with Accio Coins magnet pull — buffed: stronger & farther)
+      const COIN_MAGNET_RANGE = 240;
+      const COIN_MAGNET_PULL = 0.32;
       coins.forEach(coin => {
         if (coin.collected) return;
         const cx = px + PLAYER_W / 2;
@@ -600,8 +601,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (shopHasMagnet) {
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < COIN_MAGNET_RANGE && dist > 0) {
-            coin.x += (dx / dist) * Math.max(2, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
-            coin.y += (dy / dist) * Math.max(2, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
+            coin.x += (dx / dist) * Math.max(4, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
+            coin.y += (dy / dist) * Math.max(4, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
           }
         }
 
@@ -1705,6 +1706,73 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.font = `${PLAYER_H}px serif`;
           ctx.textAlign = "center";
           ctx.fillText(profile.character?.emoji || "⚡", cx + PLAYER_W / 2, cy + PLAYER_H - 2);
+        }
+
+        // ─── Premium character skin tint (overlay color around avatar) ───
+        const skinId = profile.activeCharacterSkin;
+        if (skinId) {
+          const skin = SHOP_ITEMS.find(s => s.id === skinId && s.type === "character");
+          if (skin?.characterTint) {
+            ctx.save();
+            ctx.globalAlpha = 0.45 + Math.sin(frameCount * 0.08) * 0.15;
+            ctx.strokeStyle = skin.characterTint;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx + PLAYER_W / 2, cy + PLAYER_H / 2, (Math.max(PLAYER_W, PLAYER_H) + 4) / 2, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.font = "12px serif";
+            ctx.textAlign = "center";
+            ctx.fillText(skin.emoji, cx + PLAYER_W / 2, cy - 8);
+            ctx.restore();
+          }
+        }
+
+        // ─── Equipped accessories ───
+        const acc = profile.activeAccessories || [];
+        if (acc.length > 0) {
+          ctx.save();
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          acc.forEach(id => {
+            const item = SHOP_ITEMS.find(s => s.id === id);
+            if (!item?.accessoryEmoji) return;
+            const slot = item.accessorySlot;
+            if (slot === "hat") {
+              ctx.font = "14px serif";
+              ctx.fillText(item.accessoryEmoji, cx + PLAYER_W / 2, cy - 4);
+            } else if (slot === "glasses") {
+              ctx.font = "10px serif";
+              ctx.fillText(item.accessoryEmoji, cx + PLAYER_W / 2, cy + PLAYER_H * 0.35);
+            } else if (slot === "scarf") {
+              ctx.font = "12px serif";
+              ctx.fillText(item.accessoryEmoji, cx + PLAYER_W / 2, cy + PLAYER_H * 0.7);
+            } else if (slot === "aura") {
+              ctx.save();
+              const auraColor = id === "acc_aura_fire" ? "rgba(255,90,30,0.6)"
+                : id === "acc_aura_patronus" ? "rgba(170,210,255,0.7)"
+                : "rgba(80,200,90,0.6)";
+              ctx.globalAlpha = 0.5 + Math.sin(frameCount * 0.12) * 0.3;
+              ctx.strokeStyle = auraColor;
+              ctx.lineWidth = 2;
+              const r = (Math.max(PLAYER_W, PLAYER_H) + 8) / 2 + Math.sin(frameCount * 0.15) * 2;
+              ctx.beginPath();
+              ctx.arc(cx + PLAYER_W / 2, cy + PLAYER_H / 2, r, 0, Math.PI * 2);
+              ctx.stroke();
+              if (frameCount % 4 === 0) {
+                particles.push({
+                  x: cx + PLAYER_W / 2 + (Math.random() - 0.5) * PLAYER_W,
+                  y: cy + PLAYER_H / 2 + (Math.random() - 0.5) * PLAYER_H,
+                  vx: (Math.random() - 0.5) * 1.2,
+                  vy: -0.5 - Math.random() * 0.8,
+                  life: 22,
+                  color: auraColor,
+                });
+              }
+              ctx.restore();
+            }
+          });
+          ctx.restore();
         }
 
         ctx.restore();

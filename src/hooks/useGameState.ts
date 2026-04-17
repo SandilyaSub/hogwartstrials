@@ -20,6 +20,10 @@ export interface PlayerProfile {
   purchasedUpgrades: Record<string, boolean>;
   activeTheme: string;
   tutorialCompleted: boolean;
+  /** Equipped premium character skin id (from shop). Falls back to base character. */
+  activeCharacterSkin?: string;
+  /** Equipped accessory ids (multiple, one per slot). */
+  activeAccessories?: string[];
 }
 
 const DEFAULT_PROFILE: PlayerProfile = {
@@ -36,6 +40,8 @@ const DEFAULT_PROFILE: PlayerProfile = {
   purchasedUpgrades: {},
   activeTheme: "dark",
   tutorialCompleted: false,
+  activeCharacterSkin: undefined,
+  activeAccessories: [],
 };
 
 export function useGameState(user: User | null) {
@@ -64,6 +70,18 @@ export function useGameState(user: User | null) {
         const house = data.house_id ? HOUSES.find(h => h.id === data.house_id) || null : null;
         const pet = data.pet_id ? PETS.find(p => p.id === data.pet_id) || null : null;
 
+        // Local-only equipment state (skin + accessories) keyed by user id
+        let activeCharacterSkin: string | undefined;
+        let activeAccessories: string[] = [];
+        try {
+          const raw = localStorage.getItem(`equip_${user.id}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            activeCharacterSkin = parsed.activeCharacterSkin;
+            activeAccessories = parsed.activeAccessories || [];
+          }
+        } catch {}
+
         setProfile({
           username: data.username || "",
           character: char,
@@ -78,6 +96,8 @@ export function useGameState(user: User | null) {
           purchasedUpgrades: (data.purchased_upgrades as Record<string, boolean>) || {},
           activeTheme: data.active_theme || "dark",
           tutorialCompleted: (data as any).tutorial_completed || false,
+          activeCharacterSkin,
+          activeAccessories,
         });
       }
       setDbLoaded(true);
@@ -87,10 +107,17 @@ export function useGameState(user: User | null) {
     loadProfile();
   }, [user]);
 
-  // Save to DB
+  // Save to DB (and persist equipment locally)
   const saveProfile = useCallback(async (p: PlayerProfile) => {
     setProfile(p);
     if (!user) return;
+
+    try {
+      localStorage.setItem(`equip_${user.id}`, JSON.stringify({
+        activeCharacterSkin: p.activeCharacterSkin,
+        activeAccessories: p.activeAccessories || [],
+      }));
+    } catch {}
 
     await supabase.from("game_profiles").update({
       username: p.username,
