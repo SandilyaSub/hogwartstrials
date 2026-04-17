@@ -61,10 +61,17 @@ export interface HouseToken {
   points: number; // typically 5-15
 }
 
+export interface Coin {
+  x: number; y: number;
+  collected: boolean;
+  value: number; // shop coins awarded (1-3)
+}
+
 export interface LevelData {
   platforms: Platform[];
   enemies: Enemy[];
   houseTokens?: HouseToken[];
+  coins?: Coin[];
   startX: number;
   startY: number;
   darkLevel?: boolean;
