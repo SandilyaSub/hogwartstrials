@@ -56,6 +56,7 @@ import inferiImg from "@/assets/enemies/inferi.png";
 import hippogriffMountImg from "@/assets/pets/hippogriff.png";
 import thestralMountImg from "@/assets/pets/thestral.png";
 import dragonMountImg from "@/assets/pets/dragon_mount.png";
+import fireboltMountImg from "@/assets/pets/firebolt_broom.png";
 
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
@@ -289,7 +290,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const isHippogriffFlight = levelData.hippogriffFlight || false;
     const isThestralFlight = levelData.thestralFlight || false;
     const isDragonFlight = levelData.dragonFlight || false;
-    const isFlyingCar = levelData.flyingCar || isHippogriffFlight || isThestralFlight || isDragonFlight;
+    const isBroomFlight = levelData.broomFlight || false;
+    const isFlyingCar = levelData.flyingCar || isHippogriffFlight || isThestralFlight || isDragonFlight || isBroomFlight;
     const isBossArena = levelData.bossArena || false;
     const bossData = levelData.boss;
 
