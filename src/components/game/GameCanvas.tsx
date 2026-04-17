@@ -1455,6 +1455,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             });
           }
         } else {
+          const carW = 50, carH = 28;
           ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
           ctx.beginPath();
           ctx.moveTo(cx, cy + carH * 0.3);
