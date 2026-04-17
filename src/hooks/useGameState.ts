@@ -20,6 +20,10 @@ export interface PlayerProfile {
   purchasedUpgrades: Record<string, boolean>;
   activeTheme: string;
   tutorialCompleted: boolean;
+  /** Equipped premium character skin id (from shop). Falls back to base character. */
+  activeCharacterSkin?: string;
+  /** Equipped accessory ids (multiple, one per slot). */
+  activeAccessories?: string[];
 }
 
 const DEFAULT_PROFILE: PlayerProfile = {
@@ -36,6 +40,8 @@ const DEFAULT_PROFILE: PlayerProfile = {
   purchasedUpgrades: {},
   activeTheme: "dark",
   tutorialCompleted: false,
+  activeCharacterSkin: undefined,
+  activeAccessories: [],
 };
 
 export function useGameState(user: User | null) {
