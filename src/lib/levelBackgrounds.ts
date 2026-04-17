@@ -55,6 +55,8 @@ import l4_10 from "@/assets/levels/4-10.jpg";
 import l5_1 from "@/assets/levels/5-1.jpg";
 import l5_2 from "@/assets/levels/5-2.jpg";
 import l5_3 from "@/assets/levels/5-3.jpg";
+// World 7 (Gringotts Escape only — rest pending credit refresh)
+import l7_5 from "@/assets/levels/7-5.jpg";
 
 const LEVEL_BACKGROUNDS: Record<string, string> = {
   "1-1": l1_1, "1-2": l1_2, "1-3": l1_3, "1-4": l1_4, "1-5": l1_5,
@@ -66,6 +68,7 @@ const LEVEL_BACKGROUNDS: Record<string, string> = {
   "4-1": l4_1, "4-2": l4_2, "4-3": l4_3, "4-4": l4_4, "4-5": l4_5,
   "4-6": l4_6, "4-7": l4_7, "4-8": l4_8, "4-9": l4_9, "4-10": l4_10,
   "5-1": l5_1, "5-2": l5_2, "5-3": l5_3,
+  "7-5": l7_5,
 };
 
 const WORLD_BACKGROUNDS: Record<number, string> = {
