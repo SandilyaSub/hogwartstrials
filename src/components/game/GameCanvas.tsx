@@ -1385,94 +1385,37 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       // Draw player
       if (isFlyingCar) {
         const cx = px, cy = py;
-        if (isHippogriffFlight) {
-          // Draw Buckbeak the Hippogriff
-          const hW = 56, hH = 34;
-          const bobY = Math.sin(frameCount * 0.08) * 3;
+        if (isHippogriffFlight || isThestralFlight) {
+          // Use the pre-made mount avatar (hippogriff or thestral)
+          const mountSrc = isHippogriffFlight ? hippogriffMountImg : thestralMountImg;
+          const mountKey = isHippogriffFlight ? "__mountImg_hippogriff" : "__mountImg_thestral";
+          if (!(window as any)[mountKey]) {
+            const img = new Image();
+            img.src = mountSrc;
+            (window as any)[mountKey] = img;
+          }
+          const mountImg = (window as any)[mountKey] as HTMLImageElement;
+
+          const mW = 72, mH = 56;
+          const bobY = Math.sin(frameCount * (isHippogriffFlight ? 0.08 : 0.09)) * 3;
           const flash = carInvincible > 0 && frameCount % 4 < 2;
           ctx.save();
           ctx.translate(cx, cy + bobY);
 
-          // Wing flap animation
-          const wingAngle = Math.sin(frameCount * 0.15) * 0.3;
-
-          // Left wing (back)
+          // Subtle wing-flap scale to suggest motion
+          const flap = 1 + Math.sin(frameCount * (isHippogriffFlight ? 0.15 : 0.18)) * 0.04;
           ctx.save();
-          ctx.translate(hW * 0.4, hH * 0.3);
-          ctx.rotate(-wingAngle - 0.2);
-          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#8B7355";
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.quadraticCurveTo(-30, -25, -45, -15);
-          ctx.quadraticCurveTo(-35, 0, 0, 5);
-          ctx.closePath();
-          ctx.fill();
-          ctx.restore();
-
-          // Right wing (back)
-          ctx.save();
-          ctx.translate(hW * 0.4, hH * 0.3);
-          ctx.rotate(wingAngle + 0.2);
-          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#8B7355";
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.quadraticCurveTo(30, -25, 45, -15);
-          ctx.quadraticCurveTo(35, 0, 0, 5);
-          ctx.closePath();
-          ctx.fill();
-          ctx.restore();
-
-          // Body
-          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#A0896C";
-          ctx.beginPath();
-          ctx.ellipse(hW * 0.45, hH * 0.55, hW * 0.32, hH * 0.35, -0.1, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Head
-          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#C4A97D";
-          ctx.beginPath();
-          ctx.arc(hW * 0.82, hH * 0.25, 8, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Beak
-          ctx.fillStyle = "#E8A020";
-          ctx.beginPath();
-          ctx.moveTo(hW * 0.9, hH * 0.22);
-          ctx.lineTo(hW + 6, hH * 0.2);
-          ctx.lineTo(hW * 0.9, hH * 0.32);
-          ctx.closePath();
-          ctx.fill();
-
-          // Eye
-          ctx.fillStyle = "#FF8C00";
-          ctx.beginPath();
-          ctx.arc(hW * 0.85, hH * 0.22, 2.5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = "#000";
-          ctx.beginPath();
-          ctx.arc(hW * 0.85, hH * 0.22, 1.2, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Tail feathers
-          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#6B5B3A";
-          for (let t = 0; t < 3; t++) {
-            ctx.beginPath();
-            ctx.moveTo(hW * 0.05, hH * 0.5);
-            ctx.quadraticCurveTo(-12, hH * 0.3 + t * 8, -20, hH * 0.4 + t * 6);
-            ctx.quadraticCurveTo(-10, hH * 0.5 + t * 4, hW * 0.1, hH * 0.6);
-            ctx.closePath();
-            ctx.fill();
+          ctx.translate(mW / 2, mH / 2);
+          ctx.scale(1, flap);
+          ctx.translate(-mW / 2, -mH / 2);
+          if (flash) {
+            ctx.globalAlpha = 0.6;
           }
-
-          // Talons
-          ctx.strokeStyle = "#555";
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.moveTo(hW * 0.35, hH * 0.85);
-          ctx.lineTo(hW * 0.3, hH + 5);
-          ctx.moveTo(hW * 0.55, hH * 0.85);
-          ctx.lineTo(hW * 0.5, hH + 5);
-          ctx.stroke();
+          if (mountImg.complete && mountImg.naturalWidth > 0) {
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(mountImg, 0, 0, mW, mH);
+          }
+          ctx.restore();
 
           // Character riding on top
           const charId = profile.character?.id || "harry";
@@ -1484,179 +1427,34 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           }
           const charImg = (window as any)[imgKey] as HTMLImageElement;
           if (charImg.complete && charImg.naturalWidth > 0) {
-            const avatarSize = 20;
+            const avatarSize = 22;
             ctx.save();
             ctx.beginPath();
-            ctx.arc(hW * 0.45, hH * 0.1, avatarSize / 2, 0, Math.PI * 2);
+            ctx.arc(mW * 0.48, mH * 0.22, avatarSize / 2, 0, Math.PI * 2);
             ctx.clip();
-            ctx.drawImage(charImg, hW * 0.45 - avatarSize / 2, hH * 0.1 - avatarSize / 2, avatarSize, avatarSize);
+            ctx.drawImage(charImg, mW * 0.48 - avatarSize / 2, mH * 0.22 - avatarSize / 2, avatarSize, avatarSize);
             ctx.restore();
           }
 
           ctx.restore();
 
-          // Wind trail particles
+          // Trail particles
           if (frameCount % 2 === 0) {
             particles.push({
-              x: cx - 5, y: cy + hH * 0.5 + bobY,
+              x: cx - 5, y: cy + mH * 0.5 + bobY,
               vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1,
-              life: 12, color: "rgba(200,220,255,0.4)",
+              life: isHippogriffFlight ? 12 : 18,
+              color: isHippogriffFlight ? "rgba(200,220,255,0.4)" : "rgba(80,80,120,0.35)",
             });
           }
-          // Feather particles occasionally
-          if (frameCount % 20 === 0) {
+          if (isHippogriffFlight && frameCount % 20 === 0) {
             particles.push({
-              x: cx + hW * 0.3, y: cy + hH * 0.3 + bobY,
+              x: cx + mW * 0.3, y: cy + mH * 0.3 + bobY,
               vx: -1 - Math.random(), vy: 0.5 + Math.random(),
               life: 30, color: "rgba(160,137,108,0.6)",
             });
           }
-        } else if (isThestralFlight) {
-          // Draw a Thestral — skeletal black winged horse
-          const tW = 60, tH = 36;
-          const bobY = Math.sin(frameCount * 0.09) * 3;
-          const flash = carInvincible > 0 && frameCount % 4 < 2;
-          const wingAngle = Math.sin(frameCount * 0.18) * 0.45;
-          ctx.save();
-          ctx.translate(cx, cy + bobY);
-
-          // Skeletal leathery wings (bat-like, with finger-bones)
-          const drawWing = (side: number, angle: number) => {
-            ctx.save();
-            ctx.translate(tW * 0.4, tH * 0.35);
-            ctx.rotate(side * (angle + 0.25));
-            // membrane
-            ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "rgba(20,20,30,0.92)";
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(side * 18, -22);
-            ctx.lineTo(side * 42, -28);
-            ctx.lineTo(side * 50, -10);
-            ctx.lineTo(side * 38, -2);
-            ctx.lineTo(side * 28, -8);
-            ctx.lineTo(side * 18, 0);
-            ctx.lineTo(side * 12, 6);
-            ctx.closePath();
-            ctx.fill();
-            // bone struts
-            ctx.strokeStyle = flash ? "#fff" : "#3a3a4a";
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.moveTo(0, 0); ctx.lineTo(side * 50, -10);
-            ctx.moveTo(0, 0); ctx.lineTo(side * 42, -28);
-            ctx.moveTo(0, 0); ctx.lineTo(side * 28, -8);
-            ctx.stroke();
-            ctx.restore();
-          };
-          drawWing(-1, wingAngle);
-          drawWing(1, wingAngle);
-
-          // Bony body (gaunt, ribs visible)
-          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#0a0a14";
-          ctx.beginPath();
-          ctx.ellipse(tW * 0.45, tH * 0.6, tW * 0.34, tH * 0.32, -0.05, 0, Math.PI * 2);
-          ctx.fill();
-          // Ribs
-          ctx.strokeStyle = "rgba(80,80,95,0.7)";
-          ctx.lineWidth = 1;
-          for (let r = 0; r < 4; r++) {
-            ctx.beginPath();
-            ctx.arc(tW * 0.4 + r * 5, tH * 0.6, 4, Math.PI * 0.2, Math.PI * 0.9);
-            ctx.stroke();
-          }
-
-          // Long thin neck
-          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#0a0a14";
-          ctx.beginPath();
-          ctx.moveTo(tW * 0.7, tH * 0.5);
-          ctx.lineTo(tW * 0.78, tH * 0.15);
-          ctx.lineTo(tW * 0.86, tH * 0.18);
-          ctx.lineTo(tW * 0.78, tH * 0.55);
-          ctx.closePath();
-          ctx.fill();
-
-          // Skeletal head (long like a dragon-horse)
-          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#12121e";
-          ctx.beginPath();
-          ctx.ellipse(tW * 0.92, tH * 0.18, 10, 5, 0.1, 0, Math.PI * 2);
-          ctx.fill();
-          // Snout
-          ctx.beginPath();
-          ctx.moveTo(tW * 0.98, tH * 0.16);
-          ctx.lineTo(tW + 8, tH * 0.2);
-          ctx.lineTo(tW * 0.98, tH * 0.24);
-          ctx.closePath();
-          ctx.fill();
-
-          // Glowing white eye
-          ctx.fillStyle = flash ? "#fff" : "rgba(220,220,255,0.95)";
-          ctx.beginPath();
-          ctx.arc(tW * 0.92, tH * 0.16, 2, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = "#fff";
-          ctx.beginPath();
-          ctx.arc(tW * 0.92, tH * 0.16, 0.9, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Spiky mane along neck
-          ctx.strokeStyle = flash ? "#fff" : "#1a1a25";
-          ctx.lineWidth = 1.2;
-          for (let m = 0; m < 5; m++) {
-            const mx = tW * 0.72 + m * 2;
-            const my = tH * 0.45 - m * 6;
-            ctx.beginPath();
-            ctx.moveTo(mx, my);
-            ctx.lineTo(mx - 3, my - 5);
-            ctx.stroke();
-          }
-
-          // Skeletal tail (long, thin, whip-like)
-          ctx.strokeStyle = flash ? "#fff" : "#0a0a14";
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(tW * 0.1, tH * 0.55);
-          ctx.quadraticCurveTo(-15, tH * 0.4 + Math.sin(frameCount * 0.1) * 4, -25, tH * 0.7);
-          ctx.stroke();
-
-          // Spindly legs
-          ctx.strokeStyle = flash ? "#fff" : "#0a0a14";
-          ctx.lineWidth = 1.5;
-          ctx.beginPath();
-          ctx.moveTo(tW * 0.35, tH * 0.85); ctx.lineTo(tW * 0.3, tH + 6);
-          ctx.moveTo(tW * 0.55, tH * 0.85); ctx.lineTo(tW * 0.5, tH + 6);
-          ctx.stroke();
-
-          // Character riding on top (between wings)
-          const charId = profile.character?.id || "harry";
-          const imgKey = `__charImg_${charId}`;
-          if (!(window as any)[imgKey]) {
-            const img = new Image();
-            img.src = CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
-            (window as any)[imgKey] = img;
-          }
-          const charImg = (window as any)[imgKey] as HTMLImageElement;
-          if (charImg.complete && charImg.naturalWidth > 0) {
-            const avatarSize = 20;
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(tW * 0.45, tH * 0.15, avatarSize / 2, 0, Math.PI * 2);
-            ctx.clip();
-            ctx.drawImage(charImg, tW * 0.45 - avatarSize / 2, tH * 0.15 - avatarSize / 2, avatarSize, avatarSize);
-            ctx.restore();
-          }
-
-          ctx.restore();
-
-          // Misty trail
-          if (frameCount % 2 === 0) {
-            particles.push({
-              x: cx - 5, y: cy + tH * 0.5 + bobY,
-              vx: -1.5 - Math.random() * 2, vy: (Math.random() - 0.5) * 1,
-              life: 18, color: "rgba(80,80,120,0.35)",
-            });
-          }
         } else {
-          const carW = 50, carH = 28;
           ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
           ctx.beginPath();
           ctx.moveTo(cx, cy + carH * 0.3);
