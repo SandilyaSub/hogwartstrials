@@ -1734,40 +1734,59 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           }
         }
 
-        // ─── Equipped accessories ───
+        // ─── Equipped accessories (rendered as images) ───
         const acc = profile.activeAccessories || [];
         if (acc.length > 0) {
           ctx.save();
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
           acc.forEach(id => {
             const item = SHOP_ITEMS.find(s => s.id === id);
-            if (!item?.accessoryEmoji) return;
+            if (!item) return;
             const slot = item.accessorySlot;
+            const accSrc = ACCESSORY_IMAGES[id];
+            if (!accSrc) return;
+
+            // Cache image
+            const accKey = `__accImg_${id}`;
+            if (!(window as any)[accKey]) {
+              const img = new Image();
+              img.src = accSrc;
+              (window as any)[accKey] = img;
+            }
+            const accImg = (window as any)[accKey] as HTMLImageElement;
+            const ready = accImg.complete && accImg.naturalWidth > 0;
+
+            const centerX = cx + PLAYER_W / 2;
+
             if (slot === "hat") {
-              ctx.font = "14px serif";
-              ctx.fillText(item.accessoryEmoji, cx + PLAYER_W / 2, cy - 4);
+              const w = PLAYER_W * 1.5;
+              const h = w;
+              if (ready) ctx.drawImage(accImg, centerX - w / 2, cy - h * 0.7, w, h);
             } else if (slot === "glasses") {
-              ctx.font = "10px serif";
-              ctx.fillText(item.accessoryEmoji, cx + PLAYER_W / 2, cy + PLAYER_H * 0.35);
+              const w = PLAYER_W * 0.95;
+              const h = w * 0.55;
+              if (ready) ctx.drawImage(accImg, centerX - w / 2, cy + PLAYER_H * 0.18, w, h);
             } else if (slot === "scarf") {
-              ctx.font = "12px serif";
-              ctx.fillText(item.accessoryEmoji, cx + PLAYER_W / 2, cy + PLAYER_H * 0.7);
+              const w = PLAYER_W * 1.2;
+              const h = w * 0.9;
+              if (ready) ctx.drawImage(accImg, centerX - w / 2, cy + PLAYER_H * 0.45, w, h);
             } else if (slot === "aura") {
-              ctx.save();
+              // Aura: draw image scaled larger than player, behind/around (additive blend, pulsing)
               const auraColor = id === "acc_aura_fire" ? "rgba(255,90,30,0.6)"
                 : id === "acc_aura_patronus" ? "rgba(170,210,255,0.7)"
                 : "rgba(80,200,90,0.6)";
-              ctx.globalAlpha = 0.5 + Math.sin(frameCount * 0.12) * 0.3;
-              ctx.strokeStyle = auraColor;
-              ctx.lineWidth = 2;
-              const r = (Math.max(PLAYER_W, PLAYER_H) + 8) / 2 + Math.sin(frameCount * 0.15) * 2;
-              ctx.beginPath();
-              ctx.arc(cx + PLAYER_W / 2, cy + PLAYER_H / 2, r, 0, Math.PI * 2);
-              ctx.stroke();
+              ctx.save();
+              ctx.globalCompositeOperation = "lighter";
+              ctx.globalAlpha = 0.55 + Math.sin(frameCount * 0.12) * 0.25;
+              const aSize = Math.max(PLAYER_W, PLAYER_H) * 2.4 + Math.sin(frameCount * 0.15) * 4;
+              if (ready) {
+                ctx.drawImage(accImg, centerX - aSize / 2, cy + PLAYER_H / 2 - aSize / 2, aSize, aSize);
+              }
+              ctx.restore();
+
+              // Trailing aura particle
               if (frameCount % 4 === 0) {
                 particles.push({
-                  x: cx + PLAYER_W / 2 + (Math.random() - 0.5) * PLAYER_W,
+                  x: centerX + (Math.random() - 0.5) * PLAYER_W,
                   y: cy + PLAYER_H / 2 + (Math.random() - 0.5) * PLAYER_H,
                   vx: (Math.random() - 0.5) * 1.2,
                   vy: -0.5 - Math.random() * 0.8,
@@ -1775,7 +1794,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
                   color: auraColor,
                 });
               }
-              ctx.restore();
             }
           });
           ctx.restore();
