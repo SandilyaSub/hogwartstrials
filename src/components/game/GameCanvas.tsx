@@ -1739,9 +1739,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           const charImg = (window as any)[imgKey] as HTMLImageElement;
           if (charImg.complete && charImg.naturalWidth > 0) {
             const avatarSize = isDragonFlight ? 26 : 22;
-            // Position rider on the dragon's back (a touch lower & more centered)
-            const riderX = isDragonFlight ? mW * 0.42 : mW * 0.48;
-            const riderY = isDragonFlight ? mH * 0.30 : mH * 0.22;
+            // Position rider — centered on broom handle, slightly back on flying mounts.
+            const riderX = isDragonFlight ? mW * 0.42 : isBroomFlight ? mW * 0.55 : mW * 0.48;
+            const riderY = isDragonFlight ? mH * 0.30 : isBroomFlight ? mH * 0.10 : mH * 0.22;
             ctx.save();
             ctx.beginPath();
             ctx.arc(riderX, riderY, avatarSize / 2, 0, Math.PI * 2);
