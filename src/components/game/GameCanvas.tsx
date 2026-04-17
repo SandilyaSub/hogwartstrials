@@ -221,7 +221,11 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
     const houseBoosts = profile.house?.boosts || { speed: 0, jump: 0, flying: 0 };
     const petEffect = profile.pet?.effect || { type: "", value: 0 };
-    const upgrades = profile.purchasedUpgrades || {};
+    const owned = profile.purchasedUpgrades || {};
+    const activeMap = profile.activeUpgrades || {};
+    // An upgrade is in effect only if it's owned AND not explicitly disabled by the player.
+    // Missing key in activeMap defaults to ON (back-compat for older profiles).
+    const isOn = (id: string) => !!owned[id] && activeMap[id] !== false;
 
     // Shop upgrade boosts
     let shopJumpBoost = 0;
@@ -234,17 +238,17 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     let shopHasTimeTurner = false;
     let shopHasFloat = false;
 
-    if (upgrades["jump_boost_1"]) shopJumpBoost += 1;
-    if (upgrades["jump_boost_2"]) shopJumpBoost += 2;
-    if (upgrades["speed_boost_1"]) shopSpeedBoost += 1;
-    if (upgrades["speed_boost_2"]) shopSpeedBoost += 2;
-    if (upgrades["double_coins"]) shopCoinMultiplier = 2;
-    if (upgrades["magnet"]) shopHasMagnet = true;
-    if (upgrades["shield"]) shopHasShield = true;
-    if (upgrades["super_jump"]) shopHasSuperJump = true;
-    if (upgrades["invisibility"]) shopHasInvisibility = true;
-    if (upgrades["time_turner"]) shopHasTimeTurner = true;
-    if (upgrades["nimbus"]) shopHasFloat = true;
+    if (isOn("jump_boost_1")) shopJumpBoost += 1;
+    if (isOn("jump_boost_2")) shopJumpBoost += 2;
+    if (isOn("speed_boost_1")) shopSpeedBoost += 1;
+    if (isOn("speed_boost_2")) shopSpeedBoost += 2;
+    if (isOn("double_coins")) shopCoinMultiplier = 2;
+    if (isOn("magnet")) shopHasMagnet = true;
+    if (isOn("shield")) shopHasShield = true;
+    if (isOn("super_jump")) shopHasSuperJump = true;
+    if (isOn("invisibility")) shopHasInvisibility = true;
+    if (isOn("time_turner")) shopHasTimeTurner = true;
+    if (isOn("nimbus")) shopHasFloat = true;
 
     // Super jump multiplies jump power by 1.5
     const superJumpMult = shopHasSuperJump ? 1.5 : 1;
