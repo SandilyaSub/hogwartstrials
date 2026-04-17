@@ -29,6 +29,17 @@ import scarfRedImg from "@/assets/accessories/scarf_red.png";
 import auraFireImg from "@/assets/accessories/aura_fire.png";
 import auraPatronusImg from "@/assets/accessories/aura_patronus.png";
 import auraDarkImg from "@/assets/accessories/aura_dark.png";
+import scarfBlueImg from "@/assets/accessories/scarf_blue.png";
+import scarfGreenImg from "@/assets/accessories/scarf_green.png";
+import scarfYellowImg from "@/assets/accessories/scarf_yellow.png";
+import topHatImg from "@/assets/accessories/top_hat.png";
+import partyHatImg from "@/assets/accessories/party_hat.png";
+import haloImg from "@/assets/accessories/halo.png";
+import hornsImg from "@/assets/accessories/horns.png";
+import auraRainbowImg from "@/assets/accessories/aura_rainbow.png";
+import auraLightningImg from "@/assets/accessories/aura_lightning.png";
+import auraIceImg from "@/assets/accessories/aura_ice.png";
+import monocleImg from "@/assets/accessories/monocle.png";
 
 export const ACCESSORY_IMAGES: Record<string, string> = {
   acc_sorting_hat: sortingHatImg,
@@ -40,6 +51,17 @@ export const ACCESSORY_IMAGES: Record<string, string> = {
   acc_aura_fire: auraFireImg,
   acc_aura_patronus: auraPatronusImg,
   acc_aura_dark: auraDarkImg,
+  acc_scarf_blue: scarfBlueImg,
+  acc_scarf_green: scarfGreenImg,
+  acc_scarf_yellow: scarfYellowImg,
+  acc_top_hat: topHatImg,
+  acc_party_hat: partyHatImg,
+  acc_halo: haloImg,
+  acc_horns: hornsImg,
+  acc_aura_rainbow: auraRainbowImg,
+  acc_aura_lightning: auraLightningImg,
+  acc_aura_ice: auraIceImg,
+  acc_monocle: monocleImg,
 };
 
 export interface ShopItem {
