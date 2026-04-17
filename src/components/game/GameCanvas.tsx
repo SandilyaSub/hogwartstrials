@@ -587,6 +587,38 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
+      // Shop coin collection (with Accio Coins magnet pull)
+      const COIN_MAGNET_RANGE = 140;
+      const COIN_MAGNET_PULL = 0.18;
+      coins.forEach(coin => {
+        if (coin.collected) return;
+        const cx = px + PLAYER_W / 2;
+        const cy = py + PLAYER_H / 2;
+        const dx = cx - coin.x;
+        const dy = cy - coin.y;
+
+        if (shopHasMagnet) {
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < COIN_MAGNET_RANGE && dist > 0) {
+            coin.x += (dx / dist) * Math.max(2, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
+            coin.y += (dy / dist) * Math.max(2, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
+          }
+        }
+
+        if (Math.abs(cx - coin.x) < 20 && Math.abs(cy - coin.y) < 20) {
+          coin.collected = true;
+          collectedCoins += coin.value;
+          collectedCoinsRef.current = collectedCoins;
+          for (let i = 0; i < 6; i++) {
+            particles.push({
+              x: coin.x, y: coin.y,
+              vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4,
+              life: 22, color: "#ffd24a",
+            });
+          }
+        }
+      });
+
       // Fall death (into water for boat level, off-screen otherwise) - skip for flying car
       if (!isFlyingCar) {
         const deathY = isBoatLevel ? H - 45 : H + 100;
