@@ -895,6 +895,43 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
 
+        // Painted world background (parallax, slow scroll)
+        const bgSrc = WORLD_BACKGROUNDS[worldId];
+        if (bgSrc) {
+          const bgKey = `__worldBg_${worldId}`;
+          if (!(window as any)[bgKey]) {
+            const bImg = new Image();
+            bImg.src = bgSrc;
+            (window as any)[bgKey] = bImg;
+          }
+          const bImg = (window as any)[bgKey] as HTMLImageElement;
+          if (bImg.complete && bImg.naturalWidth > 0) {
+            // Cover-fit then tile horizontally with slow parallax
+            const scale = H / bImg.naturalHeight;
+            const drawW = bImg.naturalWidth * scale;
+            const parallax = 0.15;
+            let offset = -((cameraX * parallax) % drawW);
+            if (offset > 0) offset -= drawW;
+            ctx.save();
+            ctx.globalAlpha = 0.85;
+            for (let x = offset; x < W; x += drawW) {
+              ctx.drawImage(bImg, x, 0, drawW, H);
+            }
+            // Subtle dark vignette/tint to keep gameplay readable
+            const tint = ctx.createLinearGradient(0, 0, 0, H);
+            tint.addColorStop(0, "rgba(0,0,0,0.15)");
+            tint.addColorStop(0.6, "rgba(0,0,0,0.05)");
+            tint.addColorStop(1, "rgba(0,0,0,0.55)");
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = tint;
+            ctx.fillRect(0, 0, W, H);
+            ctx.restore();
+          }
+        }
+
+        // Parallax background scenery based on world (silhouettes layered over painting)
+        if (worldId === 1) {
+
         // Parallax background scenery based on world
         if (worldId === 1) {
           // Hogwarts silhouette
