@@ -446,11 +446,15 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       }
 
       // Enemy collision
+      if (invisibilityFrames > 0) invisibilityFrames--;
       for (const e of enemies) {
         if (px + PLAYER_W > e.x && px < e.x + e.w && py + PLAYER_H > e.y && py < e.y + e.h) {
           if (vy > 0 && py + PLAYER_H - e.y < 10) {
             vy = jumpPower * 0.7;
             e.y = -100;
+          } else if (invisibilityFrames > 0) {
+            // Invisibility cloak active — enemies can't hurt you
+            continue;
           } else {
             if (hasRevive) { hasRevive = false; vy = jumpPower; }
             else { handleDeath("enemy"); return; }
