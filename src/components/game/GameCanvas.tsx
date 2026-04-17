@@ -1507,8 +1507,151 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
               life: 30, color: "rgba(160,137,108,0.6)",
             });
           }
+        } else if (isThestralFlight) {
+          // Draw a Thestral — skeletal black winged horse
+          const tW = 60, tH = 36;
+          const bobY = Math.sin(frameCount * 0.09) * 3;
+          const flash = carInvincible > 0 && frameCount % 4 < 2;
+          const wingAngle = Math.sin(frameCount * 0.18) * 0.45;
+          ctx.save();
+          ctx.translate(cx, cy + bobY);
+
+          // Skeletal leathery wings (bat-like, with finger-bones)
+          const drawWing = (side: number, angle: number) => {
+            ctx.save();
+            ctx.translate(tW * 0.4, tH * 0.35);
+            ctx.rotate(side * (angle + 0.25));
+            // membrane
+            ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "rgba(20,20,30,0.92)";
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(side * 18, -22);
+            ctx.lineTo(side * 42, -28);
+            ctx.lineTo(side * 50, -10);
+            ctx.lineTo(side * 38, -2);
+            ctx.lineTo(side * 28, -8);
+            ctx.lineTo(side * 18, 0);
+            ctx.lineTo(side * 12, 6);
+            ctx.closePath();
+            ctx.fill();
+            // bone struts
+            ctx.strokeStyle = flash ? "#fff" : "#3a3a4a";
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(0, 0); ctx.lineTo(side * 50, -10);
+            ctx.moveTo(0, 0); ctx.lineTo(side * 42, -28);
+            ctx.moveTo(0, 0); ctx.lineTo(side * 28, -8);
+            ctx.stroke();
+            ctx.restore();
+          };
+          drawWing(-1, wingAngle);
+          drawWing(1, wingAngle);
+
+          // Bony body (gaunt, ribs visible)
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#0a0a14";
+          ctx.beginPath();
+          ctx.ellipse(tW * 0.45, tH * 0.6, tW * 0.34, tH * 0.32, -0.05, 0, Math.PI * 2);
+          ctx.fill();
+          // Ribs
+          ctx.strokeStyle = "rgba(80,80,95,0.7)";
+          ctx.lineWidth = 1;
+          for (let r = 0; r < 4; r++) {
+            ctx.beginPath();
+            ctx.arc(tW * 0.4 + r * 5, tH * 0.6, 4, Math.PI * 0.2, Math.PI * 0.9);
+            ctx.stroke();
+          }
+
+          // Long thin neck
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#0a0a14";
+          ctx.beginPath();
+          ctx.moveTo(tW * 0.7, tH * 0.5);
+          ctx.lineTo(tW * 0.78, tH * 0.15);
+          ctx.lineTo(tW * 0.86, tH * 0.18);
+          ctx.lineTo(tW * 0.78, tH * 0.55);
+          ctx.closePath();
+          ctx.fill();
+
+          // Skeletal head (long like a dragon-horse)
+          ctx.fillStyle = flash ? "rgba(255,255,255,0.5)" : "#12121e";
+          ctx.beginPath();
+          ctx.ellipse(tW * 0.92, tH * 0.18, 10, 5, 0.1, 0, Math.PI * 2);
+          ctx.fill();
+          // Snout
+          ctx.beginPath();
+          ctx.moveTo(tW * 0.98, tH * 0.16);
+          ctx.lineTo(tW + 8, tH * 0.2);
+          ctx.lineTo(tW * 0.98, tH * 0.24);
+          ctx.closePath();
+          ctx.fill();
+
+          // Glowing white eye
+          ctx.fillStyle = flash ? "#fff" : "rgba(220,220,255,0.95)";
+          ctx.beginPath();
+          ctx.arc(tW * 0.92, tH * 0.16, 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#fff";
+          ctx.beginPath();
+          ctx.arc(tW * 0.92, tH * 0.16, 0.9, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Spiky mane along neck
+          ctx.strokeStyle = flash ? "#fff" : "#1a1a25";
+          ctx.lineWidth = 1.2;
+          for (let m = 0; m < 5; m++) {
+            const mx = tW * 0.72 + m * 2;
+            const my = tH * 0.45 - m * 6;
+            ctx.beginPath();
+            ctx.moveTo(mx, my);
+            ctx.lineTo(mx - 3, my - 5);
+            ctx.stroke();
+          }
+
+          // Skeletal tail (long, thin, whip-like)
+          ctx.strokeStyle = flash ? "#fff" : "#0a0a14";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(tW * 0.1, tH * 0.55);
+          ctx.quadraticCurveTo(-15, tH * 0.4 + Math.sin(frameCount * 0.1) * 4, -25, tH * 0.7);
+          ctx.stroke();
+
+          // Spindly legs
+          ctx.strokeStyle = flash ? "#fff" : "#0a0a14";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(tW * 0.35, tH * 0.85); ctx.lineTo(tW * 0.3, tH + 6);
+          ctx.moveTo(tW * 0.55, tH * 0.85); ctx.lineTo(tW * 0.5, tH + 6);
+          ctx.stroke();
+
+          // Character riding on top (between wings)
+          const charId = profile.character?.id || "harry";
+          const imgKey = `__charImg_${charId}`;
+          if (!(window as any)[imgKey]) {
+            const img = new Image();
+            img.src = CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
+            (window as any)[imgKey] = img;
+          }
+          const charImg = (window as any)[imgKey] as HTMLImageElement;
+          if (charImg.complete && charImg.naturalWidth > 0) {
+            const avatarSize = 20;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(tW * 0.45, tH * 0.15, avatarSize / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(charImg, tW * 0.45 - avatarSize / 2, tH * 0.15 - avatarSize / 2, avatarSize, avatarSize);
+            ctx.restore();
+          }
+
+          ctx.restore();
+
+          // Misty trail
+          if (frameCount % 2 === 0) {
+            particles.push({
+              x: cx - 5, y: cy + tH * 0.5 + bobY,
+              vx: -1.5 - Math.random() * 2, vy: (Math.random() - 0.5) * 1,
+              life: 18, color: "rgba(80,80,120,0.35)",
+            });
+          }
         } else {
-          // Draw flying car (original)
           const carW = 50, carH = 28;
           ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
           ctx.beginPath();
