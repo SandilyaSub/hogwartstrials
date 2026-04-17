@@ -239,7 +239,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const isCheckered = levelData.checkered || false;
     const isBoatLevel = levelData.boatLevel || false;
     const isHippogriffFlight = levelData.hippogriffFlight || false;
-    const isFlyingCar = levelData.flyingCar || isHippogriffFlight;
+    const isThestralFlight = levelData.thestralFlight || false;
+    const isFlyingCar = levelData.flyingCar || isHippogriffFlight || isThestralFlight;
     const isBossArena = levelData.bossArena || false;
     const bossData = levelData.boss;
 
