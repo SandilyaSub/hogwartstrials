@@ -81,7 +81,7 @@ interface GameCanvasProps {
   profile: PlayerProfile;
   worldId: number;
   levelIdx: number;
-  onComplete: () => void;
+  onComplete: (bonusCoins?: number) => void;
   onDeath: (reason: DeathReason) => void;
   onBack: () => void;
 }
