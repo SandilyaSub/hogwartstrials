@@ -240,27 +240,41 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
     if (isOn("jump_boost_1")) shopJumpBoost += 1;
     if (isOn("jump_boost_2")) shopJumpBoost += 2;
+    if (isOn("jump_boost_3")) shopJumpBoost += 3;
     if (isOn("speed_boost_1")) shopSpeedBoost += 1;
     if (isOn("speed_boost_2")) shopSpeedBoost += 2;
-    if (isOn("double_coins")) shopCoinMultiplier = 2;
+    if (isOn("speed_boost_3")) shopSpeedBoost += 3;
+    if (isOn("triple_coins")) shopCoinMultiplier = 3;
+    else if (isOn("double_coins")) shopCoinMultiplier = 2;
     if (isOn("magnet")) shopHasMagnet = true;
-    if (isOn("shield")) shopHasShield = true;
-    if (isOn("super_jump")) shopHasSuperJump = true;
-    if (isOn("invisibility")) shopHasInvisibility = true;
+    if (isOn("shield") || isOn("elder_ward")) shopHasShield = true;
+    if (isOn("super_jump") || isOn("mega_jump")) shopHasSuperJump = true;
+    if (isOn("invisibility") || isOn("polyjuice")) shopHasInvisibility = true;
     if (isOn("time_turner")) shopHasTimeTurner = true;
-    if (isOn("nimbus")) shopHasFloat = true;
+    if (isOn("nimbus") || isOn("firebolt")) shopHasFloat = true;
 
-    // Super jump multiplies jump power by 1.5
-    const superJumpMult = shopHasSuperJump ? 1.5 : 1;
+    // Tier multipliers for upgraded variants
+    const elderWardCharges = isOn("elder_ward") ? 2 : (isOn("shield") ? 1 : 0);
+    const megaJumpMult = isOn("mega_jump") ? 3 : (isOn("super_jump") ? 1.5 : 1);
+    const polyjuiceFrames = isOn("polyjuice") ? 1200 : (isOn("invisibility") ? 600 : 0);
+    const fireboltFloat = isOn("firebolt");
+    const phoenixRevive = isOn("second_wind");
+
+    // Super jump multiplies jump power
+    const superJumpMult = megaJumpMult;
     const jumpPower = (BASE_JUMP - houseBoosts.jump * 1.5 - (petEffect.type === "jump" ? petEffect.value : 0) - shopJumpBoost * 1.5) * superJumpMult;
     const speed = BASE_SPEED + houseBoosts.speed * 0.5 + (petEffect.type === "speed" ? petEffect.value * 0.5 : 0) + shopSpeedBoost * 0.5;
 
-    // Invisibility: enemies ignore the player for the first 10s of the level (600 frames @ 60fps)
-    let invisibilityFrames = shopHasInvisibility ? 600 : 0;
+    // Invisibility duration (longer with polyjuice)
+    let invisibilityFrames = polyjuiceFrames;
     // Nimbus float: after a jump, briefly halve gravity for a floaty feel
     let floatFrames = 0;
     // Time-Turner: rewind to start once if you fall to your death
     let timeTurnerCharges = shopHasTimeTurner ? 1 : 0;
+    // Phoenix Tears: auto-revive once per level
+    let phoenixCharges = phoenixRevive ? 1 : 0;
+    // Multi-hit shield charges (elder ward = 2)
+    let shieldCharges = elderWardCharges;
 
     const levelData = generateLevel(worldId, levelIdx, 3000, H);
     const { platforms, enemies, startX, startY } = levelData;

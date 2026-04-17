@@ -85,6 +85,26 @@ export const SHOP_ITEMS: ShopItem[] = [
     id: "magnet", name: "Accio Coins", description: "Strong magnetic pull — coins fly fast from far away",
     emoji: "🧲", cost: 1000, type: "upgrade", stat: "magnet", value: 1,
   },
+  {
+    id: "jump_boost_3", name: "Anti-Gravity Charm", description: "+3 Jump Height (top tier)",
+    emoji: "🌙", cost: 1800, type: "upgrade", stat: "jump", value: 3,
+  },
+  {
+    id: "speed_boost_3", name: "Tempus Acceleratio", description: "+3 Speed (top tier)",
+    emoji: "💨", cost: 1800, type: "upgrade", stat: "speed", value: 3,
+  },
+  {
+    id: "triple_coins", name: "Gringotts Vault", description: "3× coins per level (replaces 2×)",
+    emoji: "💰", cost: 3000, type: "upgrade", stat: "coinMultiplier", value: 3,
+  },
+  {
+    id: "lucky_charm", name: "Leprechaun's Luck", description: "+25% chance for bonus coins on every collect",
+    emoji: "🍀", cost: 1400, type: "upgrade", stat: "luck", value: 1,
+  },
+  {
+    id: "second_wind", name: "Phoenix Tears", description: "Auto-revive once per level at full health",
+    emoji: "🔥", cost: 2200, type: "upgrade", stat: "revive", value: 1,
+  },
 
   // ─── Consumables ───
   {
@@ -110,6 +130,26 @@ export const SHOP_ITEMS: ShopItem[] = [
   {
     id: "nimbus", name: "Nimbus 2000", description: "Float much longer after jumping — glide across gaps",
     emoji: "🧹", cost: 875, type: "consumable", stat: "float", value: 1,
+  },
+  {
+    id: "firebolt", name: "Firebolt", description: "Even better float + extra mid-air boost",
+    emoji: "🧹", cost: 1500, type: "consumable", stat: "float", value: 2,
+  },
+  {
+    id: "polyjuice", name: "Polyjuice Potion", description: "Enemies ignore you for 20 seconds",
+    emoji: "🧪", cost: 1100, type: "consumable", stat: "invisibility", value: 2,
+  },
+  {
+    id: "elder_ward", name: "Elder Ward", description: "Survive TWO extra hits per level",
+    emoji: "🛡️", cost: 1200, type: "consumable", stat: "shield", value: 2,
+  },
+  {
+    id: "boost_coins", name: "Leprechaun Gold", description: "+150 coins next level on top of rewards",
+    emoji: "🪙", cost: 600, type: "consumable", stat: "bonusCoins", value: 150,
+  },
+  {
+    id: "mega_jump", name: "Bouncing Boots", description: "Triple jump height for one level",
+    emoji: "👢", cost: 900, type: "consumable", stat: "superJump", value: 2,
   },
 
   // ─── Themes ───
@@ -152,6 +192,31 @@ export const SHOP_ITEMS: ShopItem[] = [
     id: "theme_celestial", name: "Astronomy Tower", description: "Deep indigo & starlight",
     emoji: "🌌", cost: 350, type: "theme",
     themeColors: { primary: "260 60% 65%", background: "260 35% 6%", card: "260 28% 10%" },
+  },
+  {
+    id: "theme_phoenix", name: "Order of the Phoenix", description: "Fiery crimson & molten gold",
+    emoji: "🔥", cost: 400, type: "theme",
+    themeColors: { primary: "15 90% 55%", background: "10 30% 7%", card: "12 25% 11%" },
+  },
+  {
+    id: "theme_mermaid", name: "Black Lake", description: "Deep teal & merpeople green",
+    emoji: "🧜", cost: 400, type: "theme",
+    themeColors: { primary: "180 70% 50%", background: "195 40% 6%", card: "190 32% 10%" },
+  },
+  {
+    id: "theme_butterbeer", name: "Butterbeer", description: "Warm amber & cream foam",
+    emoji: "🍺", cost: 375, type: "theme",
+    themeColors: { primary: "35 85% 55%", background: "30 25% 8%", card: "32 22% 13%" },
+  },
+  {
+    id: "theme_diagon", name: "Diagon Alley", description: "Royal purple & shop-window gold",
+    emoji: "🎩", cost: 425, type: "theme",
+    themeColors: { primary: "285 65% 60%", background: "280 30% 7%", card: "282 25% 11%" },
+  },
+  {
+    id: "theme_quidditch", name: "Quidditch Pitch", description: "Bright pitch green & flag red",
+    emoji: "⚽", cost: 425, type: "theme",
+    themeColors: { primary: "100 70% 50%", background: "120 25% 7%", card: "115 22% 12%" },
   },
 
   // ─── Legendary Characters (premium variants) ───
@@ -224,6 +289,50 @@ export const SHOP_ITEMS: ShopItem[] = [
   {
     id: "acc_aura_dark", name: "Dark Mark Aura", description: "Sinister green-black smoke",
     emoji: "💚", cost: 700, type: "accessory", accessoryEmoji: "🐍", accessorySlot: "aura",
+  },
+  {
+    id: "acc_scarf_blue", name: "Ravenclaw Scarf", description: "Bronze & blue knit",
+    emoji: "🧣", cost: 175, type: "accessory", accessoryEmoji: "🧣", accessorySlot: "scarf",
+  },
+  {
+    id: "acc_scarf_green", name: "Slytherin Scarf", description: "Silver & emerald knit",
+    emoji: "🧣", cost: 175, type: "accessory", accessoryEmoji: "🧣", accessorySlot: "scarf",
+  },
+  {
+    id: "acc_scarf_yellow", name: "Hufflepuff Scarf", description: "Black & sunshine yellow",
+    emoji: "🧣", cost: 175, type: "accessory", accessoryEmoji: "🧣", accessorySlot: "scarf",
+  },
+  {
+    id: "acc_top_hat", name: "Top Hat", description: "A dapper formal hat",
+    emoji: "🎩", cost: 250, type: "accessory", accessoryEmoji: "🎩", accessorySlot: "hat",
+  },
+  {
+    id: "acc_party_hat", name: "Party Hat", description: "Time to celebrate!",
+    emoji: "🥳", cost: 200, type: "accessory", accessoryEmoji: "🥳", accessorySlot: "hat",
+  },
+  {
+    id: "acc_halo", name: "Angelic Halo", description: "A divine glowing halo",
+    emoji: "😇", cost: 800, type: "accessory", accessoryEmoji: "😇", accessorySlot: "hat",
+  },
+  {
+    id: "acc_horns", name: "Devil Horns", description: "Embrace the dark side",
+    emoji: "😈", cost: 800, type: "accessory", accessoryEmoji: "😈", accessorySlot: "hat",
+  },
+  {
+    id: "acc_aura_rainbow", name: "Rainbow Aura", description: "Shimmering colors of the wizard pride",
+    emoji: "🌈", cost: 750, type: "accessory", accessoryEmoji: "🌈", accessorySlot: "aura",
+  },
+  {
+    id: "acc_aura_lightning", name: "Lightning Aura", description: "Crackling electric energy",
+    emoji: "⚡", cost: 700, type: "accessory", accessoryEmoji: "⚡", accessorySlot: "aura",
+  },
+  {
+    id: "acc_aura_ice", name: "Frostbite Aura", description: "A chilling icy mist surrounds you",
+    emoji: "❄️", cost: 650, type: "accessory", accessoryEmoji: "❄️", accessorySlot: "aura",
+  },
+  {
+    id: "acc_monocle", name: "Wizard Monocle", description: "A scholarly accessory",
+    emoji: "🧐", cost: 200, type: "accessory", accessoryEmoji: "🧐", accessorySlot: "glasses",
   },
 
 ];

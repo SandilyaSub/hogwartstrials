@@ -177,9 +177,11 @@ export function useGameState(user: User | null) {
     }
 
     const baseCoins = (levelIdx === (world ? world.levels.length - 1 : -1) ? 50 : 20);
+    const tripleOwned = !!profile.purchasedUpgrades?.["triple_coins"];
+    const tripleActive = profile.activeUpgrades?.["triple_coins"] !== false;
     const doubleOwned = !!profile.purchasedUpgrades?.["double_coins"];
-    const doubleActive = profile.activeUpgrades?.["double_coins"] !== false; // default ON
-    const multiplier = doubleOwned && doubleActive ? 2 : 1;
+    const doubleActive = profile.activeUpgrades?.["double_coins"] !== false;
+    const multiplier = tripleOwned && tripleActive ? 3 : (doubleOwned && doubleActive ? 2 : 1);
     const earned = baseCoins * multiplier + bonusCoins * multiplier;
 
     saveProfile({
