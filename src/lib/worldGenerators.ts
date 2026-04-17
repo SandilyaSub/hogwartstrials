@@ -1685,12 +1685,12 @@ function gen_5_7_ThestralFlight(H: number): LevelData {
   platforms.push({ x: 0, y: H - 30, w: 10000, h: 30, type: "hazard", color: "transparent" });
   platforms.push({ x: 0, y: 0, w: 10000, h: 10, type: "hazard", color: "transparent" });
 
-  // Night clouds — dark, ghostly
-  for (let i = 0; i < 30; i++) {
-    const x = 500 + i * 290 + (i % 3) * 60;
-    const y = 50 + ((i * 137) % (H - 130));
-    const w = 60 + (i % 3) * 22;
-    const h = 24 + (i % 2) * 12;
+  // Night clouds — dark, ghostly (same density/spacing as hippogriff so it's traversable)
+  for (let i = 0; i < 28; i++) {
+    const x = 500 + i * 300 + (i % 3) * 70;
+    const y = 40 + ((i * 151) % (H - 120));
+    const w = 55 + (i % 3) * 20;
+    const h = 22 + (i % 2) * 10;
     platforms.push({ x, y, w, h, type: "hazard", color: "#2a2a3a", label: "☁️" });
   }
 
@@ -1705,19 +1705,20 @@ function gen_5_7_ThestralFlight(H: number): LevelData {
     });
   }
 
-  // Lightning storm hazards
+  // Lightning bolts — short flashes from clouds, NOT full-column walls
   for (let i = 0; i < 6; i++) {
     const x = 1100 + i * 1400;
-    const y = 60 + ((i * 211) % (H - 200));
-    platforms.push({ x, y, w: 30, h: H - y - 80, type: "hazard", color: "#7a7aff", label: "⚡" });
+    const y = 60 + ((i * 211) % (H - 260));
+    platforms.push({ x, y, w: 24, h: 60, type: "hazard", color: "#7a7aff", label: "⚡" });
   }
 
-  // London skyline silhouettes (Big Ben, Ministry buildings)
+  // London skyline silhouettes (Big Ben, Ministry buildings) along the bottom
+  // Kept short so the player can fly over them
   const buildings = ["🏛️", "🕰️", "🏢", "🏛️"];
   for (let i = 0; i < 8; i++) {
     const x = 1500 + i * 950;
     platforms.push({
-      x, y: H - 100, w: 60, h: 100, type: "hazard",
+      x, y: H - 80, w: 50, h: 70, type: "hazard",
       color: "#1a1a2a", label: buildings[i % buildings.length],
     });
   }
