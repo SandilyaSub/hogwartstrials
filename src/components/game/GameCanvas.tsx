@@ -1668,9 +1668,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
 
         // Draw character avatar image — use premium skin if equipped
-        const skinId = profile.activeCharacterSkin;
-        const avatarSrc = (skinId && PREMIUM_CHARACTER_IMAGES[skinId]) || CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
-        const imgKey = `__charImg_${skinId || charId}`;
+        const equippedSkinId = profile.activeCharacterSkin;
+        const avatarSrc = (equippedSkinId && PREMIUM_CHARACTER_IMAGES[equippedSkinId]) || CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
+        const imgKey = `__charImg_${equippedSkinId || charId}`;
         if (!(window as any)[imgKey]) {
           const img = new Image();
           img.src = avatarSrc;
