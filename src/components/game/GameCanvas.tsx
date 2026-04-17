@@ -790,18 +790,18 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.restore();
         }
         // Scrolling hills (parallax layers)
-        const mtnA = isHippogriffFlight ? "rgba(40,20,50,0.7)" : isThestralFlight ? "rgba(15,15,30,0.85)" : "rgba(10,30,15,0.8)";
-        const mtnB = isHippogriffFlight ? "rgba(30,15,40,0.8)" : isThestralFlight ? "rgba(8,8,20,0.95)" : "rgba(8,20,10,0.9)";
+        const mtnA = isHippogriffFlight ? "rgba(20,25,55,0.75)" : isThestralFlight ? "rgba(15,15,30,0.85)" : "rgba(10,30,15,0.8)";
+        const mtnB = isHippogriffFlight ? "rgba(12,15,38,0.9)" : isThestralFlight ? "rgba(8,8,20,0.95)" : "rgba(8,20,10,0.9)";
         drawMountains(H - 30, mtnA, 0.1, 1);
         drawMountains(H - 15, mtnB, 0.2, 3);
         // Ground silhouette with trees
-        ctx.fillStyle = isHippogriffFlight ? "#1a0a20" : isThestralFlight ? "#050510" : "#0a1a0a";
+        ctx.fillStyle = isHippogriffFlight ? "#080c1a" : isThestralFlight ? "#050510" : "#0a1a0a";
         for (let i = -1; i < W / 40 + 2; i++) {
           const gx = (i * 40 - (cameraX * 0.3) % 40);
           const gh = 20 + ((i * 37 + 13) % 30);
           ctx.fillRect(gx, H - gh, 42, gh);
         }
-        const treeColor = isHippogriffFlight ? "#150a1a" : isThestralFlight ? "#02020a" : "#0d1f0d";
+        const treeColor = isHippogriffFlight ? "#04060f" : isThestralFlight ? "#02020a" : "#0d1f0d";
         drawTreeLine(H - 20, treeColor, 0.25, 20, 7);
       } else {
         const [c1, c2] = theme.bgColors;
