@@ -1,6 +1,7 @@
 import { WORLDS, MENTOR_QUOTES } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { useState } from "react";
+import GoldCoin from "./GoldCoin";
 
 import harryImg from "@/assets/characters/harry.png";
 import hermioneImg from "@/assets/characters/hermione.png";
@@ -73,8 +74,9 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
                 <h1 className="font-display text-xl font-semibold text-primary text-glow">
                   {profile.username}
                 </h1>
-                <p className="text-sm text-muted-foreground font-body">
-                  {profile.house?.name} · {profile.pet?.emoji || "No pet"} · 🪙 {profile.coins}
+                <p className="text-sm text-muted-foreground font-body inline-flex items-center gap-1.5">
+                  <span>{profile.house?.name} · {profile.pet?.emoji || "No pet"} ·</span>
+                  <GoldCoin size={14} /> {profile.coins}
                 </p>
               </div>
             </div>

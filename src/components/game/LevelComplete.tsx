@@ -1,4 +1,5 @@
 import { WORLDS } from "@/lib/gameData";
+import GoldCoin from "./GoldCoin";
 
 interface LevelCompleteProps {
   worldId: number;
@@ -35,7 +36,7 @@ const LevelComplete = ({ worldId, levelIdx, isFinalBoss, onNextLevel, onWorldMap
           </div>
 
           <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary/12 text-primary font-display font-semibold text-sm">
-            +{isBossLevel ? 50 : 20} 🪙
+            +{isBossLevel ? 50 : 20} <GoldCoin size={16} />
           </div>
 
           <div className="flex flex-col gap-3 pt-2">
