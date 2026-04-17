@@ -1681,43 +1681,51 @@ function gen_5_7_ThestralFlight(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  // Hogwarts grounds — mounting the Thestral
-  platforms.push({ x: 0, y: H - 40, w: 160, h: 40, type: "normal", color: "#2a3a2a", label: "🦇 Mount Thestral" });
+  // Invisible floor and ceiling boundaries
+  platforms.push({ x: 0, y: H - 30, w: 10000, h: 30, type: "hazard", color: "transparent" });
+  platforms.push({ x: 0, y: 0, w: 10000, h: 10, type: "hazard", color: "transparent" });
 
-  // Takeoff over the forest
-  const treeTops = [
-    { x: 180, y: H - 80 }, { x: 320, y: H - 120 }, { x: 460, y: H - 170 },
-  ];
-  treeTops.forEach((t, i) => {
-    platforms.push({ x: t.x, y: t.y, w: 70, h: 14, type: "normal", color: "#2a4a2a", label: i === 0 ? "🌲" : "" });
-  });
+  // Night clouds — dark, ghostly
+  for (let i = 0; i < 30; i++) {
+    const x = 500 + i * 290 + (i % 3) * 60;
+    const y = 50 + ((i * 137) % (H - 130));
+    const w = 60 + (i % 3) * 22;
+    const h = 24 + (i % 2) * 12;
+    platforms.push({ x, y, w, h, type: "hazard", color: "#2a2a3a", label: "☁️" });
+  }
 
-  // High altitude clouds — English countryside
-  const clouds = [
-    { x: 600, y: H - 230, range: 60 }, { x: 800, y: H - 280, range: 50 },
-    { x: 1000, y: H - 250, range: 70 }, { x: 1200, y: H - 310, range: 55 },
-    { x: 1400, y: H - 270, range: 65 }, { x: 1600, y: H - 330, range: 50 },
-    { x: 1800, y: H - 290, range: 60 }, { x: 2000, y: H - 350, range: 55 },
-  ];
-  clouds.forEach((c, i) => {
-    const p: Platform = {
-      x: c.x, y: c.y, w: 60, h: 12, type: "moving", color: "#6a6a8a",
-      label: i % 3 === 0 ? "☁️" : "", origX: c.x, origY: c.y, moveDir: i % 2 === 0 ? 1 : -1, moveRange: c.range,
-    };
-    platforms.push(p);
-  });
+  // Other thestrals / dark birds you must weave around
+  for (let i = 0; i < 12; i++) {
+    const x = 700 + i * 650;
+    const y = 50 + ((i * 197) % (H - 130));
+    enemies.push({
+      x, y, w: 24, h: 24, type: "thestral_wild",
+      dir: -1, speed: 1.0 + (i % 3) * 0.3, range: 130,
+      origX: x, emoji: "🦇",
+    });
+  }
 
-  // Storm clouds — hazards
-  platforms.push({ x: 900, y: H - 220, w: 50, h: 8, type: "hazard", color: "#3a3a5a", label: "⚡" });
-  platforms.push({ x: 1500, y: H - 300, w: 50, h: 8, type: "hazard", color: "#3a3a5a", label: "⚡" });
+  // Lightning storm hazards
+  for (let i = 0; i < 6; i++) {
+    const x = 1100 + i * 1400;
+    const y = 60 + ((i * 211) % (H - 200));
+    platforms.push({ x, y, w: 30, h: H - y - 80, type: "hazard", color: "#7a7aff", label: "⚡" });
+  }
 
-  // Death Eaters chasing
-  enemies.push({ x: 700, y: H - 260, w: 22, h: 22, type: "deathEater", dir: 1, speed: 1.3, range: 80, origX: 700, emoji: "💀" });
-  enemies.push({ x: 1300, y: H - 300, w: 24, h: 24, type: "deathEater", dir: -1, speed: 1.5, range: 90, origX: 1300, emoji: "💀" });
-  enemies.push({ x: 1900, y: H - 340, w: 24, h: 24, type: "deathEater", dir: 1, speed: 1.6, range: 100, origX: 1900, emoji: "💀" });
+  // London skyline silhouettes (Big Ben, Ministry buildings)
+  const buildings = ["🏛️", "🕰️", "🏢", "🏛️"];
+  for (let i = 0; i < 8; i++) {
+    const x = 1500 + i * 950;
+    platforms.push({
+      x, y: H - 100, w: 60, h: 100, type: "hazard",
+      color: "#1a1a2a", label: buildings[i % buildings.length],
+    });
+  }
 
-  platforms.push({ x: 2200, y: H - 380, w: 120, h: 20, type: "finish", label: "🏛️ Ministry Arrival" });
-  return { platforms, enemies, startX: 40, startY: H - 80 };
+  // Arrival at the Ministry of Magic
+  platforms.push({ x: 9200, y: H / 2 - 30, w: 140, h: 60, type: "finish", label: "🏛️ Ministry" });
+
+  return { platforms, enemies, startX: 60, startY: H / 2, thestralFlight: true };
 }
 
 function gen_5_8_VeilChamber(H: number): LevelData {
