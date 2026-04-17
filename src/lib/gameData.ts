@@ -123,7 +123,7 @@ export const WORLDS: World[] = [
     levels: [
       { id: "4-1", name: "Portkey Field", description: "Quidditch World Cup arrival", isBoss: false, theme: "field" },
       { id: "4-2", name: "Cliff Jumps", description: "Beauxbatons & Durmstrang arrive", isBoss: false, theme: "cliffs" },
-      { id: "4-3", name: "Dragon Arena", description: "First Task — face the Horntail", isBoss: false, theme: "arena" },
+      { id: "4-3", name: "Dragon Flight", description: "First Task — ride the Horntail through the sky!", isBoss: false, theme: "arena" },
       { id: "4-4", name: "Yule Ball", description: "Dance floor between the tasks", isBoss: false, theme: "ballroom" },
       { id: "4-5", name: "Underwater Maze", description: "Second Task — into the Black Lake", isBoss: false, theme: "water" },
       { id: "4-6", name: "Merpeople Village", description: "Rescue the hostages", isBoss: false, theme: "water" },
