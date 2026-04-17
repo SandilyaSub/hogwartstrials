@@ -193,6 +193,31 @@ export const SHOP_ITEMS: ShopItem[] = [
     emoji: "🌌", cost: 350, type: "theme",
     themeColors: { primary: "260 60% 65%", background: "260 35% 6%", card: "260 28% 10%" },
   },
+  {
+    id: "theme_phoenix", name: "Order of the Phoenix", description: "Fiery crimson & molten gold",
+    emoji: "🔥", cost: 400, type: "theme",
+    themeColors: { primary: "15 90% 55%", background: "10 30% 7%", card: "12 25% 11%" },
+  },
+  {
+    id: "theme_mermaid", name: "Black Lake", description: "Deep teal & merpeople green",
+    emoji: "🧜", cost: 400, type: "theme",
+    themeColors: { primary: "180 70% 50%", background: "195 40% 6%", card: "190 32% 10%" },
+  },
+  {
+    id: "theme_butterbeer", name: "Butterbeer", description: "Warm amber & cream foam",
+    emoji: "🍺", cost: 375, type: "theme",
+    themeColors: { primary: "35 85% 55%", background: "30 25% 8%", card: "32 22% 13%" },
+  },
+  {
+    id: "theme_diagon", name: "Diagon Alley", description: "Royal purple & shop-window gold",
+    emoji: "🎩", cost: 425, type: "theme",
+    themeColors: { primary: "285 65% 60%", background: "280 30% 7%", card: "282 25% 11%" },
+  },
+  {
+    id: "theme_quidditch", name: "Quidditch Pitch", description: "Bright pitch green & flag red",
+    emoji: "⚽", cost: 425, type: "theme",
+    themeColors: { primary: "100 70% 50%", background: "120 25% 7%", card: "115 22% 12%" },
+  },
 
   // ─── Legendary Characters (premium variants) ───
   {
