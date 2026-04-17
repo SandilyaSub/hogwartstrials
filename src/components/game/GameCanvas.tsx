@@ -1708,6 +1708,73 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.fillText(profile.character?.emoji || "⚡", cx + PLAYER_W / 2, cy + PLAYER_H - 2);
         }
 
+        // ─── Premium character skin tint (overlay color around avatar) ───
+        const skinId = profile.activeCharacterSkin;
+        if (skinId) {
+          const skin = SHOP_ITEMS.find(s => s.id === skinId && s.type === "character");
+          if (skin?.characterTint) {
+            ctx.save();
+            ctx.globalAlpha = 0.45 + Math.sin(frameCount * 0.08) * 0.15;
+            ctx.strokeStyle = skin.characterTint;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx + PLAYER_W / 2, cy + PLAYER_H / 2, (Math.max(PLAYER_W, PLAYER_H) + 4) / 2, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.font = "12px serif";
+            ctx.textAlign = "center";
+            ctx.fillText(skin.emoji, cx + PLAYER_W / 2, cy - 8);
+            ctx.restore();
+          }
+        }
+
+        // ─── Equipped accessories ───
+        const acc = profile.activeAccessories || [];
+        if (acc.length > 0) {
+          ctx.save();
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          acc.forEach(id => {
+            const item = SHOP_ITEMS.find(s => s.id === id);
+            if (!item?.accessoryEmoji) return;
+            const slot = item.accessorySlot;
+            if (slot === "hat") {
+              ctx.font = "14px serif";
+              ctx.fillText(item.accessoryEmoji, cx + PLAYER_W / 2, cy - 4);
+            } else if (slot === "glasses") {
+              ctx.font = "10px serif";
+              ctx.fillText(item.accessoryEmoji, cx + PLAYER_W / 2, cy + PLAYER_H * 0.35);
+            } else if (slot === "scarf") {
+              ctx.font = "12px serif";
+              ctx.fillText(item.accessoryEmoji, cx + PLAYER_W / 2, cy + PLAYER_H * 0.7);
+            } else if (slot === "aura") {
+              ctx.save();
+              const auraColor = id === "acc_aura_fire" ? "rgba(255,90,30,0.6)"
+                : id === "acc_aura_patronus" ? "rgba(170,210,255,0.7)"
+                : "rgba(80,200,90,0.6)";
+              ctx.globalAlpha = 0.5 + Math.sin(frameCount * 0.12) * 0.3;
+              ctx.strokeStyle = auraColor;
+              ctx.lineWidth = 2;
+              const r = (Math.max(PLAYER_W, PLAYER_H) + 8) / 2 + Math.sin(frameCount * 0.15) * 2;
+              ctx.beginPath();
+              ctx.arc(cx + PLAYER_W / 2, cy + PLAYER_H / 2, r, 0, Math.PI * 2);
+              ctx.stroke();
+              if (frameCount % 4 === 0) {
+                particles.push({
+                  x: cx + PLAYER_W / 2 + (Math.random() - 0.5) * PLAYER_W,
+                  y: cy + PLAYER_H / 2 + (Math.random() - 0.5) * PLAYER_H,
+                  vx: (Math.random() - 0.5) * 1.2,
+                  vy: -0.5 - Math.random() * 0.8,
+                  life: 22,
+                  color: auraColor,
+                });
+              }
+              ctx.restore();
+            }
+          });
+          ctx.restore();
+        }
+
         ctx.restore();
       }
 
