@@ -821,7 +821,31 @@ function generateHouseTokens(platforms: Platform[]): HouseToken[] {
   return tokens;
 }
 
-// ─── Main Generator ────────────────────────────
+// Generate scattered shop coins (separate from house tokens) — these are pulled by the Accio Coins magnet
+function generateCoins(platforms: Platform[]): Coin[] {
+  const coins: Coin[] = [];
+  const eligible = platforms.filter(p =>
+    p.type === "normal" || p.type === "moving" || p.type === "ice"
+  );
+  eligible.forEach((p, i) => {
+    // Skip platforms that already host a house token (those are at i % 3 === 1)
+    if (i % 3 === 1) return;
+    if (coins.length >= 14) return;
+    // Place 1-3 coins above the platform in a small arc
+    const count = 1 + (i % 3);
+    for (let k = 0; k < count; k++) {
+      const offset = (k - (count - 1) / 2) * 22;
+      coins.push({
+        x: p.x + p.w / 2 + offset,
+        y: p.y - 28 - Math.abs(offset) * 0.4,
+        collected: false,
+        value: 1,
+      });
+    }
+  });
+  return coins;
+}
+
 
 export function generateLevel(worldId: number, levelIdx: number, canvasW: number, canvasH: number): LevelData {
   let data: LevelData;
