@@ -1327,16 +1327,54 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
               ctx.shadowBlur = 18 + Math.sin(frameCount * 0.05) * 6;
               ctx.drawImage(lmImg, lmX, lmY, lmW, lmH);
               ctx.restore();
+
+              // FINISH banner above the landmark
+              const bannerText = "⭐ FINISH ⭐";
+              ctx.save();
+              ctx.font = "bold 16px Fredoka, sans-serif";
+              ctx.textAlign = "center";
+              const textW = ctx.measureText(bannerText).width;
+              const padX = 10;
+              const bannerW = textW + padX * 2;
+              const bannerH = 24;
+              const bannerX = p.x + p.w / 2 - bannerW / 2;
+              const bannerY = lmY - bannerH - 6;
+              // Banner background
+              ctx.fillStyle = "rgba(20, 10, 40, 0.85)";
+              ctx.strokeStyle = "#ffd700";
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.roundRect(bannerX, bannerY, bannerW, bannerH, 6);
+              ctx.fill();
+              ctx.stroke();
+              // Banner text
+              ctx.fillStyle = "#ffd700";
+              ctx.shadowColor = "#ffd700";
+              ctx.shadowBlur = 10;
+              ctx.textBaseline = "middle";
+              ctx.fillText(bannerText, p.x + p.w / 2, bannerY + bannerH / 2 + 1);
+              ctx.restore();
+            } else {
+              // Fallback label if image hasn't loaded yet
+              ctx.save();
+              ctx.fillStyle = "#ffd700";
+              ctx.font = "bold 14px Fredoka, sans-serif";
+              ctx.textAlign = "center";
+              ctx.shadowColor = "#ffd700";
+              ctx.shadowBlur = 8;
+              ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 10);
+              ctx.restore();
             }
+          } else {
+            ctx.save();
+            ctx.fillStyle = "#ffd700";
+            ctx.font = "bold 14px Fredoka, sans-serif";
+            ctx.textAlign = "center";
+            ctx.shadowColor = "#ffd700";
+            ctx.shadowBlur = 8;
+            ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 10);
+            ctx.restore();
           }
-          ctx.save();
-          ctx.fillStyle = "#ffd700";
-          ctx.font = "bold 14px Fredoka, sans-serif";
-          ctx.textAlign = "center";
-          ctx.shadowColor = "#ffd700";
-          ctx.shadowBlur = 8;
-          ctx.fillText(p.label || "⭐ FINISH", p.x + p.w / 2, p.y - 10);
-          ctx.restore();
         } else if (p.label && !isBoatPlatform) {
           ctx.font = "11px serif";
           ctx.textAlign = "center";
