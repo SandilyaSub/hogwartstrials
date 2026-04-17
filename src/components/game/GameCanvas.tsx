@@ -561,14 +561,29 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (playerHitFlash > 0) playerHitFlash--;
       }
 
-      // House token collection
+      // House token collection (with magnet pull if Accio Coins is owned)
+      const MAGNET_RANGE = 140;
+      const MAGNET_PULL = 0.18;
       houseTokens.forEach(token => {
         if (token.collected) return;
-        const dx = (px + PLAYER_W / 2) - token.x;
-        const dy = (py + PLAYER_H / 2) - token.y;
-        if (Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+        const cx = px + PLAYER_W / 2;
+        const cy = py + PLAYER_H / 2;
+        const dx = cx - token.x;
+        const dy = cy - token.y;
+
+        // Magnet effect: pull tokens toward the player when within range
+        if (shopHasMagnet) {
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAGNET_RANGE && dist > 0) {
+            token.x += (dx / dist) * Math.max(2, (MAGNET_RANGE - dist) * MAGNET_PULL);
+            token.y += (dy / dist) * Math.max(2, (MAGNET_RANGE - dist) * MAGNET_PULL);
+          }
+        }
+
+        if (Math.abs(cx - token.x) < 22 && Math.abs(cy - token.y) < 22) {
           token.collected = true;
-          collectedTokenPoints += token.points;
+          // Apply double-coins multiplier per token as well
+          collectedTokenPoints += token.points * shopCoinMultiplier;
           tokenPointsRef.current = collectedTokenPoints;
           for (let i = 0; i < 8; i++) {
             particles.push({
@@ -584,8 +599,23 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       if (!isFlyingCar) {
         const deathY = isBoatLevel ? H - 45 : H + 100;
         if (py > deathY) {
-          if (hasRevive) { hasRevive = false; py = startY - 100; vy = 0; px = startX; }
-          else { handleDeath(isBoatLevel ? "drown" : "fall"); return; }
+          if (timeTurnerCharges > 0) {
+            timeTurnerCharges--;
+            px = startX; py = startY; vx = 0; vy = 0;
+            // Visual rewind sparkles
+            for (let i = 0; i < 30; i++) {
+              particles.push({
+                x: startX + (Math.random() - 0.5) * 60,
+                y: startY + (Math.random() - 0.5) * 60,
+                vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4,
+                life: 40, color: "hsl(45, 90%, 65%)",
+              });
+            }
+          } else if (hasRevive) {
+            hasRevive = false; py = startY - 100; vy = 0; px = startX;
+          } else {
+            handleDeath(isBoatLevel ? "drown" : "fall"); return;
+          }
         }
       }
 
