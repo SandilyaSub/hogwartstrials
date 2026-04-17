@@ -1318,7 +1318,49 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
-      // Draw enemies with avatar images
+      // Draw shop coins (gold) — these are pulled by Accio Coins magnet
+      coins.forEach(coin => {
+        if (coin.collected) return;
+        const cx = coin.x, cy = coin.y;
+        const bob = Math.sin(frameCount * 0.12 + cx * 0.05) * 2;
+        const spin = Math.abs(Math.sin(frameCount * 0.08 + cx * 0.02));
+        // Outer glow
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = "#ffd24a";
+        ctx.beginPath();
+        ctx.arc(cx, cy + bob, 11, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // Coin face (squashed for spin)
+        ctx.save();
+        ctx.fillStyle = "#f5b800";
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + bob, 7 * (0.3 + spin * 0.7), 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#8a5a00";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        // Inner highlight
+        if (spin > 0.4) {
+          ctx.fillStyle = "#fff5b0";
+          ctx.font = "bold 8px Fredoka, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("G", cx, cy + bob + 3);
+        }
+        ctx.restore();
+
+        // Sparkle trail
+        if (frameCount % 14 === 0) {
+          particles.push({
+            x: cx + (Math.random() - 0.5) * 8, y: cy + bob,
+            vx: (Math.random() - 0.5) * 0.8, vy: -Math.random() * 1.2,
+            life: 12, color: "#ffe680",
+          });
+        }
+      });
+
+
       enemies.forEach(e => {
         if (e.y < -50) return;
         // Subtle shadow/glow under enemy
