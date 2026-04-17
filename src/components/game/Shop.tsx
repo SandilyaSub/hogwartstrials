@@ -10,7 +10,7 @@ interface ShopProps {
 
 const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
   const purchased = profile.purchasedUpgrades || {};
-  const categories = ["upgrade", "consumable", "theme"] as const;
+  const categories = ["character", "accessory", "upgrade", "consumable", "theme"] as const;
 
   return (
     <div className="h-screen bg-background p-4 overflow-y-auto">
@@ -41,21 +41,25 @@ const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
                   const owned = purchased[item.id] === true;
                   const canAfford = profile.coins >= item.cost;
                   const isActiveTheme = item.type === "theme" && profile.activeTheme === item.id;
+                  const isActiveCharacter = item.type === "character" && profile.activeCharacterSkin === item.id;
+                  const activeAccessories = profile.activeAccessories || [];
+                  const isActiveAccessory = item.type === "accessory" && activeAccessories.includes(item.id);
+                  const toggleableOwned = owned && (item.type === "theme" || item.type === "character" || item.type === "accessory");
 
                   return (
                     <button
                       key={item.id}
                       onClick={() => {
-                        if (owned && item.type === "theme") {
+                        if (toggleableOwned) {
                           onActivate(item);
                         } else if (!owned && canAfford) {
                           onPurchase(item);
                         }
                       }}
-                      disabled={(!owned && !canAfford) || (owned && item.type !== "theme")}
+                      disabled={(!owned && !canAfford) || (owned && !toggleableOwned)}
                       className={`card-illustrated p-4 text-left transition-all duration-300 animate-pop-in ${
-                        isActiveTheme ? "!border-primary box-glow !bg-primary/8" :
-                        owned ? "!opacity-60" :
+                        isActiveTheme || isActiveCharacter || isActiveAccessory ? "!border-primary box-glow !bg-primary/8" :
+                        owned && !toggleableOwned ? "!opacity-60" :
                         canAfford ? "hover:border-primary/30 hover:scale-[1.02]" :
                         "!opacity-40 cursor-not-allowed"
                       }`}
@@ -70,7 +74,7 @@ const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
                         <div className="text-right">
                           {owned ? (
                             <span className="text-xs font-display font-semibold text-primary px-2 py-1 rounded-full bg-primary/12">
-                              {isActiveTheme ? "ACTIVE" : "OWNED"}
+                              {isActiveTheme || isActiveCharacter || isActiveAccessory ? "ACTIVE" : toggleableOwned ? "TAP" : "OWNED"}
                             </span>
                           ) : (
                             <span className={`text-sm font-display font-bold ${canAfford ? "text-primary" : "text-muted-foreground"}`}>
