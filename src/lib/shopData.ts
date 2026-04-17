@@ -131,6 +131,26 @@ export const SHOP_ITEMS: ShopItem[] = [
     id: "nimbus", name: "Nimbus 2000", description: "Float much longer after jumping — glide across gaps",
     emoji: "🧹", cost: 875, type: "consumable", stat: "float", value: 1,
   },
+  {
+    id: "firebolt", name: "Firebolt", description: "Even better float + extra mid-air boost",
+    emoji: "🧹", cost: 1500, type: "consumable", stat: "float", value: 2,
+  },
+  {
+    id: "polyjuice", name: "Polyjuice Potion", description: "Enemies ignore you for 20 seconds",
+    emoji: "🧪", cost: 1100, type: "consumable", stat: "invisibility", value: 2,
+  },
+  {
+    id: "elder_ward", name: "Elder Ward", description: "Survive TWO extra hits per level",
+    emoji: "🛡️", cost: 1200, type: "consumable", stat: "shield", value: 2,
+  },
+  {
+    id: "boost_coins", name: "Leprechaun Gold", description: "+150 coins next level on top of rewards",
+    emoji: "🪙", cost: 600, type: "consumable", stat: "bonusCoins", value: 150,
+  },
+  {
+    id: "mega_jump", name: "Bouncing Boots", description: "Triple jump height for one level",
+    emoji: "👢", cost: 900, type: "consumable", stat: "superJump", value: 2,
+  },
 
   // ─── Themes ───
   {
