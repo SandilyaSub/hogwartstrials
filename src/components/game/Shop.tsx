@@ -11,6 +11,7 @@ interface ShopProps {
 
 const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
   const purchased = profile.purchasedUpgrades || {};
+  const activeUpgrades = profile.activeUpgrades || {};
   const categories = ["character", "accessory", "upgrade", "consumable", "theme"] as const;
 
   return (
@@ -47,7 +48,21 @@ const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
                   const isActiveCharacter = item.type === "character" && profile.activeCharacterSkin === item.id;
                   const activeAccessories = profile.activeAccessories || [];
                   const isActiveAccessory = item.type === "accessory" && activeAccessories.includes(item.id);
-                  const toggleableOwned = owned && (item.type === "theme" || item.type === "character" || item.type === "accessory");
+
+                  // Upgrades & consumables can be toggled on/off (except true one-shots like Felix Felicis,
+                  // which is consumed instantly on purchase and never marked as owned).
+                  const isToggleableEffect = owned && (item.type === "upgrade" || item.type === "consumable");
+                  const isEffectActive = isToggleableEffect && activeUpgrades[item.id] !== false; // default ON
+
+                  const toggleableOwned =
+                    owned &&
+                    (item.type === "theme" ||
+                      item.type === "character" ||
+                      item.type === "accessory" ||
+                      isToggleableEffect);
+
+                  const isAnyActive =
+                    isActiveTheme || isActiveCharacter || isActiveAccessory || (isToggleableEffect && isEffectActive);
 
                   return (
                     <button
@@ -61,8 +76,9 @@ const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
                       }}
                       disabled={(!owned && !canAfford) || (owned && !toggleableOwned)}
                       className={`card-illustrated p-4 text-left transition-all duration-300 animate-pop-in ${
-                        isActiveTheme || isActiveCharacter || isActiveAccessory ? "!border-primary box-glow !bg-primary/8" :
+                        isAnyActive ? "!border-primary box-glow !bg-primary/8" :
                         owned && !toggleableOwned ? "!opacity-60" :
+                        owned && isToggleableEffect && !isEffectActive ? "!opacity-70 hover:border-primary/30" :
                         canAfford ? "hover:border-primary/30 hover:scale-[1.02]" :
                         "!opacity-40 cursor-not-allowed"
                       }`}
@@ -97,7 +113,7 @@ const Shop = ({ profile, onPurchase, onActivate, onBack }: ShopProps) => {
                         <div className="text-right">
                           {owned ? (
                             <span className="text-xs font-display font-semibold text-primary px-2 py-1 rounded-full bg-primary/12">
-                              {isActiveTheme || isActiveCharacter || isActiveAccessory ? "ACTIVE" : toggleableOwned ? "TAP" : "OWNED"}
+                              {isAnyActive ? "ACTIVE" : isToggleableEffect ? "OFF" : toggleableOwned ? "TAP" : "OWNED"}
                             </span>
                           ) : (
                             <span className={`text-sm font-display font-bold inline-flex items-center gap-1 ${canAfford ? "text-primary" : "text-muted-foreground"}`}>
