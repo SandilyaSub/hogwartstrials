@@ -931,9 +931,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
         // Parallax background scenery based on world (silhouettes layered over painting)
         if (worldId === 1) {
-
-        // Parallax background scenery based on world
-        if (worldId === 1) {
           // Hogwarts silhouette
           drawMountains(H * 0.7, "rgba(15,10,25,0.4)", 0.05, 0);
           drawCastle(W * 0.7 - cameraX * 0.03, H * 0.65, 1.2, "rgba(20,15,30,0.35)");
