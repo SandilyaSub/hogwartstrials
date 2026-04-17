@@ -1551,12 +1551,14 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           }
           ctx.restore();
 
-          // Character riding on top
+          // Character riding on top — use premium skin if equipped
           const charId = profile.character?.id || "harry";
-          const imgKey = `__charImg_${charId}`;
+          const skinId = profile.activeCharacterSkin;
+          const avatarSrc = (skinId && PREMIUM_CHARACTER_IMAGES[skinId]) || CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
+          const imgKey = `__charImg_${skinId || charId}`;
           if (!(window as any)[imgKey]) {
             const img = new Image();
-            img.src = CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
+            img.src = avatarSrc;
             (window as any)[imgKey] = img;
           }
           const charImg = (window as any)[imgKey] as HTMLImageElement;
@@ -1623,10 +1625,12 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             });
           }
           const carCharId = profile.character?.id || "harry";
-          const carImgKey = `__charImg_${carCharId}`;
+          const carSkinId = profile.activeCharacterSkin;
+          const carAvatarSrc = (carSkinId && PREMIUM_CHARACTER_IMAGES[carSkinId]) || CHARACTER_IMAGES[carCharId] || CHARACTER_IMAGES.harry;
+          const carImgKey = `__charImg_${carSkinId || carCharId}`;
           if (!(window as any)[carImgKey]) {
             const img = new Image();
-            img.src = CHARACTER_IMAGES[carCharId] || CHARACTER_IMAGES.harry;
+            img.src = carAvatarSrc;
             (window as any)[carImgKey] = img;
           }
           const carCharImg = (window as any)[carImgKey] as HTMLImageElement;
