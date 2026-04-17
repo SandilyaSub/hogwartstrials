@@ -4,7 +4,7 @@ import { WORLDS } from "@/lib/gameData";
 import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef, type HouseToken, type Coin } from "@/lib/levelGenerator";
 
 import type { PlayerProfile } from "@/hooks/useGameState";
-import { SHOP_ITEMS, PREMIUM_CHARACTER_IMAGES } from "@/lib/shopData";
+import { SHOP_ITEMS, PREMIUM_CHARACTER_IMAGES, ACCESSORY_IMAGES } from "@/lib/shopData";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
 import harryImg from "@/assets/characters/harry.png";
