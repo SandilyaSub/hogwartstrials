@@ -19,6 +19,29 @@ export const PREMIUM_CHARACTER_IMAGES: Record<string, string> = {
   char_dark_harry: darkHarryImg,
 };
 
+// Accessory illustrations
+import sortingHatImg from "@/assets/accessories/sorting_hat.png";
+import crownImg from "@/assets/accessories/crown.png";
+import witchHatImg from "@/assets/accessories/witch_hat.png";
+import glassesImg from "@/assets/accessories/glasses.png";
+import sunglassesImg from "@/assets/accessories/sunglasses.png";
+import scarfRedImg from "@/assets/accessories/scarf_red.png";
+import auraFireImg from "@/assets/accessories/aura_fire.png";
+import auraPatronusImg from "@/assets/accessories/aura_patronus.png";
+import auraDarkImg from "@/assets/accessories/aura_dark.png";
+
+export const ACCESSORY_IMAGES: Record<string, string> = {
+  acc_sorting_hat: sortingHatImg,
+  acc_crown: crownImg,
+  acc_witch_hat: witchHatImg,
+  acc_glasses: glassesImg,
+  acc_sunglasses: sunglassesImg,
+  acc_scarf_red: scarfRedImg,
+  acc_aura_fire: auraFireImg,
+  acc_aura_patronus: auraPatronusImg,
+  acc_aura_dark: auraDarkImg,
+};
+
 export interface ShopItem {
   id: string;
   name: string;
