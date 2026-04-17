@@ -374,39 +374,50 @@ function gen_4_1_DragonArena(H: number): LevelData {
   const platforms: Platform[] = [];
   const enemies: Enemy[] = [];
 
-  platforms.push({ x: 0, y: H - 40, w: 120, h: 40, type: "normal" });
+  // Invisible floor and ceiling boundaries (same pattern as hippogriff/thestral flight)
+  platforms.push({ x: 0, y: H - 30, w: 10000, h: 30, type: "hazard", color: "transparent" });
+  platforms.push({ x: 0, y: 0, w: 10000, h: 10, type: "hazard", color: "transparent" });
 
-  // Longer rocky arena with fire hazards and varied terrain
-  for (let i = 0; i < 22; i++) {
-    const x = 140 + i * 110;
-    const y = H - 70 - (i % 3) * 30 - i * 4;
-    const isFire = i % 6 === 3;
-    const isMoving = i % 5 === 2;
-    const p: Platform = {
-      x, y, w: 60 + (i % 2) * 15, h: 14,
-      type: isFire ? "hazard" : isMoving ? "moving" : "normal",
-      color: isFire ? "#aa3a0a" : "#5a4a3a",
-      label: isFire ? "🔥" : isMoving ? "🪨" : "",
-    };
-    if (isMoving) {
-      p.origX = x; p.origY = y;
-      p.moveDir = i % 2 === 0 ? 1 : -1;
-      p.moveRange = 40;
-    }
-    platforms.push(p);
+  // Floating fireballs to dodge — main hazard
+  for (let i = 0; i < 28; i++) {
+    const x = 500 + i * 300 + (i % 3) * 70;
+    const y = 40 + ((i * 151) % (H - 120));
+    const w = 40 + (i % 3) * 14;
+    const h = 30 + (i % 2) * 10;
+    platforms.push({ x, y, w, h, type: "hazard", color: "#cc4a0a", label: "🔥" });
   }
 
-  // Egg nests as bonus platforms
-  platforms.push({ x: 600, y: H - 160, w: 50, h: 12, type: "normal", color: "#6a5a2a", label: "🪹" });
-  platforms.push({ x: 1200, y: H - 200, w: 50, h: 12, type: "normal", color: "#6a5a2a", label: "🪹" });
+  // Rival wild dragons swooping at you
+  for (let i = 0; i < 12; i++) {
+    const x = 700 + i * 650;
+    const y = 50 + ((i * 197) % (H - 130));
+    enemies.push({
+      x, y, w: 26, h: 26, type: "dragon",
+      dir: -1, speed: 1.1 + (i % 3) * 0.3, range: 130,
+      origX: x, emoji: "🐉",
+    });
+  }
 
-  // Dragon enemies — spaced out
-  enemies.push({ x: 500, y: H - 150, w: 28, h: 28, type: "dragon", dir: 1, speed: 0.5, range: 90, origX: 500, emoji: "🐉" });
-  enemies.push({ x: 1100, y: H - 200, w: 28, h: 28, type: "dragon", dir: -1, speed: 0.6, range: 80, origX: 1100, emoji: "🐉" });
-  enemies.push({ x: 1800, y: H - 170, w: 26, h: 26, type: "dragon", dir: 1, speed: 0.7, range: 70, origX: 1800, emoji: "🐉" });
+  // Ember puffs from below — short vertical hazards rising from the arena floor
+  for (let i = 0; i < 6; i++) {
+    const x = 1100 + i * 1400;
+    const y = 60 + ((i * 211) % (H - 260));
+    platforms.push({ x, y, w: 24, h: 60, type: "hazard", color: "#ff8a2a", label: "🔥" });
+  }
 
-  platforms.push({ x: 2550, y: H - 220, w: 80, h: 20, type: "finish", label: "🥚 Golden Egg" });
-  return { platforms, enemies, startX: 40, startY: H - 80 };
+  // Jagged rocky peaks below — Triwizard arena spires
+  for (let i = 0; i < 8; i++) {
+    const x = 1500 + i * 950;
+    platforms.push({
+      x, y: H - 90, w: 60, h: 90, type: "hazard",
+      color: "#3a2a1a", label: "⛰️",
+    });
+  }
+
+  // Goal — snatch the Golden Egg
+  platforms.push({ x: 9200, y: H / 2 - 30, w: 140, h: 60, type: "finish", label: "🥚 Golden Egg" });
+
+  return { platforms, enemies, startX: 60, startY: H / 2, dragonFlight: true };
 }
 
 function gen_4_2_CliffJumps(H: number): LevelData {

@@ -81,6 +81,7 @@ export interface LevelData {
   flyingCar?: boolean;
   hippogriffFlight?: boolean;
   thestralFlight?: boolean;
+  dragonFlight?: boolean;
   bossArena?: boolean;
   boss?: BossData;
 }
@@ -877,7 +878,7 @@ export function generateLevel(worldId: number, levelIdx: number, canvasW: number
   }
 
   // Auto-generate scattered shop coins (skip for boss arenas and flight levels — those have other dynamics)
-  if (!data.coins && !data.bossArena && !data.flyingCar && !data.hippogriffFlight && !data.thestralFlight) {
+  if (!data.coins && !data.bossArena && !data.flyingCar && !data.hippogriffFlight && !data.thestralFlight && !data.dragonFlight) {
     data.coins = generateCoins(data.platforms);
   } else if (!data.coins) {
     data.coins = [];

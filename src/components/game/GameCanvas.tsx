@@ -53,6 +53,7 @@ import inferiImg from "@/assets/enemies/inferi.png";
 // Mount avatars (used for flight levels)
 import hippogriffMountImg from "@/assets/pets/hippogriff.png";
 import thestralMountImg from "@/assets/pets/thestral.png";
+import dragonMountImg from "@/assets/pets/dragon_mount.png";
 
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
@@ -267,7 +268,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     const isBoatLevel = levelData.boatLevel || false;
     const isHippogriffFlight = levelData.hippogriffFlight || false;
     const isThestralFlight = levelData.thestralFlight || false;
-    const isFlyingCar = levelData.flyingCar || isHippogriffFlight || isThestralFlight;
+    const isDragonFlight = levelData.dragonFlight || false;
+    const isFlyingCar = levelData.flyingCar || isHippogriffFlight || isThestralFlight || isDragonFlight;
     const isBossArena = levelData.bossArena || false;
     const bossData = levelData.boss;
 
@@ -734,7 +736,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     function draw() {
       // Background
       if (isFlyingCar) {
-        // Sky gradient — sunset for hippogriff, stormy midnight for thestral, night for car
+        // Sky gradient — sunset for hippogriff, stormy midnight for thestral, fiery sunset for dragon, night for car
         const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
         if (isHippogriffFlight) {
           // Nighttime sky — deep indigo to midnight blue
@@ -749,6 +751,13 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           skyGrad.addColorStop(0.6, "#1a1535");
           skyGrad.addColorStop(0.85, "#252040");
           skyGrad.addColorStop(1, "#0a0a1a");
+        } else if (isDragonFlight) {
+          // Fiery dusk — black smoke top, ember orange bottom
+          skyGrad.addColorStop(0, "#0a0205");
+          skyGrad.addColorStop(0.3, "#2a0a05");
+          skyGrad.addColorStop(0.6, "#5a1a08");
+          skyGrad.addColorStop(0.85, "#a8430a");
+          skyGrad.addColorStop(1, "#d86a18");
         } else {
           skyGrad.addColorStop(0, "#020a20");
           skyGrad.addColorStop(0.2, "#0a1540");
@@ -801,6 +810,24 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             ctx.fillStyle = "rgba(180,180,255,0.15)";
             ctx.fillRect(0, 0, W, H);
           }
+        } else if (isDragonFlight) {
+          // Glowing ember sun on the horizon
+          ctx.save();
+          ctx.fillStyle = "rgba(255,140,40,0.08)";
+          ctx.beginPath(); ctx.arc(W - 110, H * 0.55, 130, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "rgba(255,160,60,0.18)";
+          ctx.beginPath(); ctx.arc(W - 110, H * 0.55, 80, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#ffb04a";
+          ctx.beginPath(); ctx.arc(W - 110, H * 0.55, 42, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+          // Flying embers/ash drifting across the sky
+          for (let i = 0; i < 40; i++) {
+            const ex = ((i * 137 + cameraX * 0.5) % (W + 60)) - 30;
+            const ey = ((i * 91 + frameCount * 0.6) % H);
+            const a = 0.3 + Math.sin(frameCount * 0.05 + i) * 0.25;
+            ctx.fillStyle = `rgba(255,${140 + (i % 4) * 20},60,${a})`;
+            ctx.fillRect(ex, ey, 2, 2);
+          }
         } else {
           // Moon with atmospheric glow
           ctx.save();
@@ -815,8 +842,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.restore();
         }
         // Scrolling hills (parallax layers)
-        const mtnA = isHippogriffFlight ? "rgba(20,25,55,0.75)" : isThestralFlight ? "rgba(15,15,30,0.85)" : "rgba(10,30,15,0.8)";
-        const mtnB = isHippogriffFlight ? "rgba(12,15,38,0.9)" : isThestralFlight ? "rgba(8,8,20,0.95)" : "rgba(8,20,10,0.9)";
+        const mtnA = isHippogriffFlight ? "rgba(20,25,55,0.75)" : isThestralFlight ? "rgba(15,15,30,0.85)" : isDragonFlight ? "rgba(40,15,5,0.85)" : "rgba(10,30,15,0.8)";
+        const mtnB = isHippogriffFlight ? "rgba(12,15,38,0.9)" : isThestralFlight ? "rgba(8,8,20,0.95)" : isDragonFlight ? "rgba(20,8,4,0.95)" : "rgba(8,20,10,0.9)";
         drawMountains(H - 30, mtnA, 0.1, 1);
         drawMountains(H - 15, mtnB, 0.2, 3);
         // Ground silhouette with trees
@@ -1106,12 +1133,24 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             ctx.fillText(p.label, bx + bw / 2, by - 4);
           }
         } else if (isFlyingCar && p.type === "hazard" && p.color !== "transparent") {
-          // Cloud-shaped hazards for flying car level
+          // Cloud-shaped hazards for flying levels — recolor as fireballs on dragon level
           const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
+          const isFire = isDragonFlight;
           ctx.save();
           ctx.globalAlpha = 0.85 + Math.sin(frameCount * 0.04 + p.x * 0.01) * 0.1;
-          ctx.fillStyle = "#c8c8d8";
-          // Main cloud puff
+          if (isFire) {
+            // Outer flame glow
+            const glow = ctx.createRadialGradient(cx, cy, 2, cx, cy, p.w * 0.6);
+            glow.addColorStop(0, "rgba(255,200,80,0.6)");
+            glow.addColorStop(0.6, "rgba(255,80,20,0.35)");
+            glow.addColorStop(1, "rgba(180,30,0,0)");
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(cx, cy, p.w * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.fillStyle = isFire ? "#ff5a14" : "#c8c8d8";
+          // Main puff
           ctx.beginPath();
           ctx.arc(cx, cy, p.w * 0.35, 0, Math.PI * 2);
           ctx.fill();
@@ -1127,8 +1166,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.beginPath();
           ctx.arc(cx + p.w * 0.12, cy - p.h * 0.35, p.w * 0.22, 0, Math.PI * 2);
           ctx.fill();
-          // Highlight
-          ctx.fillStyle = "#e8e8f0";
+          // Highlight / hot core
+          ctx.fillStyle = isFire ? "#ffd24a" : "#e8e8f0";
           ctx.beginPath();
           ctx.arc(cx - p.w * 0.05, cy - p.h * 0.2, p.w * 0.15, 0, Math.PI * 2);
           ctx.fill();
@@ -1519,10 +1558,10 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       // Draw player
       if (isFlyingCar) {
         const cx = px, cy = py;
-        if (isHippogriffFlight || isThestralFlight) {
-          // Use the pre-made mount avatar (hippogriff or thestral)
-          const mountSrc = isHippogriffFlight ? hippogriffMountImg : thestralMountImg;
-          const mountKey = isHippogriffFlight ? "__mountImg_hippogriff" : "__mountImg_thestral";
+        if (isHippogriffFlight || isThestralFlight || isDragonFlight) {
+          // Use the pre-made mount avatar (hippogriff / thestral / dragon)
+          const mountSrc = isHippogriffFlight ? hippogriffMountImg : isThestralFlight ? thestralMountImg : dragonMountImg;
+          const mountKey = isHippogriffFlight ? "__mountImg_hippogriff" : isThestralFlight ? "__mountImg_thestral" : "__mountImg_dragon";
           if (!(window as any)[mountKey]) {
             const img = new Image();
             img.src = mountSrc;
@@ -1530,14 +1569,19 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           }
           const mountImg = (window as any)[mountKey] as HTMLImageElement;
 
-          const mW = 72, mH = 56;
-          const bobY = Math.sin(frameCount * (isHippogriffFlight ? 0.08 : 0.09)) * 3;
+          // Dragon is bigger than the lighter mounts
+          const mW = isDragonFlight ? 90 : 72;
+          const mH = isDragonFlight ? 70 : 56;
+          const bobFreq = isHippogriffFlight ? 0.08 : isThestralFlight ? 0.09 : 0.07;
+          const bobY = Math.sin(frameCount * bobFreq) * (isDragonFlight ? 4 : 3);
           const flash = carInvincible > 0 && frameCount % 4 < 2;
           ctx.save();
           ctx.translate(cx, cy + bobY);
 
           // Subtle wing-flap scale to suggest motion
-          const flap = 1 + Math.sin(frameCount * (isHippogriffFlight ? 0.15 : 0.18)) * 0.04;
+          const flapFreq = isHippogriffFlight ? 0.15 : isThestralFlight ? 0.18 : 0.13;
+          const flapAmp = isDragonFlight ? 0.06 : 0.04;
+          const flap = 1 + Math.sin(frameCount * flapFreq) * flapAmp;
           ctx.save();
           ctx.translate(mW / 2, mH / 2);
           ctx.scale(1, flap);
@@ -1563,12 +1607,15 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           }
           const charImg = (window as any)[imgKey] as HTMLImageElement;
           if (charImg.complete && charImg.naturalWidth > 0) {
-            const avatarSize = 22;
+            const avatarSize = isDragonFlight ? 26 : 22;
+            // Position rider on the dragon's back (a touch lower & more centered)
+            const riderX = isDragonFlight ? mW * 0.42 : mW * 0.48;
+            const riderY = isDragonFlight ? mH * 0.30 : mH * 0.22;
             ctx.save();
             ctx.beginPath();
-            ctx.arc(mW * 0.48, mH * 0.22, avatarSize / 2, 0, Math.PI * 2);
+            ctx.arc(riderX, riderY, avatarSize / 2, 0, Math.PI * 2);
             ctx.clip();
-            ctx.drawImage(charImg, mW * 0.48 - avatarSize / 2, mH * 0.22 - avatarSize / 2, avatarSize, avatarSize);
+            ctx.drawImage(charImg, riderX - avatarSize / 2, riderY - avatarSize / 2, avatarSize, avatarSize);
             ctx.restore();
           }
 
@@ -1576,11 +1623,16 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
 
           // Trail particles
           if (frameCount % 2 === 0) {
+            const trailColor = isHippogriffFlight
+              ? "rgba(200,220,255,0.4)"
+              : isThestralFlight
+                ? "rgba(80,80,120,0.35)"
+                : "rgba(255,140,40,0.55)"; // dragon: ember trail
             particles.push({
               x: cx - 5, y: cy + mH * 0.5 + bobY,
               vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1,
-              life: isHippogriffFlight ? 12 : 18,
-              color: isHippogriffFlight ? "rgba(200,220,255,0.4)" : "rgba(80,80,120,0.35)",
+              life: isHippogriffFlight ? 12 : isDragonFlight ? 22 : 18,
+              color: trailColor,
             });
           }
           if (isHippogriffFlight && frameCount % 20 === 0) {
@@ -1588,6 +1640,14 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
               x: cx + mW * 0.3, y: cy + mH * 0.3 + bobY,
               vx: -1 - Math.random(), vy: 0.5 + Math.random(),
               life: 30, color: "rgba(160,137,108,0.6)",
+            });
+          }
+          if (isDragonFlight && frameCount % 6 === 0) {
+            // Smoke puffs from the dragon's nostrils / wake
+            particles.push({
+              x: cx + mW * 0.85, y: cy + mH * 0.35 + bobY,
+              vx: 0.4 + Math.random() * 0.6, vy: -0.2 - Math.random() * 0.4,
+              life: 35, color: "rgba(80,40,20,0.45)",
             });
           }
         } else {
