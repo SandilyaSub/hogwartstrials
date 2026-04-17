@@ -19,23 +19,23 @@ export const SHOP_ITEMS: ShopItem[] = [
   // ─── Character Upgrades ───
   {
     id: "jump_boost_1", name: "Featherweight Charm", description: "+1 Jump Height",
-    emoji: "🪶", cost: 30, type: "upgrade", stat: "jump", value: 1,
+    emoji: "🪶", cost: 120, type: "upgrade", stat: "jump", value: 1,
   },
   {
     id: "jump_boost_2", name: "Levitation Mastery", description: "+2 Jump Height",
-    emoji: "✨", cost: 80, type: "upgrade", stat: "jump", value: 2,
+    emoji: "✨", cost: 320, type: "upgrade", stat: "jump", value: 2,
   },
   {
     id: "speed_boost_1", name: "Swift Potion", description: "+1 Speed",
-    emoji: "⚡", cost: 30, type: "upgrade", stat: "speed", value: 1,
+    emoji: "⚡", cost: 120, type: "upgrade", stat: "speed", value: 1,
   },
   {
     id: "speed_boost_2", name: "Lightning Reflexes", description: "+2 Speed",
-    emoji: "🏃", cost: 80, type: "upgrade", stat: "speed", value: 2,
+    emoji: "🏃", cost: 320, type: "upgrade", stat: "speed", value: 2,
   },
   {
     id: "double_coins", name: "Galleon Charm", description: "2× coins per level",
-    emoji: "🪙", cost: 150, type: "upgrade", stat: "coinMultiplier", value: 2,
+    emoji: "🪙", cost: 500, type: "upgrade", stat: "coinMultiplier", value: 2,
   },
   {
     id: "magnet", name: "Accio Coins", description: "Strong magnetic pull — coins fly fast from far away",
@@ -45,23 +45,23 @@ export const SHOP_ITEMS: ShopItem[] = [
   // ─── Consumables ───
   {
     id: "shield", name: "Protego Shield", description: "Survive one extra hit per level",
-    emoji: "🛡️", cost: 50, type: "consumable", stat: "shield", value: 1,
+    emoji: "🛡️", cost: 200, type: "consumable", stat: "shield", value: 1,
   },
   {
     id: "super_jump", name: "Super Jump Spring", description: "Double jump height for one level",
-    emoji: "🦘", cost: 40, type: "consumable", stat: "superJump", value: 1,
+    emoji: "🦘", cost: 180, type: "consumable", stat: "superJump", value: 1,
   },
   {
     id: "extra_life", name: "Felix Felicis", description: "+1 Extra Life",
-    emoji: "🍀", cost: 60, type: "consumable", stat: "life", value: 1,
+    emoji: "🍀", cost: 250, type: "consumable", stat: "life", value: 1,
   },
   {
     id: "invisibility", name: "Invisibility Cloak", description: "Enemies can't see you for 10 seconds",
-    emoji: "👻", cost: 70, type: "consumable", stat: "invisibility", value: 1,
+    emoji: "👻", cost: 300, type: "consumable", stat: "invisibility", value: 1,
   },
   {
     id: "time_turner", name: "Time-Turner", description: "Rewind 5 seconds when you fall",
-    emoji: "⏳", cost: 90, type: "consumable", stat: "timeTurner", value: 1,
+    emoji: "⏳", cost: 380, type: "consumable", stat: "timeTurner", value: 1,
   },
   {
     id: "nimbus", name: "Nimbus 2000", description: "Float much longer after jumping — glide across gaps",
