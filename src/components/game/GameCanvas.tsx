@@ -561,24 +561,11 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (playerHitFlash > 0) playerHitFlash--;
       }
 
-      // House token collection (with magnet pull if Accio Coins is owned)
-      const MAGNET_RANGE = 140;
-      const MAGNET_PULL = 0.18;
+      // House token collection (NOTE: magnet/Accio Coins does NOT affect house tokens — only normal coins)
       houseTokens.forEach(token => {
         if (token.collected) return;
         const cx = px + PLAYER_W / 2;
         const cy = py + PLAYER_H / 2;
-        const dx = cx - token.x;
-        const dy = cy - token.y;
-
-        // Magnet effect: pull tokens toward the player when within range
-        if (shopHasMagnet) {
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < MAGNET_RANGE && dist > 0) {
-            token.x += (dx / dist) * Math.max(2, (MAGNET_RANGE - dist) * MAGNET_PULL);
-            token.y += (dy / dist) * Math.max(2, (MAGNET_RANGE - dist) * MAGNET_PULL);
-          }
-        }
 
         if (Math.abs(cx - token.x) < 22 && Math.abs(cy - token.y) < 22) {
           token.collected = true;
