@@ -156,8 +156,8 @@ function Player({
   const owned = profile.purchasedUpgrades || {};
   const activeMap = profile.activeUpgrades || {};
   const isOn = (id: string) => !!owned[id] && activeMap[id] !== false;
-  const jumpPower = JUMP + houseBoosts.jump * 1.5 + (isOn("jump_boost_1") ? 1.5 : 0) + (isOn("jump_boost_2") ? 3 : 0);
-  const speed = SPEED + houseBoosts.speed * 0.8 + (isOn("speed_boost_1") ? 0.8 : 0) + (isOn("speed_boost_2") ? 1.5 : 0);
+  const jumpPower = JUMP + houseBoosts.jump * 1.5 + (isOn("jump_boost_1") ? 1.5 : 0) + (isOn("jump_boost_2") ? 3 : 0) + (isOn("jump_boost_3") ? 4.5 : 0);
+  const speed = SPEED + houseBoosts.speed * 0.8 + (isOn("speed_boost_1") ? 0.8 : 0) + (isOn("speed_boost_2") ? 1.5 : 0) + (isOn("speed_boost_3") ? 2.2 : 0);
 
   useFrame((_, delta) => {
     if (!meshRef.current || !stateRef.current.alive || completedRef.current) return;
