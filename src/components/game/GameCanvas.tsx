@@ -5,6 +5,7 @@ import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy,
 
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { SHOP_ITEMS, PREMIUM_CHARACTER_IMAGES, ACCESSORY_IMAGES } from "@/lib/shopData";
+import { getFinishLandmark } from "@/lib/finishLandmarks";
 import { supabase } from "@/integrations/supabase/client";
 import dementorImg from "@/assets/dementor.png";
 import harryImg from "@/assets/characters/harry.png";
