@@ -170,6 +170,9 @@ const Index = () => {
             saveProfile({ ...profile, activeTheme: themeId });
           }}
           onSelectCharacter={selectCharacter}
+          onActivatePremiumCharacter={(skinId) => {
+            saveProfile({ ...profile, activeCharacterSkin: skinId });
+          }}
           onBack={() => setScreen("worldmap")}
         />
       );
