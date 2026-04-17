@@ -885,10 +885,10 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
 
-        // Painted world background (parallax, slow scroll)
-        const bgSrc = WORLD_BACKGROUNDS[worldId];
+        // Painted level background (parallax, slow scroll). Per-level when available, otherwise per-world.
+        const bgSrc = getLevelBackground(worldId, levelIdx);
         if (bgSrc) {
-          const bgKey = `__worldBg_${worldId}`;
+          const bgKey = `__lvlBg_${worldId}_${levelIdx}`;
           if (!(window as any)[bgKey]) {
             const bImg = new Image();
             bImg.src = bgSrc;
@@ -907,6 +907,17 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             for (let x = offset; x < W; x += drawW) {
               ctx.drawImage(bImg, x, 0, drawW, H);
             }
+            // Subtle dark vignette/tint to keep gameplay readable
+            const tint = ctx.createLinearGradient(0, 0, 0, H);
+            tint.addColorStop(0, "rgba(0,0,0,0.15)");
+            tint.addColorStop(0.6, "rgba(0,0,0,0.05)");
+            tint.addColorStop(1, "rgba(0,0,0,0.55)");
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = tint;
+            ctx.fillRect(0, 0, W, H);
+            ctx.restore();
+          }
+        }
             // Subtle dark vignette/tint to keep gameplay readable
             const tint = ctx.createLinearGradient(0, 0, 0, H);
             tint.addColorStop(0, "rgba(0,0,0,0.15)");
