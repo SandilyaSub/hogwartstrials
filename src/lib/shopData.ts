@@ -4,10 +4,15 @@ export interface ShopItem {
   description: string;
   emoji: string;
   cost: number;
-  type: "upgrade" | "consumable" | "theme";
+  type: "upgrade" | "consumable" | "theme" | "character" | "accessory";
   stat?: string;
   value?: number;
   themeColors?: { primary: string; background: string; card: string };
+  /** For character variants: tint color drawn around the avatar */
+  characterTint?: string;
+  /** For accessories: emoji drawn on the player + render slot */
+  accessoryEmoji?: string;
+  accessorySlot?: "hat" | "glasses" | "scarf" | "aura";
 }
 
 export const SHOP_ITEMS: ShopItem[] = [
@@ -33,8 +38,8 @@ export const SHOP_ITEMS: ShopItem[] = [
     emoji: "🪙", cost: 150, type: "upgrade", stat: "coinMultiplier", value: 2,
   },
   {
-    id: "magnet", name: "Accio Coins", description: "Coins fly towards you",
-    emoji: "🧲", cost: 100, type: "upgrade", stat: "magnet", value: 1,
+    id: "magnet", name: "Accio Coins", description: "Strong magnetic pull — coins fly fast from far away",
+    emoji: "🧲", cost: 200, type: "upgrade", stat: "magnet", value: 1,
   },
 
   // ─── Consumables ───
@@ -59,8 +64,8 @@ export const SHOP_ITEMS: ShopItem[] = [
     emoji: "⏳", cost: 90, type: "consumable", stat: "timeTurner", value: 1,
   },
   {
-    id: "nimbus", name: "Nimbus 2000", description: "Float briefly after jumping",
-    emoji: "🧹", cost: 75, type: "consumable", stat: "float", value: 1,
+    id: "nimbus", name: "Nimbus 2000", description: "Float much longer after jumping — glide across gaps",
+    emoji: "🧹", cost: 180, type: "consumable", stat: "float", value: 1,
   },
 
   // ─── Themes ───
