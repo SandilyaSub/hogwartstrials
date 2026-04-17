@@ -11,6 +11,16 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  // Authenticate caller via shared secret
+  const expected = Deno.env.get("WEEKLY_RESET_SECRET");
+  const authHeader = req.headers.get("Authorization") ?? "";
+  if (!expected || authHeader !== `Bearer ${expected}`) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 401 }
+    );
+  }
+
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -88,8 +98,10 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
   } catch (error) {
+    // Log full error server-side, return generic message to caller
+    console.error("Weekly reset failed:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Internal server error" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
     );
   }
