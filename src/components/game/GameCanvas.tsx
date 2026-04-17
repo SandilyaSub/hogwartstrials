@@ -49,6 +49,10 @@ import dragonImg from "@/assets/enemies/dragon.png";
 import bellatrixImg from "@/assets/enemies/bellatrix.png";
 import inferiImg from "@/assets/enemies/inferi.png";
 
+// Mount avatars (used for flight levels)
+import hippogriffMountImg from "@/assets/pets/hippogriff.png";
+import thestralMountImg from "@/assets/pets/thestral.png";
+
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
   luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
