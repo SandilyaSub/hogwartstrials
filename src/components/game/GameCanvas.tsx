@@ -918,17 +918,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             ctx.restore();
           }
         }
-            // Subtle dark vignette/tint to keep gameplay readable
-            const tint = ctx.createLinearGradient(0, 0, 0, H);
-            tint.addColorStop(0, "rgba(0,0,0,0.15)");
-            tint.addColorStop(0.6, "rgba(0,0,0,0.05)");
-            tint.addColorStop(1, "rgba(0,0,0,0.55)");
-            ctx.globalAlpha = 1;
-            ctx.fillStyle = tint;
-            ctx.fillRect(0, 0, W, H);
-            ctx.restore();
-          }
-        }
 
         // Parallax background scenery based on world (silhouettes layered over painting)
         if (worldId === 1) {
