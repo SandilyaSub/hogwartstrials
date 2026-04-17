@@ -1667,11 +1667,13 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.translate(-cx, 0);
         }
 
-        // Draw character avatar image
-        const imgKey = `__charImg_${charId}`;
+        // Draw character avatar image — use premium skin if equipped
+        const skinId = profile.activeCharacterSkin;
+        const avatarSrc = (skinId && PREMIUM_CHARACTER_IMAGES[skinId]) || CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
+        const imgKey = `__charImg_${skinId || charId}`;
         if (!(window as any)[imgKey]) {
           const img = new Image();
-          img.src = CHARACTER_IMAGES[charId] || CHARACTER_IMAGES.harry;
+          img.src = avatarSrc;
           (window as any)[imgKey] = img;
         }
         const charImg = (window as any)[imgKey] as HTMLImageElement;
