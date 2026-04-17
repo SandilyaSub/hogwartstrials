@@ -57,6 +57,7 @@ import hippogriffMountImg from "@/assets/pets/hippogriff.png";
 import thestralMountImg from "@/assets/pets/thestral.png";
 import dragonMountImg from "@/assets/pets/dragon_mount.png";
 import fireboltMountImg from "@/assets/pets/firebolt_broom.png";
+import flyingCarImg from "@/assets/pets/flying_car.png";
 
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
@@ -1782,39 +1783,39 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             });
           }
         } else {
-          const carW = 50, carH = 28;
-          ctx.fillStyle = carInvincible > 0 && frameCount % 4 < 2 ? "rgba(255,255,255,0.5)" : "#4a9adb";
-          ctx.beginPath();
-          ctx.moveTo(cx, cy + carH * 0.3);
-          ctx.lineTo(cx + 8, cy);
-          ctx.lineTo(cx + carW - 5, cy);
-          ctx.lineTo(cx + carW, cy + carH * 0.3);
-          ctx.lineTo(cx + carW + 5, cy + carH * 0.6);
-          ctx.lineTo(cx + carW, cy + carH);
-          ctx.lineTo(cx, cy + carH);
-          ctx.lineTo(cx - 3, cy + carH * 0.6);
-          ctx.closePath();
-          ctx.fill();
-          ctx.strokeStyle = "#2a6aaa";
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-          ctx.fillStyle = "#aaddff";
-          ctx.fillRect(cx + 12, cy + 3, 14, 10);
-          ctx.fillRect(cx + 28, cy + 3, 12, 10);
-          ctx.fillStyle = "#222";
-          ctx.beginPath();
-          ctx.arc(cx + 12, cy + carH + 2, 5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(cx + carW - 10, cy + carH + 2, 5, 0, Math.PI * 2);
-          ctx.fill();
+          // Flying Ford Anglia sprite
+          const carW = 78, carH = 44;
+          if (!(window as any).__mountImg_flyingcar) {
+            const img = new Image();
+            img.src = flyingCarImg;
+            (window as any).__mountImg_flyingcar = img;
+          }
+          const carSpriteImg = (window as any).__mountImg_flyingcar as HTMLImageElement;
+          const bobY = Math.sin(frameCount * 0.1) * 2;
+          const flash = carInvincible > 0 && frameCount % 4 < 2;
+          ctx.save();
+          ctx.translate(cx, cy + bobY);
+          if (flash) ctx.globalAlpha = 0.55;
+          if (carSpriteImg.complete && carSpriteImg.naturalWidth > 0) {
+            ctx.imageSmoothingEnabled = true;
+            ctx.drawImage(carSpriteImg, 0, 0, carW, carH);
+          } else {
+            // Fallback while sprite loads
+            ctx.fillStyle = "#4a9adb";
+            ctx.fillRect(0, 0, carW, carH);
+          }
+          ctx.restore();
+
+          // Exhaust / wind trail
           if (frameCount % 2 === 0) {
             particles.push({
-              x: cx - 5, y: cy + carH * 0.6,
+              x: cx - 4, y: cy + carH * 0.7 + bobY,
               vx: -2 - Math.random() * 2, vy: (Math.random() - 0.5) * 1.5,
-              life: 15, color: "rgba(200,200,200,0.6)",
+              life: 18, color: "rgba(220,220,230,0.55)",
             });
           }
+
+          // Driver avatar peeking through the window
           const carCharId = profile.character?.id || "harry";
           const carSkinId = profile.activeCharacterSkin;
           const carAvatarSrc = (carSkinId && PREMIUM_CHARACTER_IMAGES[carSkinId]) || CHARACTER_IMAGES[carCharId] || CHARACTER_IMAGES.harry;
@@ -1827,11 +1828,14 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           const carCharImg = (window as any)[carImgKey] as HTMLImageElement;
           if (carCharImg.complete && carCharImg.naturalWidth > 0) {
             const avatarSize = 18;
+            // Driver-side window position on the sprite
+            const dx = cx + carW * 0.42;
+            const dy = cy + carH * 0.32 + bobY;
             ctx.save();
             ctx.beginPath();
-            ctx.arc(cx + carW / 2, cy + carH / 2, avatarSize / 2, 0, Math.PI * 2);
+            ctx.arc(dx, dy, avatarSize / 2, 0, Math.PI * 2);
             ctx.clip();
-            ctx.drawImage(carCharImg, cx + carW / 2 - avatarSize / 2, cy + carH / 2 - avatarSize / 2, avatarSize, avatarSize);
+            ctx.drawImage(carCharImg, dx - avatarSize / 2, dy - avatarSize / 2, avatarSize, avatarSize);
             ctx.restore();
           }
         }
