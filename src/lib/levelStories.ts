@@ -158,106 +158,106 @@ export const LEVEL_STORIES: Record<string, { quote: string; narrator: string; st
 
   // World 4 — Goblet of Fire
   "4-1": {
+    narrator: "Arthur Weasley",
+    quote: "It's an old boot.",
+    story: "Summer holidays — the Weasleys take you to the Quidditch World Cup by Portkey! An open field scattered with old boots, kettles, and other mundane objects, each one a Portkey. Touch the right ones to leap across the countryside to Stoatshead Hill.",
+  },
+  "4-2": {
+    narrator: "Albus Dumbledore",
+    quote: "Our guests from the north — please greet the proud sons of Durmstrang!",
+    story: "The Beauxbatons carriage soars overhead and the Durmstrang ship rises from the Black Lake. Race along the cliff faces above the lake to greet the foreign schools as they arrive at Hogwarts.",
+  },
+  "4-3": {
     narrator: "Barty Crouch Sr.",
     quote: "The Triwizard Tournament will be held at Hogwarts.",
     story: "The First Task: face a Hungarian Horntail! The dragon guards its nest in a rocky arena, breathing fire across every path. You must outmanoeuvre it to claim the golden egg without getting scorched.",
   },
-  "4-2": {
-    narrator: "Cedric Diggory",
-    quote: "Take the cup together — it's still a Hogwarts victory.",
-    story: "The Triwizard maze has transformed into treacherous cliff faces. Enchanted hedges grow along vertical walls, and the path forward requires death-defying leaps across crumbling stone pillars.",
-  },
-  "4-3": {
-    narrator: "Moaning Myrtle",
-    quote: "I'd try the egg in the water if I were you.",
-    story: "The Second Task sends you beneath the Black Lake. Gillyweed lets you breathe, but the murky depths are full of Grindylows and tangled weeds. Swim through the underwater maze to rescue your friend!",
-  },
   "4-4": {
-    narrator: "Lord Voldemort",
-    quote: "I can touch you now.",
-    story: "The Triwizard Cup was a Portkey — you've been transported to a dark graveyard in Little Hangleton. Tombstones loom in the fog, Death Eaters close in, and the Dark Lord himself has returned.",
-  },
-  "4-5": {
     narrator: "Parvati Patil",
     quote: "I don't think we're going to sit down, Harry...",
     story: "The Yule Ball is in full swing! The Great Hall's enchanted dance floor shifts and spins beneath your feet. Weave between waltzing couples, dodge flying goblets of punch, and don't slip on the ice sculptures!",
   },
+  "4-5": {
+    narrator: "Moaning Myrtle",
+    quote: "I'd try the egg in the water if I were you.",
+    story: "The Second Task sends you beneath the Black Lake. Gillyweed lets you breathe, but the murky depths are full of Grindylows and tangled weeds. Swim through the underwater maze to rescue your friend!",
+  },
   "4-6": {
+    narrator: "Dumbledore",
+    quote: "You have shown bravery beyond anything I could have expected.",
+    story: "Deeper beneath the Black Lake, you've found the Merpeople village. Ancient stone ruins rise from the lake bed, guarded by Merpeople with tridents and tangles of enchanted kelp. Find the hostages before time runs out!",
+  },
+  "4-7": {
     narrator: "Ludo Bagman",
     quote: "The third task is coming — the Triwizard Maze!",
     story: "The enchanted hedge maze grows and shifts around you. Blast-Ended Skrewts lurk in dead ends, golden mist inverts your vision, and a Sphinx blocks the final path with her riddle.",
   },
-  "4-7": {
-    narrator: "Dumbledore",
-    quote: "You have shown bravery beyond anything I could have expected.",
-    story: "Deeper beneath the Black Lake than before, you've found the Merpeople village. Ancient stone ruins rise from the lake bed, guarded by Merpeople with tridents and tangles of enchanted kelp.",
-  },
   "4-8": {
-    narrator: "Barty Crouch Jr.",
-    quote: "I'll show you mine if you show me yours.",
-    story: "An open field scattered with old boots, kettles, and other mundane objects — each one a Portkey! Touch one and you're teleported to a random platform. Find the right sequence to reach the exit!",
+    narrator: "Cedric Diggory",
+    quote: "Take the cup together — it's still a Hogwarts victory.",
+    story: "The Triwizard Cup was a Portkey — you've been transported to a dark graveyard in Little Hangleton. Tombstones loom in the fog, Death Eaters close in, and Wormtail prepares the dark ritual.",
   },
   "4-9": {
     narrator: "Harry Potter",
     quote: "Voldemort's wand and mine — they're connected.",
-    story: "Priori Incantatem! The echoes of past spells surge around you as ghostly figures emerge from Voldemort's wand. Navigate through the spectral battlefield as reality warps and shimmers.",
+    story: "Priori Incantatem! The echoes of past spells surge around you as ghostly figures emerge from Voldemort's wand — your parents among them. Navigate through the spectral battlefield as reality warps and shimmers.",
   },
   "4-10": {
-    narrator: "Albus Dumbledore",
-    quote: "Remember, if the time should come, you must be strong.",
-    story: "The Hungarian Horntail has broken free of its chains! It chases you across the Hogwarts rooftops in a desperate flight. Outrun its fire and reach safety before the beast catches you!",
+    narrator: "Lord Voldemort",
+    quote: "I can touch you now.",
+    story: "The Dark Lord has returned in flesh. Voldemort circles you in the graveyard, his Death Eaters watching as he toys with you. This is your first true duel against him — survive, grab the Cup, and escape!",
   },
 
   // World 5 — Order of the Phoenix
   "5-1": {
-    narrator: "Nymphadora Tonks",
-    quote: "Don't call me Nymphadora!",
-    story: "The Ministry of Magic's grand atrium stretches before you — but the Death Eaters have infiltrated it. Navigate the enchanted lifts, dodge hexes, and make your way to the Department of Mysteries.",
+    narrator: "Dolores Umbridge",
+    quote: "I must not tell lies.",
+    story: "Umbridge's office is a nightmare of pink and kittens. Decorative plates line the walls — and they bite! Navigate through her saccharine-sweet office while dodging enchanted cat plates and the punishing blood quill.",
   },
   "5-2": {
-    narrator: "Sybill Trelawney",
-    quote: "The one with the power to vanquish the Dark Lord approaches...",
-    story: "Rows upon rows of glowing prophecy orbs line the shelves of the Hall of Prophecy. The shelves topple like dominoes as Death Eaters blast them apart — grab the prophecy and run!",
+    narrator: "Dobby",
+    quote: "It is called the Room of Requirement, sir!",
+    story: "The Room of Requirement appears only when you truly need it. Tonight, you need a place to hide and learn — the room reshapes itself as you approach, walls shifting and stairs rearranging into a secret training hall.",
   },
   "5-3": {
     narrator: "Harry Potter",
     quote: "Every great wizard in history has started out as nothing more than what we are now: students.",
-    story: "Welcome to Dumbledore's Army! The Room of Requirement has transformed into a training ground. Master your jumping, dodging, and spellwork on this magical obstacle course.",
+    story: "Welcome to Dumbledore's Army! The Room of Requirement has transformed into a training ground. Master your jumping, dodging, and spellwork on this magical obstacle course alongside your friends.",
   },
   "5-4": {
-    narrator: "Bellatrix Lestrange",
-    quote: "I killed Sirius Black! I killed Sirius Black!",
-    story: "The battle rages through the Ministry's corridors! Walls crack, ceilings collapse, and jets of light fly in every direction. Sprint through the chaos as the Order and Death Eaters clash around you.",
+    narrator: "Neville Longbottom",
+    quote: "Dumbledore's Army — still recruiting.",
+    story: "The full D.A. stands together for the first time. Every spell, every move, every drill — performed in unison. Lead the army through the ultimate training gauntlet before Umbridge's Inquisitorial Squad finds you!",
   },
   "5-5": {
-    narrator: "Dobby",
-    quote: "It is called the Room of Requirement, sir!",
-    story: "The Room of Requirement reshapes itself to your needs — but it's glitching! Walls shift, stairs rearrange, and platforms appear and vanish unpredictably. Adapt or fall!",
+    narrator: "Bellatrix Lestrange",
+    quote: "I killed Sirius Black! I killed Sirius Black!",
+    story: "Umbridge has discovered the D.A.! Educational Decrees explode off the walls and the corridors of Hogwarts descend into chaos. Walls crack, ceilings collapse — sprint through the mayhem and out of the castle!",
   },
   "5-6": {
-    narrator: "Dolores Umbridge",
-    quote: "I must not tell lies.",
-    story: "Umbridge's office is a nightmare of pink and kittens. Decorative plates line the walls — and they bite! Navigate through her saccharine-sweet office while dodging enchanted cat plates and punishing quills.",
-  },
-  "5-7": {
     narrator: "Luna Lovegood",
     quote: "They're called Thestrals. They're quite gentle, really.",
-    story: "Only those who've seen death can see Thestrals. Mount the invisible winged horse and soar over the English countryside toward the Ministry of Magic, dodging storms and Death Eaters!",
+    story: "Only those who've seen death can see Thestrals. Mount the invisible winged horse and soar over the English countryside toward London, dodging storms and Death Eaters as you race to the Ministry of Magic!",
+  },
+  "5-7": {
+    narrator: "Nymphadora Tonks",
+    quote: "Don't call me Nymphadora!",
+    story: "The Ministry of Magic's grand atrium stretches before you — quiet, but menacing in the dead of night. Navigate the enchanted lifts and golden statues, making your way deep into the Department of Mysteries.",
   },
   "5-8": {
+    narrator: "Sybill Trelawney",
+    quote: "The one with the power to vanquish the Dark Lord approaches...",
+    story: "Rows upon rows of glowing prophecy orbs line the shelves of the Hall of Prophecy. The shelves topple like dominoes as Death Eaters blast them apart — grab the prophecy and run before the Death Eaters reach you!",
+  },
+  "5-9": {
     narrator: "Sirius Black",
     quote: "Nice one, James!",
     story: "The Death Chamber holds an ancient stone archway with a tattered veil. Whispers draw you forward, but the room is filled with swirling darkness and platforms that hover over the void. Don't fall in.",
   },
-  "5-9": {
-    narrator: "Neville Longbottom",
-    quote: "Dumbledore's Army — still recruiting.",
-    story: "The final D.A. session is the hardest yet. Every spell you've learned, every move you've practiced — it all comes together in one ultimate training gauntlet before the battle ahead.",
-  },
   "5-10": {
     narrator: "Albus Dumbledore",
     quote: "It is the unknown we fear when we look upon death and darkness.",
-    story: "Voldemort himself has arrived at the Ministry! Dumbledore faces him in the atrium in a titanic duel. Fight through the magical shockwaves and survive the Dark Lord's wrath!",
+    story: "Dolores Umbridge has cornered you in the atrium with her Inquisitorial Squad! The High Inquisitor of Hogwarts unleashes her full fury — face her in a duel that will decide the fate of Dumbledore's Army!",
   },
 
   // World 6 — Half-Blood Prince
@@ -269,12 +269,12 @@ export const LEVEL_STORIES: Record<string, { quote: string; narrator: string; st
   "6-2": {
     narrator: "Albus Dumbledore",
     quote: "I am not worried, Harry. I am with you.",
-    story: "The Astronomy Tower looms above the castle. Death Eaters have breached the grounds and the tower itself is crumbling. Climb through collapsing stairwells and shattered windows to reach the top.",
+    story: "The Astronomy Tower looms above the castle. Tonight, Dumbledore takes you to retrieve a Horcrux. Climb through the tower's spiralling stairwells and shattered windows to reach the top.",
   },
   "6-3": {
     narrator: "Draco Malfoy",
     quote: "I have to do this. I have to kill you.",
-    story: "Draco has been sneaking into the Room of Requirement to repair the Vanishing Cabinet. The room shifts between realities — furniture appears and disappears, creating an ever-changing labyrinth.",
+    story: "Draco has been sneaking into the Room of Requirement to repair the Vanishing Cabinet. The room shifts between realities — furniture appears and disappears, creating an ever-changing labyrinth of forgotten objects.",
   },
   "6-4": {
     narrator: "Albus Dumbledore",
@@ -289,27 +289,27 @@ export const LEVEL_STORIES: Record<string, { quote: string; narrator: string; st
   "6-6": {
     narrator: "Severus Snape",
     quote: "Sectumsempra! For enemies.",
-    story: "The bathroom is flooding with cursed water after a terrible duel. Broken mirrors reflect dark magic, water rises from every drain, and Moaning Myrtle screams from above. Navigate the devastation!",
+    story: "The bathroom is flooding with cursed water after a terrible duel with Draco. Broken mirrors reflect dark magic, water rises from every drain, and Moaning Myrtle screams from above. Navigate the devastation!",
   },
   "6-7": {
     narrator: "Albus Dumbledore",
     quote: "I have been careless, and it has cost me dearly.",
-    story: "Dumbledore's Pensieve holds memories crucial to defeating Voldemort. Dive into swirling silver memories — each one a different landscape of platforms and hazards from the past.",
+    story: "Dumbledore's Pensieve holds memories crucial to defeating Voldemort. Dive into swirling silver memories — each one a different landscape of platforms and hazards from young Tom Riddle's past.",
   },
   "6-8": {
     narrator: "Albus Dumbledore",
     quote: "Severus... please.",
-    story: "The tower has been struck by lightning and dark curses. It crumbles piece by piece as you climb — every step could be your last. Reach the top before the entire structure collapses!",
+    story: "The Astronomy Tower has been struck by lightning and dark curses as Death Eaters storm Hogwarts. It crumbles piece by piece as you fight your way up — every step could be your last.",
   },
   "6-9": {
     narrator: "Harry Potter",
     quote: "Liquid luck! I feel like I can do anything!",
-    story: "Felix Felicis courses through your veins — everything goes your way! But the potion's wearing off fast. Sprint through this speed-run course while luck still bends reality in your favour!",
+    story: "Felix Felicis courses through your veins — everything goes your way! But the potion's wearing off fast. Sprint through the castle to reach Slughorn before luck runs out and the memory is lost forever!",
   },
   "6-10": {
     narrator: "Severus Snape",
     quote: "Avada Kedavra.",
-    story: "Deep within the cave, the Horcrux is guarded by dark enchantments. The potion of despair, the rising Inferi, and the crushing darkness — survive it all to destroy a piece of Voldemort's soul.",
+    story: "Deep within the Horcrux cave, dark enchantments close in. The potion of despair, the rising Inferi, and the crushing darkness — survive it all to destroy a piece of Voldemort's soul.",
   },
 
   // World 7 — Deathly Hallows
@@ -321,7 +321,7 @@ export const LEVEL_STORIES: Record<string, { quote: string; narrator: string; st
   "7-2": {
     narrator: "Neville Longbottom",
     quote: "I'll join you when hell freezes over! Dumbledore's Army!",
-    story: "The Battle of Hogwarts rages. The castle you once called home is shattered — towers crumble, bridges collapse, and giants stride through the grounds. Navigate the ruins of the place you love.",
+    story: "You've returned to a Hogwarts twisted by the Carrows. The castle you once called home is shattered and patrolled by Death Eaters — towers crumble, bridges collapse. Navigate the ruins to find the Ravenclaw diadem.",
   },
   "7-3": {
     narrator: "Hermione Granger",
@@ -331,7 +331,7 @@ export const LEVEL_STORIES: Record<string, { quote: string; narrator: string; st
   "7-4": {
     narrator: "Harry Potter",
     quote: "I never wanted any of you to die for me.",
-    story: "Hogwarts is in ruins, but you must reach the top of the broken castle. The final Horcrux awaits in the Room of Requirement, and Fiendfyre has consumed everything. Climb through the inferno.",
+    story: "Hogwarts is in ruins, but you must reach the top of the broken castle. The final Horcrux awaits in the Room of Requirement, and the Battle of Hogwarts has begun. Climb through the inferno.",
   },
   "7-5": {
     narrator: "Griphook",
@@ -346,7 +346,7 @@ export const LEVEL_STORIES: Record<string, { quote: string; narrator: string; st
   "7-7": {
     narrator: "Harry Potter",
     quote: "I am about to die.",
-    story: "The walk to the Forbidden Forest. Each step heavier than the last. Ghostly figures walk beside you — your parents, Sirius, Lupin. The forest is quiet, but something terrible waits at its heart.",
+    story: "The walk to the Forbidden Forest. Each step heavier than the last. Ghostly figures walk beside you — your parents, Sirius, Lupin. The forest is quiet, but Voldemort waits at its heart.",
   },
   "7-8": {
     narrator: "Voldemort",
