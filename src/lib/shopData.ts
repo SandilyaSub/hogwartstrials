@@ -85,6 +85,26 @@ export const SHOP_ITEMS: ShopItem[] = [
     id: "magnet", name: "Accio Coins", description: "Strong magnetic pull — coins fly fast from far away",
     emoji: "🧲", cost: 1000, type: "upgrade", stat: "magnet", value: 1,
   },
+  {
+    id: "jump_boost_3", name: "Anti-Gravity Charm", description: "+3 Jump Height (top tier)",
+    emoji: "🌙", cost: 1800, type: "upgrade", stat: "jump", value: 3,
+  },
+  {
+    id: "speed_boost_3", name: "Tempus Acceleratio", description: "+3 Speed (top tier)",
+    emoji: "💨", cost: 1800, type: "upgrade", stat: "speed", value: 3,
+  },
+  {
+    id: "triple_coins", name: "Gringotts Vault", description: "3× coins per level (replaces 2×)",
+    emoji: "💰", cost: 3000, type: "upgrade", stat: "coinMultiplier", value: 3,
+  },
+  {
+    id: "lucky_charm", name: "Leprechaun's Luck", description: "+25% chance for bonus coins on every collect",
+    emoji: "🍀", cost: 1400, type: "upgrade", stat: "luck", value: 1,
+  },
+  {
+    id: "second_wind", name: "Phoenix Tears", description: "Auto-revive once per level at full health",
+    emoji: "🔥", cost: 2200, type: "upgrade", stat: "revive", value: 1,
+  },
 
   // ─── Consumables ───
   {
