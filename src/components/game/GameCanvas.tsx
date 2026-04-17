@@ -712,11 +712,12 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         // Sky gradient — sunset for hippogriff, stormy midnight for thestral, night for car
         const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
         if (isHippogriffFlight) {
-          skyGrad.addColorStop(0, "#1a1040");
-          skyGrad.addColorStop(0.25, "#3a2065");
-          skyGrad.addColorStop(0.5, "#8a4070");
-          skyGrad.addColorStop(0.75, "#d06040");
-          skyGrad.addColorStop(1, "#f0a030");
+          // Nighttime sky — deep indigo to midnight blue
+          skyGrad.addColorStop(0, "#050818");
+          skyGrad.addColorStop(0.3, "#0c1230");
+          skyGrad.addColorStop(0.6, "#1a2050");
+          skyGrad.addColorStop(0.85, "#2a2860");
+          skyGrad.addColorStop(1, "#1a1838");
         } else if (isThestralFlight) {
           skyGrad.addColorStop(0, "#000005");
           skyGrad.addColorStop(0.3, "#0a0a20");
