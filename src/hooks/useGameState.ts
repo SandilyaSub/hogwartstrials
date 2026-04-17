@@ -107,10 +107,17 @@ export function useGameState(user: User | null) {
     loadProfile();
   }, [user]);
 
-  // Save to DB
+  // Save to DB (and persist equipment locally)
   const saveProfile = useCallback(async (p: PlayerProfile) => {
     setProfile(p);
     if (!user) return;
+
+    try {
+      localStorage.setItem(`equip_${user.id}`, JSON.stringify({
+        activeCharacterSkin: p.activeCharacterSkin,
+        activeAccessories: p.activeAccessories || [],
+      }));
+    } catch {}
 
     await supabase.from("game_profiles").update({
       username: p.username,
