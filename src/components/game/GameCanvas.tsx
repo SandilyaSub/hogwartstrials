@@ -649,7 +649,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     function draw() {
       // Background
       if (isFlyingCar) {
-        // Sky gradient — sunset for hippogriff, night for car
+        // Sky gradient — sunset for hippogriff, stormy midnight for thestral, night for car
         const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
         if (isHippogriffFlight) {
           skyGrad.addColorStop(0, "#1a1040");
@@ -657,6 +657,12 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           skyGrad.addColorStop(0.5, "#8a4070");
           skyGrad.addColorStop(0.75, "#d06040");
           skyGrad.addColorStop(1, "#f0a030");
+        } else if (isThestralFlight) {
+          skyGrad.addColorStop(0, "#000005");
+          skyGrad.addColorStop(0.3, "#0a0a20");
+          skyGrad.addColorStop(0.6, "#1a1535");
+          skyGrad.addColorStop(0.85, "#252040");
+          skyGrad.addColorStop(1, "#0a0a1a");
         } else {
           skyGrad.addColorStop(0, "#020a20");
           skyGrad.addColorStop(0.2, "#0a1540");
@@ -676,6 +682,29 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.fillStyle = "#ffd060";
           ctx.beginPath(); ctx.arc(W - 100, H - 40, 30, 0, Math.PI * 2); ctx.fill();
           ctx.restore();
+        } else if (isThestralFlight) {
+          // Stars
+          for (let i = 0; i < 60; i++) {
+            const sx = (i * 137 + (cameraX * 0.05)) % W;
+            const sy = (i * 71) % (H * 0.6);
+            const tw = 0.4 + Math.sin(frameCount * 0.05 + i) * 0.3;
+            ctx.fillStyle = `rgba(220,220,255,${tw})`;
+            ctx.fillRect(sx, sy, 2, 2);
+          }
+          // Pale crescent moon
+          ctx.save();
+          ctx.fillStyle = "rgba(220,220,255,0.05)";
+          ctx.beginPath(); ctx.arc(W - 90, 70, 60, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#d8d8e8";
+          ctx.beginPath(); ctx.arc(W - 90, 70, 22, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#0a0a20";
+          ctx.beginPath(); ctx.arc(W - 80, 65, 20, 0, Math.PI * 2); ctx.fill();
+          ctx.restore();
+          // Occasional lightning flash
+          if (frameCount % 180 < 4) {
+            ctx.fillStyle = "rgba(180,180,255,0.15)";
+            ctx.fillRect(0, 0, W, H);
+          }
         } else {
           // Moon with atmospheric glow
           ctx.save();
@@ -690,16 +719,19 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.restore();
         }
         // Scrolling hills (parallax layers)
-        drawMountains(H - 30, isHippogriffFlight ? "rgba(40,20,50,0.7)" : "rgba(10,30,15,0.8)", 0.1, 1);
-        drawMountains(H - 15, isHippogriffFlight ? "rgba(30,15,40,0.8)" : "rgba(8,20,10,0.9)", 0.2, 3);
+        const mtnA = isHippogriffFlight ? "rgba(40,20,50,0.7)" : isThestralFlight ? "rgba(15,15,30,0.85)" : "rgba(10,30,15,0.8)";
+        const mtnB = isHippogriffFlight ? "rgba(30,15,40,0.8)" : isThestralFlight ? "rgba(8,8,20,0.95)" : "rgba(8,20,10,0.9)";
+        drawMountains(H - 30, mtnA, 0.1, 1);
+        drawMountains(H - 15, mtnB, 0.2, 3);
         // Ground silhouette with trees
-        ctx.fillStyle = isHippogriffFlight ? "#1a0a20" : "#0a1a0a";
+        ctx.fillStyle = isHippogriffFlight ? "#1a0a20" : isThestralFlight ? "#050510" : "#0a1a0a";
         for (let i = -1; i < W / 40 + 2; i++) {
           const gx = (i * 40 - (cameraX * 0.3) % 40);
           const gh = 20 + ((i * 37 + 13) % 30);
           ctx.fillRect(gx, H - gh, 42, gh);
         }
-        drawTreeLine(H - 20, isHippogriffFlight ? "#150a1a" : "#0d1f0d", 0.25, 20, 7);
+        const treeColor = isHippogriffFlight ? "#150a1a" : isThestralFlight ? "#02020a" : "#0d1f0d";
+        drawTreeLine(H - 20, treeColor, 0.25, 20, 7);
       } else {
         const [c1, c2] = theme.bgColors;
         const grad = ctx.createLinearGradient(0, 0, 0, H);
