@@ -157,6 +157,26 @@ export function useGameState(user: User | null) {
 
   const purchaseItem = useCallback(async (item: ShopItem) => {
     if (profile.coins < item.cost) return;
+
+    // Felix Felicis (extra_life) is a true one-shot consumable: grant +1 life immediately,
+    // do NOT mark as owned so the user can buy it again.
+    if (item.id === "extra_life") {
+      saveProfile({
+        ...profile,
+        coins: profile.coins - item.cost,
+        lives: Math.min(10, profile.lives + 1),
+      });
+      if (user) {
+        await supabase.from("shop_purchases").insert({
+          user_id: user.id,
+          item_id: item.id,
+          item_type: item.type,
+          cost: item.cost,
+        });
+      }
+      return;
+    }
+
     const newUpgrades = { ...profile.purchasedUpgrades, [item.id]: true };
     const newTheme = item.type === "theme" ? item.id : profile.activeTheme;
     saveProfile({
