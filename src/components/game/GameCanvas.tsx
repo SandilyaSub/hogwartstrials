@@ -185,6 +185,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
   const [paused, setPaused] = useState(false);
   
   const tokenPointsRef = useRef(0);
+  const collectedCoinsRef = useRef(0);
 
   const world = WORLDS[worldId - 1];
   const level = world.levels[levelIdx];
@@ -197,8 +198,10 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     if (pts > 0 && profile.house?.id) {
       supabase.rpc("add_house_points", { p_house_id: profile.house.id, p_points: pts }).then(() => {});
     }
+    const bonusCoins = collectedCoinsRef.current;
     tokenPointsRef.current = 0;
-    onComplete();
+    collectedCoinsRef.current = 0;
+    onComplete(bonusCoins);
   }, [onComplete, profile.house?.id]);
 
   const handleDeath = useCallback((reason: DeathReason = "fall") => {
