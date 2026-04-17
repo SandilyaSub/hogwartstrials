@@ -24,6 +24,8 @@ export interface PlayerProfile {
   activeCharacterSkin?: string;
   /** Equipped accessory ids (multiple, one per slot). */
   activeAccessories?: string[];
+  /** Per-upgrade equip toggle. If a key is missing, the upgrade is considered ON (back-compat). */
+  activeUpgrades?: Record<string, boolean>;
 }
 
 const DEFAULT_PROFILE: PlayerProfile = {
@@ -42,6 +44,7 @@ const DEFAULT_PROFILE: PlayerProfile = {
   tutorialCompleted: false,
   activeCharacterSkin: undefined,
   activeAccessories: [],
+  activeUpgrades: {},
 };
 
 export function useGameState(user: User | null) {
@@ -70,15 +73,17 @@ export function useGameState(user: User | null) {
         const house = data.house_id ? HOUSES.find(h => h.id === data.house_id) || null : null;
         const pet = data.pet_id ? PETS.find(p => p.id === data.pet_id) || null : null;
 
-        // Local-only equipment state (skin + accessories) keyed by user id
+        // Local-only equipment state (skin + accessories + upgrade toggles) keyed by user id
         let activeCharacterSkin: string | undefined;
         let activeAccessories: string[] = [];
+        let activeUpgrades: Record<string, boolean> = {};
         try {
           const raw = localStorage.getItem(`equip_${user.id}`);
           if (raw) {
             const parsed = JSON.parse(raw);
             activeCharacterSkin = parsed.activeCharacterSkin;
             activeAccessories = parsed.activeAccessories || [];
+            activeUpgrades = parsed.activeUpgrades || {};
           }
         } catch {}
 
@@ -98,6 +103,7 @@ export function useGameState(user: User | null) {
           tutorialCompleted: (data as any).tutorial_completed || false,
           activeCharacterSkin,
           activeAccessories,
+          activeUpgrades,
         });
       }
       setDbLoaded(true);
@@ -116,6 +122,7 @@ export function useGameState(user: User | null) {
       localStorage.setItem(`equip_${user.id}`, JSON.stringify({
         activeCharacterSkin: p.activeCharacterSkin,
         activeAccessories: p.activeAccessories || [],
+        activeUpgrades: p.activeUpgrades || {},
       }));
     } catch {}
 
@@ -170,7 +177,9 @@ export function useGameState(user: User | null) {
     }
 
     const baseCoins = (levelIdx === (world ? world.levels.length - 1 : -1) ? 50 : 20);
-    const multiplier = profile.purchasedUpgrades?.["double_coins"] ? 2 : 1;
+    const doubleOwned = !!profile.purchasedUpgrades?.["double_coins"];
+    const doubleActive = profile.activeUpgrades?.["double_coins"] !== false; // default ON
+    const multiplier = doubleOwned && doubleActive ? 2 : 1;
     const earned = baseCoins * multiplier + bonusCoins * multiplier;
 
     saveProfile({
@@ -210,11 +219,17 @@ export function useGameState(user: User | null) {
 
     const newUpgrades = { ...profile.purchasedUpgrades, [item.id]: true };
     const newTheme = item.type === "theme" ? item.id : profile.activeTheme;
+    // Auto-equip newly purchased upgrades & consumables (so behavior matches user expectation right after buying)
+    const newActiveUpgrades = { ...(profile.activeUpgrades || {}) };
+    if (item.type === "upgrade" || item.type === "consumable") {
+      newActiveUpgrades[item.id] = true;
+    }
     saveProfile({
       ...profile,
       coins: profile.coins - item.cost,
       purchasedUpgrades: newUpgrades,
       activeTheme: newTheme,
+      activeUpgrades: newActiveUpgrades,
     });
 
     if (user) {

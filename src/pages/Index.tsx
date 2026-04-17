@@ -170,6 +170,9 @@ const Index = () => {
             saveProfile({ ...profile, activeTheme: themeId });
           }}
           onSelectCharacter={selectCharacter}
+          onActivatePremiumCharacter={(skinId) => {
+            saveProfile({ ...profile, activeCharacterSkin: skinId });
+          }}
           onBack={() => setScreen("worldmap")}
         />
       );
@@ -212,6 +215,14 @@ const Index = () => {
                 next = [...filtered, item.id];
               }
               saveProfile({ ...profile, activeAccessories: next });
+            } else if (item.type === "upgrade" || item.type === "consumable") {
+              // Toggle the effect on/off without losing the purchase
+              const current = profile.activeUpgrades || {};
+              const isOn = current[item.id] !== false; // default ON
+              saveProfile({
+                ...profile,
+                activeUpgrades: { ...current, [item.id]: !isOn },
+              });
             }
           }}
           onBack={() => setScreen("worldmap")}
