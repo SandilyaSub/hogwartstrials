@@ -123,7 +123,7 @@ export const WORLDS: World[] = [
     levels: [
       { id: "4-1", name: "Portkey Field", description: "Quidditch World Cup arrival", isBoss: false, theme: "field" },
       { id: "4-2", name: "Cliff Jumps", description: "Beauxbatons & Durmstrang arrive", isBoss: false, theme: "cliffs" },
-      { id: "4-3", name: "Dragon Flight", description: "First Task — ride the Horntail through the sky!", isBoss: false, theme: "arena" },
+      { id: "4-3", name: "Dragon Duel", description: "First Task — fly your Firebolt to seize the Golden Egg!", isBoss: false, theme: "arena" },
       { id: "4-4", name: "Yule Ball", description: "Dance floor between the tasks", isBoss: false, theme: "ballroom" },
       { id: "4-5", name: "Underwater Maze", description: "Second Task — into the Black Lake", isBoss: false, theme: "water" },
       { id: "4-6", name: "Merpeople Village", description: "Rescue the hostages", isBoss: false, theme: "water" },
@@ -170,7 +170,7 @@ export const WORLDS: World[] = [
       { id: "7-2", name: "Ruined Hogwarts", description: "Navigate the ruins", isBoss: false, theme: "ruins" },
       { id: "7-3", name: "Hard Flying", description: "Dragon escape flight", isBoss: false, theme: "flying" },
       { id: "7-4", name: "Final Climb", description: "Ascend the broken castle", isBoss: false, theme: "climb" },
-      { id: "7-5", name: "Gringotts Vault", description: "Mine cart escape ride", isBoss: false, theme: "dungeon" },
+      { id: "7-5", name: "Gringotts Escape", description: "Ride the Ironbelly out of the bank!", isBoss: false, theme: "flying" },
       { id: "7-6", name: "Room of Hidden Things", description: "Fiendfyre escape", isBoss: false, theme: "fire" },
       { id: "7-7", name: "Forbidden Forest Walk", description: "Walk to your fate", isBoss: false, theme: "forest" },
       { id: "7-8", name: "Elder Wand Chase", description: "The final pursuit", isBoss: false, theme: "chase" },
