@@ -1774,25 +1774,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           ctx.fillText(profile.character?.emoji || "⚡", cx + PLAYER_W / 2, cy + PLAYER_H - 2);
         }
 
-        // ─── Premium character skin tint (overlay color around avatar) ───
-        const skinId = profile.activeCharacterSkin;
-        if (skinId) {
-          const skin = SHOP_ITEMS.find(s => s.id === skinId && s.type === "character");
-          if (skin?.characterTint) {
-            ctx.save();
-            ctx.globalAlpha = 0.45 + Math.sin(frameCount * 0.08) * 0.15;
-            ctx.strokeStyle = skin.characterTint;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(cx + PLAYER_W / 2, cy + PLAYER_H / 2, (Math.max(PLAYER_W, PLAYER_H) + 4) / 2, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.globalAlpha = 1;
-            ctx.font = "12px serif";
-            ctx.textAlign = "center";
-            ctx.fillText(skin.emoji, cx + PLAYER_W / 2, cy - 8);
-            ctx.restore();
-          }
-        }
+        // (Premium character skin tint ring removed — character image stands alone)
 
         // ─── Equipped accessories (rendered as images) ───
         const acc = profile.activeAccessories || [];
