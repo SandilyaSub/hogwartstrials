@@ -73,6 +73,7 @@ export interface LevelData {
   boatLevel?: boolean;
   flyingCar?: boolean;
   hippogriffFlight?: boolean;
+  thestralFlight?: boolean;
   bossArena?: boolean;
   boss?: BossData;
 }
@@ -88,9 +89,9 @@ export interface LevelTheme {
 export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
   if (worldId === 1) {
     switch (levelIdx) {
-      case 0: return { bgColors: ["#050a14", "#0a1525"], platformColor: "#5a3a1a", platformHighlight: "#8a6a3a", ambientParticles: { color: "hsl(200, 60%, 40%)", count: 6 } };
+      case 0: return { bgColors: ["#02040c", "#0a1230"], platformColor: "#3a2a1a", platformHighlight: "#7a5a30", ambientParticles: { color: "hsl(220, 70%, 50%)", count: 8 } }; // Lake at night, Hogwarts in distance
       case 1: return { bgColors: ["#0d0d15", "#15152a"], platformColor: "#4a4a5a", platformHighlight: "#7a7a8a", ambientParticles: { color: "hsl(240, 30%, 50%)", count: 5 } };
-      case 2: return { bgColors: ["#050805", "#0a100a"], platformColor: "#3a3a2a", platformHighlight: "#5a5a4a", ambientParticles: { color: "hsl(120, 40%, 30%)", count: 3 } };
+      case 2: return { bgColors: ["#080605", "#1a0f08"], platformColor: "#3a3a2a", platformHighlight: "#a0703a", ambientParticles: { color: "hsl(25, 70%, 50%)", count: 5 } }; // Troll Dungeon - torchlit stone
       case 3: return { bgColors: ["#0a0a0f", "#151520"], platformColor: "#2a2a2a", platformHighlight: "#e0e0e0", ambientParticles: { color: "hsl(0, 0%, 80%)", count: 4 } };
       case 4: return { bgColors: ["#0a0808", "#151010"], platformColor: "#4a3a2a", platformHighlight: "#6a5a4a", ambientParticles: { color: "hsl(30, 40%, 40%)", count: 5 } };
       case 5: return { bgColors: ["#050805", "#0a100a"], platformColor: "#2a4a2a", platformHighlight: "#4a6a4a", ambientParticles: { color: "hsl(120, 50%, 30%)", count: 4 } };
@@ -113,7 +114,7 @@ export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
     "2-6": { bgColors: ["#050a05", "#0a150a"], platformColor: "#2a3a2a", platformHighlight: "#4a5a4a", ambientParticles: { color: "hsl(120, 30%, 30%)", count: 4 } },
     "2-7": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#2a3a3a", platformHighlight: "#4a5a5a", ambientParticles: { color: "hsl(150, 30%, 35%)", count: 4 } },
     "2-8": { bgColors: ["#0a0a0f", "#101020"], platformColor: "#4a3a2a", platformHighlight: "#6a5a4a", ambientParticles: { color: "hsl(40, 40%, 40%)", count: 6 } },
-    "2-9": { bgColors: ["#0a1a0a", "#052a10"], platformColor: "#2a4a2a", platformHighlight: "#4a7a4a", ambientParticles: { color: "hsl(120, 60%, 40%)", count: 8 } },
+    "2-9": { bgColors: ["#030a05", "#082a15"], platformColor: "#1a4a2a", platformHighlight: "#3a8a4a", ambientParticles: { color: "hsl(140, 70%, 35%)", count: 10 } }, // Chamber of Secrets - serpentine green
     // World 3 - Prisoner of Azkaban
     "3-0": { bgColors: ["#10081a", "#1a1030"], platformColor: "#5a4a6a", platformHighlight: "#8a7a9a", ambientParticles: { color: "hsl(270, 40%, 50%)", count: 6 } },
     "3-1": { bgColors: ["#0d0d15", "#15152a"], platformColor: "#5a5a6a", platformHighlight: "#8a8a9a", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 4 } },
@@ -128,7 +129,7 @@ export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
     // World 4 - Goblet of Fire
     "4-0": { bgColors: ["#1a0a00", "#2a1505"], platformColor: "#5a3a1a", platformHighlight: "#8a5a3a", ambientParticles: { color: "hsl(20, 70%, 50%)", count: 6 } },
     "4-1": { bgColors: ["#0a0a15", "#15152a"], platformColor: "#5a5a5a", platformHighlight: "#8a8a8a", ambientParticles: { color: "hsl(200, 20%, 50%)", count: 4 } },
-    "4-2": { bgColors: ["#051020", "#0a1a35"], platformColor: "#3a5a7a", platformHighlight: "#5a8aaa", ambientParticles: { color: "hsl(200, 50%, 40%)", count: 8 } },
+    "4-2": { bgColors: ["#020815", "#04162a"], platformColor: "#1a3a5a", platformHighlight: "#3a7aaa", ambientParticles: { color: "hsl(200, 80%, 55%)", count: 12 } }, // Black Lake underwater - deep & murky
     "4-3": { bgColors: ["#0a0808", "#151010"], platformColor: "#3a3a3a", platformHighlight: "#5a5a5a", ambientParticles: { color: "hsl(0, 0%, 30%)", count: 3 } },
     "4-4": { bgColors: ["#1a100a", "#2a1a10"], platformColor: "#6a5a3a", platformHighlight: "#8a7a5a", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 5 } },
     "4-5": { bgColors: ["#0a100a", "#0a1a0a"], platformColor: "#2a4a2a", platformHighlight: "#4a6a4a", ambientParticles: { color: "hsl(120, 40%, 35%)", count: 5 } },
@@ -136,22 +137,22 @@ export function getLevelTheme(worldId: number, levelIdx: number): LevelTheme {
     "4-7": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(280, 40%, 45%)", count: 6 } },
     "4-8": { bgColors: ["#100a10", "#1a0a1a"], platformColor: "#5a3a5a", platformHighlight: "#7a5a7a", ambientParticles: { color: "hsl(300, 40%, 45%)", count: 7 } },
     "4-9": { bgColors: ["#1a0a00", "#2a1500"], platformColor: "#5a3a1a", platformHighlight: "#7a5a3a", ambientParticles: { color: "hsl(15, 80%, 50%)", count: 10 } },
-    // World 5 - Order of the Phoenix
-    "5-0": { bgColors: ["#080810", "#10101a"], platformColor: "#3a3a4a", platformHighlight: "#5a5a7a", ambientParticles: { color: "hsl(230, 30%, 50%)", count: 5 } },
-    "5-1": { bgColors: ["#060608", "#0a0a10"], platformColor: "#2a2a3a", platformHighlight: "#4a4a5a", ambientParticles: { color: "hsl(270, 40%, 40%)", count: 4 } },
-    "5-2": { bgColors: ["#0a0a15", "#151525"], platformColor: "#4a4a5a", platformHighlight: "#6a6a8a", ambientParticles: { color: "hsl(45, 60%, 50%)", count: 6 } },
-    "5-3": { bgColors: ["#0a0508", "#150a10"], platformColor: "#4a3a3a", platformHighlight: "#6a5a5a", ambientParticles: { color: "hsl(0, 50%, 40%)", count: 8 } },
-    "5-4": { bgColors: ["#0a0810", "#15101a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(280, 40%, 45%)", count: 5 } },
-    "5-5": { bgColors: ["#1a1008", "#2a1a10"], platformColor: "#5a4a3a", platformHighlight: "#7a6a5a", ambientParticles: { color: "hsl(330, 40%, 50%)", count: 6 } },
-    "5-6": { bgColors: ["#0a1020", "#152040"], platformColor: "#6a6a8a", platformHighlight: "#8a8aaa", ambientParticles: { color: "hsl(220, 40%, 60%)", count: 7 } },
-    "5-7": { bgColors: ["#0a0508", "#150a10"], platformColor: "#3a2a3a", platformHighlight: "#5a4a5a", ambientParticles: { color: "hsl(300, 30%, 35%)", count: 4 } },
-    "5-8": { bgColors: ["#0a0a15", "#151525"], platformColor: "#4a4a5a", platformHighlight: "#6a6a8a", ambientParticles: { color: "hsl(45, 60%, 50%)", count: 7 } },
-    "5-9": { bgColors: ["#0a0a2a", "#001030"], platformColor: "#2a2a5a", platformHighlight: "#4a4a7a", ambientParticles: { color: "hsl(240, 50%, 50%)", count: 10 } },
+    // World 5 - Order of the Phoenix (book chronological order)
+    "5-0": { bgColors: ["#3a1a25", "#5a2538"], platformColor: "#aa4a6a", platformHighlight: "#e08aa0", ambientParticles: { color: "hsl(330, 50%, 60%)", count: 6 } }, // Umbridge's pink office
+    "5-1": { bgColors: ["#1a1008", "#2a1a10"], platformColor: "#5a4a3a", platformHighlight: "#7a6a5a", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 6 } }, // Room of Requirement (warm wood)
+    "5-2": { bgColors: ["#0a0a15", "#151525"], platformColor: "#4a4a5a", platformHighlight: "#6a6a8a", ambientParticles: { color: "hsl(45, 60%, 50%)", count: 6 } }, // D.A. Training
+    "5-3": { bgColors: ["#100a1a", "#1a1030"], platformColor: "#3a2a4a", platformHighlight: "#5a4a7a", ambientParticles: { color: "hsl(50, 70%, 60%)", count: 8 } }, // DA showdown - patronus glow
+    "5-4": { bgColors: ["#0a0508", "#150a10"], platformColor: "#4a3a3a", platformHighlight: "#6a5a5a", ambientParticles: { color: "hsl(0, 50%, 40%)", count: 8 } }, // Chaos Corridor
+    "5-5": { bgColors: ["#000005", "#0a0a20"], platformColor: "#2a2a3a", platformHighlight: "#4a4a6a", ambientParticles: { color: "hsl(240, 30%, 50%)", count: 6 } }, // Thestral Flight - midnight
+    "5-6": { bgColors: ["#080810", "#10101a"], platformColor: "#3a3a4a", platformHighlight: "#5a5a7a", ambientParticles: { color: "hsl(230, 30%, 50%)", count: 5 } }, // Ministry Atrium
+    "5-7": { bgColors: ["#060608", "#0a0a10"], platformColor: "#2a2a3a", platformHighlight: "#4a4a5a", ambientParticles: { color: "hsl(200, 70%, 60%)", count: 8 } }, // Hall of Prophecy - blue glow
+    "5-8": { bgColors: ["#000003", "#08080f"], platformColor: "#1a1a25", platformHighlight: "#3a3a4a", ambientParticles: { color: "hsl(260, 40%, 35%)", count: 5 } }, // Veil Chamber - pitch dark
+    "5-9": { bgColors: ["#3a1a25", "#1a0a15"], platformColor: "#5a2a3a", platformHighlight: "#aa4a6a", ambientParticles: { color: "hsl(330, 60%, 55%)", count: 12 } }, // Battle of Ministry / Umbridge boss
     // World 6 - Half-Blood Prince
     "6-0": { bgColors: ["#050a0a", "#0a1515"], platformColor: "#2a4a4a", platformHighlight: "#4a6a6a", ambientParticles: { color: "hsl(160, 40%, 40%)", count: 5 } },
     "6-1": { bgColors: ["#0a0a10", "#10101a"], platformColor: "#4a4a5a", platformHighlight: "#6a6a8a", ambientParticles: { color: "hsl(240, 20%, 50%)", count: 4 } },
     "6-2": { bgColors: ["#050505", "#0a0a0a"], platformColor: "#2a2a2a", platformHighlight: "#4a4a4a", ambientParticles: { color: "hsl(0, 0%, 25%)", count: 2 } },
-    "6-3": { bgColors: ["#050a10", "#0a1520"], platformColor: "#3a4a5a", platformHighlight: "#5a7a8a", ambientParticles: { color: "hsl(200, 30%, 35%)", count: 6 } },
+    "6-3": { bgColors: ["#000005", "#020812"], platformColor: "#1a2a3a", platformHighlight: "#3a8a6a", ambientParticles: { color: "hsl(140, 80%, 45%)", count: 10 } }, // Inferi cave - emerald potion glow
     "6-4": { bgColors: ["#1a100a", "#2a1a10"], platformColor: "#6a5a3a", platformHighlight: "#8a7a5a", ambientParticles: { color: "hsl(40, 50%, 50%)", count: 5 } },
     "6-5": { bgColors: ["#08101a", "#101a25"], platformColor: "#3a5a6a", platformHighlight: "#5a7a8a", ambientParticles: { color: "hsl(200, 40%, 50%)", count: 6 } },
     "6-6": { bgColors: ["#0a0810", "#15101a"], platformColor: "#4a3a5a", platformHighlight: "#6a5a7a", ambientParticles: { color: "hsl(280, 40%, 45%)", count: 5 } },
