@@ -1786,6 +1786,19 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillText(`🪙 ${collected}/${totalTokens}  (+${collectedTokenPoints} pts)`, W / 2, 24);
       }
 
+      // Shop coin counter (gold coins collected this level)
+      if (coins.length > 0) {
+        const coinsGot = coins.filter(c => c.collected).length;
+        ctx.save();
+        ctx.fillStyle = "#ffd24a";
+        ctx.font = "bold 14px Fredoka, sans-serif";
+        ctx.textAlign = "right";
+        ctx.shadowColor = "rgba(0,0,0,0.6)";
+        ctx.shadowBlur = 4;
+        ctx.fillText(`🟡 ${coinsGot}/${coins.length}`, W - 12, 24);
+        ctx.restore();
+      }
+
       if (isBossArena) {
         // Player HP bar
         ctx.fillStyle = "#aaa";
