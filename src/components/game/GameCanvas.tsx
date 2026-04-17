@@ -365,8 +365,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (jump && onGround) {
           vy = jumpPower;
           onGround = false;
-          // Nimbus: float briefly after jumping
-          if (shopHasFloat) floatFrames = 30;
+          // Nimbus: float much longer after jumping (buffed: was 30, now 90 frames = 1.5s glide)
+          if (shopHasFloat) floatFrames = 90;
           for (let i = 0; i < 5; i++) {
             particles.push({ x: px + PLAYER_W / 2, y: py + PLAYER_H, vx: (Math.random() - 0.5) * 3, vy: Math.random() * -2, life: 20, color: "hsl(45, 80%, 55%)" });
           }
@@ -587,9 +587,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         }
       });
 
-      // Shop coin collection (with Accio Coins magnet pull)
-      const COIN_MAGNET_RANGE = 140;
-      const COIN_MAGNET_PULL = 0.18;
+      // Shop coin collection (with Accio Coins magnet pull — buffed: stronger & farther)
+      const COIN_MAGNET_RANGE = 240;
+      const COIN_MAGNET_PULL = 0.32;
       coins.forEach(coin => {
         if (coin.collected) return;
         const cx = px + PLAYER_W / 2;
@@ -600,8 +600,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         if (shopHasMagnet) {
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < COIN_MAGNET_RANGE && dist > 0) {
-            coin.x += (dx / dist) * Math.max(2, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
-            coin.y += (dy / dist) * Math.max(2, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
+            coin.x += (dx / dist) * Math.max(4, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
+            coin.y += (dy / dist) * Math.max(4, (COIN_MAGNET_RANGE - dist) * COIN_MAGNET_PULL);
           }
         }
 
