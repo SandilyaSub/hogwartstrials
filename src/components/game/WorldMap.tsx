@@ -13,6 +13,19 @@ import dracoImg from "@/assets/characters/draco.png";
 import cedricImg from "@/assets/characters/cedric.png";
 import choImg from "@/assets/characters/cho.png";
 
+import owlImg from "@/assets/pets/owl.png";
+import catImg from "@/assets/pets/cat.png";
+import toadImg from "@/assets/pets/toad.png";
+import ratImg from "@/assets/pets/rat.png";
+import phoenixImg from "@/assets/pets/phoenix.png";
+import hippogriffImg from "@/assets/pets/hippogriff.png";
+import thestralImg from "@/assets/pets/thestral.png";
+import dragonImg from "@/assets/pets/dragon.png";
+import nifflerImg from "@/assets/pets/niffler.png";
+import basiliskImg from "@/assets/pets/basilisk.png";
+import occamyImg from "@/assets/pets/occamy.png";
+import grimImg from "@/assets/pets/grim.png";
+
 import world1Img from "@/assets/worlds/world1_philosopher.png";
 import world2Img from "@/assets/worlds/world2_chamber.png";
 import world3Img from "@/assets/worlds/world3_azkaban.png";
