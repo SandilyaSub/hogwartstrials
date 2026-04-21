@@ -1989,11 +1989,32 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.restore();
       }
 
-      // Pet
+      // Pet companion sprite
       if (profile.pet) {
-        ctx.font = "12px serif";
-        ctx.textAlign = "center";
-        ctx.fillText(profile.pet.emoji, px + PLAYER_W + 8, py - 4 + Math.sin(frameCount * 0.1) * 3);
+        const petSrc = PET_IMAGES[profile.pet.id];
+        const petY = py - 4 + Math.sin(frameCount * 0.1) * 3;
+        const petX = px + PLAYER_W + 8;
+        if (petSrc) {
+          const petKey = `__petImg_${profile.pet.id}`;
+          if (!(window as any)[petKey]) {
+            const img = new Image();
+            img.src = petSrc;
+            (window as any)[petKey] = img;
+          }
+          const petImg = (window as any)[petKey] as HTMLImageElement;
+          if (petImg.complete && petImg.naturalWidth > 0) {
+            const petSize = 22;
+            ctx.drawImage(petImg, petX - petSize / 2, petY - petSize / 2, petSize, petSize);
+          } else {
+            ctx.font = "14px serif";
+            ctx.textAlign = "center";
+            ctx.fillText(profile.pet.emoji, petX, petY);
+          }
+        } else {
+          ctx.font = "14px serif";
+          ctx.textAlign = "center";
+          ctx.fillText(profile.pet.emoji, petX, petY);
+        }
       }
 
       // Particles (rounded)
