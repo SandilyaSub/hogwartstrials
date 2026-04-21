@@ -31,8 +31,9 @@ function getMondayOfWeek(date: Date): string {
   return d.toISOString().split("T")[0];
 }
 
-function isMonday(): boolean {
-  return new Date().getUTCDay() === 1;
+// Celebrate the winner all week long, not just on Monday
+function isWinnerWeek(weekStart: string): boolean {
+  return getMondayOfWeek(new Date()) === weekStart;
 }
 
 const HouseLeaderboard = ({ onBack, playerHouseId }: HouseLeaderboardProps) => {
@@ -76,7 +77,7 @@ const HouseLeaderboard = ({ onBack, playerHouseId }: HouseLeaderboardProps) => {
   }, []);
 
   const maxPoints = Math.max(1, ...houses.map(h => h.total_points));
-  const showCelebration = weeklyWinner && isMonday();
+  const showCelebration = weeklyWinner && isWinnerWeek(weeklyWinner.week_start);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4 relative overflow-hidden">
@@ -112,7 +113,7 @@ const HouseLeaderboard = ({ onBack, playerHouseId }: HouseLeaderboardProps) => {
             </p>
             {showCelebration && (
               <p className="text-xs mt-2 font-display animate-magic-pulse" style={{ color: weeklyWinner.house_color }}>
-                ✨ Celebrating all day today! ✨
+                ✨ Celebrating all week! ✨
               </p>
             )}
           </div>
