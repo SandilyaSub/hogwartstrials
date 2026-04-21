@@ -45,6 +45,13 @@ const WORLD_IMAGES: Record<number, string> = {
   5: world5Img, 6: world6Img, 7: world7Img,
 };
 
+const PET_IMAGES: Record<string, string> = {
+  owl: owlImg, cat: catImg, toad: toadImg, rat: ratImg,
+  phoenix: phoenixImg, hippogriff: hippogriffImg, thestral: thestralImg,
+  dragon: dragonImg, niffler: nifflerImg, basilisk: basiliskImg,
+  occamy: occamyImg, grim: grimImg,
+};
+
 interface WorldMapProps {
   profile: PlayerProfile;
   onStartLevel: (worldId: number, levelIdx: number) => void;
