@@ -60,6 +60,27 @@ import dragonMountImg from "@/assets/pets/dragon_mount.png";
 import fireboltMountImg from "@/assets/pets/firebolt_broom.png";
 import flyingCarImg from "@/assets/pets/flying_car.png";
 
+// Pet companion sprites
+import petOwlImg from "@/assets/pets/owl.png";
+import petCatImg from "@/assets/pets/cat.png";
+import petToadImg from "@/assets/pets/toad.png";
+import petRatImg from "@/assets/pets/rat.png";
+import petPhoenixImg from "@/assets/pets/phoenix.png";
+import petHippogriffImg from "@/assets/pets/hippogriff.png";
+import petThestralImg from "@/assets/pets/thestral.png";
+import petDragonImg from "@/assets/pets/dragon.png";
+import petNifflerImg from "@/assets/pets/niffler.png";
+import petBasiliskImg from "@/assets/pets/basilisk.png";
+import petOccamyImg from "@/assets/pets/occamy.png";
+import petGrimImg from "@/assets/pets/grim.png";
+
+const PET_IMAGES: Record<string, string> = {
+  owl: petOwlImg, cat: petCatImg, toad: petToadImg, rat: petRatImg,
+  phoenix: petPhoenixImg, hippogriff: petHippogriffImg, thestral: petThestralImg,
+  dragon: petDragonImg, niffler: petNifflerImg, basilisk: petBasiliskImg,
+  occamy: petOccamyImg, grim: petGrimImg,
+};
+
 const CHARACTER_IMAGES: Record<string, string> = {
   harry: harryImg, hermione: hermioneImg, ron: ronImg,
   luna: lunaImg, ginny: ginnyImg, neville: nevilleImg,
@@ -1968,11 +1989,32 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.restore();
       }
 
-      // Pet
+      // Pet companion sprite
       if (profile.pet) {
-        ctx.font = "12px serif";
-        ctx.textAlign = "center";
-        ctx.fillText(profile.pet.emoji, px + PLAYER_W + 8, py - 4 + Math.sin(frameCount * 0.1) * 3);
+        const petSrc = PET_IMAGES[profile.pet.id];
+        const petY = py - 4 + Math.sin(frameCount * 0.1) * 3;
+        const petX = px + PLAYER_W + 8;
+        if (petSrc) {
+          const petKey = `__petImg_${profile.pet.id}`;
+          if (!(window as any)[petKey]) {
+            const img = new Image();
+            img.src = petSrc;
+            (window as any)[petKey] = img;
+          }
+          const petImg = (window as any)[petKey] as HTMLImageElement;
+          if (petImg.complete && petImg.naturalWidth > 0) {
+            const petSize = 22;
+            ctx.drawImage(petImg, petX - petSize / 2, petY - petSize / 2, petSize, petSize);
+          } else {
+            ctx.font = "14px serif";
+            ctx.textAlign = "center";
+            ctx.fillText(profile.pet.emoji, petX, petY);
+          }
+        } else {
+          ctx.font = "14px serif";
+          ctx.textAlign = "center";
+          ctx.fillText(profile.pet.emoji, petX, petY);
+        }
       }
 
       // Particles (rounded)
