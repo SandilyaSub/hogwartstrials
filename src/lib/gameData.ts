@@ -24,6 +24,9 @@ export interface Pet {
   description: string;
   unlockWorld: number;
   effect: { type: string; value: number };
+  /** If set, this pet is legendary and must be purchased from the Pet Store with coins. */
+  cost?: number;
+  legendary?: boolean;
 }
 
 export interface Level {
@@ -70,6 +73,13 @@ export const PETS: Pet[] = [
   { id: "phoenix", name: "Phoenix", emoji: "🔥", ability: "Revive", description: "Second chance after falling", unlockWorld: 4, effect: { type: "revive", value: 1 } },
   { id: "hippogriff", name: "Hippogriff", emoji: "🦅", ability: "Flight Control", description: "Better flying control", unlockWorld: 5, effect: { type: "flying", value: 1 } },
   { id: "thestral", name: "Thestral", emoji: "👻", ability: "See Hidden", description: "Reveals hidden platforms", unlockWorld: 6, effect: { type: "vision", value: 1 } },
+
+  // ─── Legendary Pets (purchased with coins from the Pet Store) ───
+  { id: "dragon", name: "Norwegian Ridgeback", emoji: "🐉", ability: "Fire Dash", description: "Legendary dragon hatchling — soars over gaps with a blazing dash", unlockWorld: 1, effect: { type: "flying", value: 2 }, legendary: true, cost: 2500 },
+  { id: "niffler", name: "Niffler", emoji: "🪙", ability: "Treasure Hunter", description: "Legendary — sniffs out bonus coins on every level", unlockWorld: 1, effect: { type: "luck", value: 2 }, legendary: true, cost: 2000 },
+  { id: "basilisk", name: "Basilisk", emoji: "🐍", ability: "Petrifying Gaze", description: "Legendary serpent — stuns nearby enemies with a single look", unlockWorld: 1, effect: { type: "stun", value: 1 }, legendary: true, cost: 3000 },
+  { id: "occamy", name: "Occamy", emoji: "🪶", ability: "Featherlight", description: "Legendary winged serpent — extends your jump and float dramatically", unlockWorld: 1, effect: { type: "jump", value: 2 }, legendary: true, cost: 2200 },
+  { id: "grim", name: "The Grim", emoji: "🐺", ability: "Death's Shield", description: "Legendary spectral hound — guards you from one fatal blow per level", unlockWorld: 1, effect: { type: "revive", value: 1 }, legendary: true, cost: 2800 },
 ];
 
 export const WORLDS: World[] = [
