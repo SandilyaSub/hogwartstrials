@@ -182,6 +182,7 @@ const Index = () => {
         <PetStore
           profile={profile}
           onSelectPet={selectPet}
+          onPurchasePet={purchasePet}
           onBack={() => setScreen("worldmap")}
         />
       );

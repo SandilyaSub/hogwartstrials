@@ -162,6 +162,30 @@ export function useGameState(user: User | null) {
     saveProfile({ ...profile, pet });
   }, [profile, saveProfile]);
 
+  const purchasePet = useCallback(async (petId: string, cost: number) => {
+    const pet = PETS.find(p => p.id === petId);
+    if (!pet || !pet.legendary) return;
+    if (profile.unlockedPets.includes(petId)) return;
+    if (profile.coins < cost) return;
+
+    const newPets = [...profile.unlockedPets, petId];
+    saveProfile({
+      ...profile,
+      coins: profile.coins - cost,
+      unlockedPets: newPets,
+      pet, // auto-equip after purchase
+    });
+
+    if (user) {
+      await supabase.from("shop_purchases").insert({
+        user_id: user.id,
+        item_id: petId,
+        item_type: "pet",
+        cost,
+      });
+    }
+  }, [profile, saveProfile, user]);
+
   const completeLevel = useCallback((levelId: string, bonusCoins: number = 0) => {
     const completed = [...new Set([...profile.completedLevels, levelId])];
     const world = WORLDS.find(w => w.levels.some(l => l.id === levelId));
@@ -255,7 +279,7 @@ export function useGameState(user: User | null) {
   return {
     screen, setScreen,
     profile, saveProfile,
-    setUsername, selectCharacter, selectHouse, selectPet,
+    setUsername, selectCharacter, selectHouse, selectPet, purchasePet,
     completeLevel, startLevel, resetGame, purchaseItem,
     hasSave, dbLoaded,
   };
