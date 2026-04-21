@@ -8,67 +8,70 @@ export interface PremiumItem {
   highlight?: boolean; // featured item
 }
 
+// NOTE: These items are intentionally distinct from anything in the regular
+// coin-based shop (see shopData.ts). No overlapping characters, accessories,
+// themes, auras, powerups or pets.
 export const PREMIUM_ITEMS: PremiumItem[] = [
-  // ─── Exclusive Characters ───
+  // ─── Exclusive Characters (none of these exist in the coin shop) ───
   {
-    id: "prem_dumbledore", name: "Albus Dumbledore", description: "The greatest wizard of all time. +3 to all stats.",
-    emoji: "🧙‍♂️", priceLabel: "$2.99", category: "character", highlight: true,
+    id: "prem_merlin", name: "Merlin the Ancient", description: "The legendary founder of magic. +5 to all stats.",
+    emoji: "🪄", priceLabel: "$3.99", category: "character", highlight: true,
   },
   {
-    id: "prem_snape", name: "Severus Snape", description: "Master of potions. Enemies slow down near you.",
-    emoji: "🖤", priceLabel: "$2.99", category: "character",
+    id: "prem_morgana", name: "Morgana le Fay", description: "Dark sorceress of legend. Curse enemies on contact.",
+    emoji: "🌙", priceLabel: "$2.99", category: "character",
   },
   {
-    id: "prem_voldemort", name: "Tom Riddle", description: "The Dark Lord himself. Immune to hazard platforms.",
-    emoji: "💀", priceLabel: "$3.99", category: "character", highlight: true,
+    id: "prem_nicolas_flamel", name: "Nicolas Flamel", description: "The immortal alchemist. Coins are worth double.",
+    emoji: "⚗️", priceLabel: "$2.49", category: "character", highlight: true,
   },
   {
-    id: "prem_dobby", name: "Dobby", description: "A free elf! Double jump permanently unlocked.",
-    emoji: "🧦", priceLabel: "$1.99", category: "character",
-  },
-
-  // ─── Premium Power-ups ───
-  {
-    id: "prem_elder_wand", name: "Elder Wand", description: "Triple spell damage in all boss fights. Permanent.",
-    emoji: "⚡", priceLabel: "$1.99", category: "powerup", highlight: true,
-  },
-  {
-    id: "prem_resurrection_stone", name: "Resurrection Stone", description: "Revive with full HP once per level. Unlimited uses.",
-    emoji: "💎", priceLabel: "$2.49", category: "powerup",
-  },
-  {
-    id: "prem_marauders_map", name: "Marauder's Map Complete", description: "See all enemies, coins & secrets on every level.",
-    emoji: "🗺️", priceLabel: "$1.49", category: "powerup",
-  },
-  {
-    id: "prem_infinite_lives", name: "Infinite Lives Pack", description: "Never run out of lives. Play endlessly.",
-    emoji: "♾️", priceLabel: "$3.99", category: "powerup", highlight: true,
+    id: "prem_grindelwald", name: "Gellert Grindelwald", description: "Master duellist. Spells pierce through walls.",
+    emoji: "🗡️", priceLabel: "$2.99", category: "character",
   },
 
-  // ─── Premium Cosmetics ───
+  // ─── Premium Power-ups (mechanics not sold for coins) ───
   {
-    id: "prem_theme_deathly", name: "Deathly Hallows Theme", description: "Exclusive tri-symbol theme with animated particles.",
-    emoji: "△", priceLabel: "$0.99", category: "cosmetic",
+    id: "prem_time_turner", name: "Time-Turner", description: "Rewind death once per level. Permanent unlock.",
+    emoji: "⏳", priceLabel: "$2.49", category: "powerup", highlight: true,
   },
   {
-    id: "prem_theme_patronus", name: "Patronus Glow Theme", description: "Shimmering silver-blue with ethereal light trails.",
-    emoji: "🦌", priceLabel: "$0.99", category: "cosmetic",
+    id: "prem_invisibility_cloak", name: "Invisibility Cloak", description: "Phase through enemies for 5s every minute.",
+    emoji: "👻", priceLabel: "$1.99", category: "powerup",
   },
   {
-    id: "prem_trail_fire", name: "Fiendfyre Trail", description: "Leave a trail of magical fire as you run.",
-    emoji: "🔥", priceLabel: "$1.49", category: "cosmetic",
+    id: "prem_pensieve", name: "Pensieve Memory", description: "Replay any boss with full health, anytime.",
+    emoji: "🌀", priceLabel: "$1.49", category: "powerup",
   },
   {
-    id: "prem_trail_stars", name: "Starfall Trail", description: "Sparkling stars follow your every move.",
-    emoji: "✨", priceLabel: "$1.49", category: "cosmetic",
+    id: "prem_xp_boost", name: "Eternal House Boost", description: "All house points awarded are tripled. Forever.",
+    emoji: "🏆", priceLabel: "$3.49", category: "powerup", highlight: true,
+  },
+
+  // ─── Premium Cosmetics (no overlap with coin themes/auras/pets) ───
+  {
+    id: "prem_theme_mirror_erised", name: "Mirror of Erised Theme", description: "Reflective gold UI with shifting reflections.",
+    emoji: "🪞", priceLabel: "$1.49", category: "cosmetic",
   },
   {
-    id: "prem_golden_skin", name: "Golden Wizard Skin", description: "Your character shines in pure gold. Flex on everyone.",
-    emoji: "👑", priceLabel: "$2.99", category: "cosmetic", highlight: true,
+    id: "prem_theme_chamber", name: "Chamber of Secrets Theme", description: "Emerald serpent UI with parseltongue runes.",
+    emoji: "🐍", priceLabel: "$1.49", category: "cosmetic",
   },
   {
-    id: "prem_pet_phoenix", name: "Phoenix Companion", description: "A majestic phoenix follows you in every level.",
-    emoji: "🔥", priceLabel: "$2.49", category: "cosmetic",
+    id: "prem_aura_basilisk", name: "Basilisk Aura", description: "Coiling green serpent aura swirls around you.",
+    emoji: "🟢", priceLabel: "$1.99", category: "cosmetic",
+  },
+  {
+    id: "prem_aura_galaxy", name: "Galaxy Aura", description: "A swirling cosmos orbits your character.",
+    emoji: "🌌", priceLabel: "$1.99", category: "cosmetic",
+  },
+  {
+    id: "prem_skin_diamond", name: "Diamond Wizard Skin", description: "Crystalline character with refracted light.",
+    emoji: "💎", priceLabel: "$2.99", category: "cosmetic", highlight: true,
+  },
+  {
+    id: "prem_pet_thestral", name: "Thestral Companion", description: "A mysterious skeletal steed glides beside you.",
+    emoji: "🦴", priceLabel: "$2.49", category: "cosmetic",
   },
 ];
 
