@@ -28,7 +28,7 @@ const Index = () => {
   const {
     screen, setScreen,
     profile, saveProfile,
-    setUsername, selectCharacter, selectHouse, selectPet,
+    setUsername, selectCharacter, selectHouse, selectPet, purchasePet,
     completeLevel, startLevel, resetGame, purchaseItem,
     hasSave, dbLoaded,
   } = useGameState(user);
