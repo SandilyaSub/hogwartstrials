@@ -339,9 +339,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     function update() {
       frameCount++;
 
-      const left = keys.has("ArrowLeft") || keys.has("a") || touchLeft;
-      const right = keys.has("ArrowRight") || keys.has("d") || touchRight;
-      const jump = keys.has("ArrowUp") || keys.has("w") || keys.has(" ") || touchJump;
+      const left = keys.has("ArrowLeft") || keys.has("a");
+      const right = keys.has("ArrowRight") || keys.has("d");
+      const jump = keys.has("ArrowUp") || keys.has("w") || keys.has(" ");
       const down = keys.has("ArrowDown") || keys.has("s");
 
       if (isFlyingCar) {
@@ -2112,8 +2112,6 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
       cancelAnimationFrame(gameLoopRef.current);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
-      canvas.removeEventListener("touchstart", onTouchStart);
-      canvas.removeEventListener("touchend", onTouchEnd);
     };
   }, [worldId, levelIdx, profile, paused, handleComplete, handleDeath, theme]);
 
