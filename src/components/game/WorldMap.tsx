@@ -13,6 +13,19 @@ import dracoImg from "@/assets/characters/draco.png";
 import cedricImg from "@/assets/characters/cedric.png";
 import choImg from "@/assets/characters/cho.png";
 
+import owlImg from "@/assets/pets/owl.png";
+import catImg from "@/assets/pets/cat.png";
+import toadImg from "@/assets/pets/toad.png";
+import ratImg from "@/assets/pets/rat.png";
+import phoenixImg from "@/assets/pets/phoenix.png";
+import hippogriffImg from "@/assets/pets/hippogriff.png";
+import thestralImg from "@/assets/pets/thestral.png";
+import dragonImg from "@/assets/pets/dragon.png";
+import nifflerImg from "@/assets/pets/niffler.png";
+import basiliskImg from "@/assets/pets/basilisk.png";
+import occamyImg from "@/assets/pets/occamy.png";
+import grimImg from "@/assets/pets/grim.png";
+
 import world1Img from "@/assets/worlds/world1_philosopher.png";
 import world2Img from "@/assets/worlds/world2_chamber.png";
 import world3Img from "@/assets/worlds/world3_azkaban.png";
@@ -30,6 +43,13 @@ const CHARACTER_IMAGES: Record<string, string> = {
 const WORLD_IMAGES: Record<number, string> = {
   1: world1Img, 2: world2Img, 3: world3Img, 4: world4Img,
   5: world5Img, 6: world6Img, 7: world7Img,
+};
+
+const PET_IMAGES: Record<string, string> = {
+  owl: owlImg, cat: catImg, toad: toadImg, rat: ratImg,
+  phoenix: phoenixImg, hippogriff: hippogriffImg, thestral: thestralImg,
+  dragon: dragonImg, niffler: nifflerImg, basilisk: basiliskImg,
+  occamy: occamyImg, grim: grimImg,
 };
 
 interface WorldMapProps {
@@ -75,7 +95,13 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
                   {profile.username}
                 </h1>
                 <p className="text-sm text-muted-foreground font-body inline-flex items-center gap-1.5">
-                  <span>{profile.house?.name} · {profile.pet?.emoji || "No pet"} ·</span>
+                  <span>{profile.house?.name} ·</span>
+                  {profile.pet && PET_IMAGES[profile.pet.id] ? (
+                    <img src={PET_IMAGES[profile.pet.id]} alt={profile.pet.name} className="w-5 h-5 inline-block object-contain" />
+                  ) : (
+                    <span>{profile.pet?.emoji || "No pet"}</span>
+                  )}
+                  <span>·</span>
                   <GoldCoin size={14} /> {profile.coins}
                 </p>
               </div>
