@@ -332,21 +332,9 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
 
-    let touchLeft = false, touchRight = false, touchJump = false;
-    const onTouchStart = (e: TouchEvent) => {
-      for (const t of Array.from(e.touches)) {
-        if (t.clientY > H * 0.6) {
-          if (t.clientX < W / 3) touchLeft = true;
-          else if (t.clientX > W * 2 / 3) touchRight = true;
-        } else {
-          touchJump = true;
-        }
-      }
-    };
-    const onTouchEnd = () => { touchLeft = false; touchRight = false; touchJump = false; };
+    // Touch input is handled by the <TouchControls /> overlay component,
+    // which writes directly into keysRef (a/d/w/s/space).
 
-    canvas.addEventListener("touchstart", onTouchStart);
-    canvas.addEventListener("touchend", onTouchEnd);
 
     function update() {
       frameCount++;
@@ -2106,21 +2094,8 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
         ctx.fillText(hasRevive ? "🔥 Revive Ready" : "", W - 10, 24);
       }
 
-      // Touch controls
-      if ('ontouchstart' in window) {
-        ctx.globalAlpha = 0.15;
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(0, H * 0.6, W / 3, H * 0.4);
-        ctx.fillRect(W * 2 / 3, H * 0.6, W / 3, H * 0.4);
-        ctx.fillRect(W / 3, 0, W / 3, H * 0.6);
-        ctx.globalAlpha = 0.3;
-        ctx.font = "20px serif";
-        ctx.textAlign = "center";
-        ctx.fillText("◄", W / 6, H * 0.8);
-        ctx.fillText("►", W * 5 / 6, H * 0.8);
-        ctx.fillText("JUMP", W / 2, H * 0.3);
-        ctx.globalAlpha = 1;
-      }
+      // (Touch UI is now rendered as a React overlay, not on the canvas)
+
     }
 
     function gameLoop() {
