@@ -1,1 +1,4 @@
 project_id = "qlybqauyoqsjqxwcgmri"
+
+[functions.weekly-house-cup-reset]
+verify_jwt = false

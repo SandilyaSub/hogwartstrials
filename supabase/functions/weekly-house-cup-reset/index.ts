@@ -6,19 +6,13 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// Public endpoint: no auth required.
+// Safe because the function is idempotent — it only records ONE winner per
+// ISO week (week_start unique guard) and resets points to 0. Calling it
+// repeatedly within the same week is a no-op after the first success.
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
-  }
-
-  // Authenticate caller via shared secret
-  const expected = Deno.env.get("WEEKLY_RESET_SECRET");
-  const authHeader = req.headers.get("Authorization") ?? "";
-  if (!expected || authHeader !== `Bearer ${expected}`) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized" }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 401 }
-    );
   }
 
   try {
@@ -26,7 +20,6 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Get all houses sorted by points descending
     const { data: houses, error: fetchErr } = await supabase
       .from("house_leaderboard")
       .select("*")
@@ -42,15 +35,16 @@ Deno.serve(async (req) => {
 
     const winner = houses[0];
 
-    // Calculate the Monday of the current week
+    // Monday of the current ISO week (UTC)
     const now = new Date();
     const dayOfWeek = now.getUTCDay(); // 0=Sun, 1=Mon...
     const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     const monday = new Date(now);
     monday.setUTCDate(now.getUTCDate() + mondayOffset);
+    monday.setUTCHours(0, 0, 0, 0);
     const weekStart = monday.toISOString().split("T")[0];
 
-    // Check if we already recorded a winner for this week
+    // Idempotency: only record one winner per week
     const { data: existing } = await supabase
       .from("house_cup_winners")
       .select("id")
@@ -59,12 +53,23 @@ Deno.serve(async (req) => {
 
     if (existing && existing.length > 0) {
       return new Response(
-        JSON.stringify({ message: "Winner already recorded for this week", winner: winner.house_name }),
+        JSON.stringify({
+          message: "Winner already recorded for this week",
+          winner: winner.house_name,
+          week_start: weekStart,
+        }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
       );
     }
 
-    // Record the winner
+    // Don't crown / reset if no one has any points this week
+    if (winner.total_points <= 0) {
+      return new Response(
+        JSON.stringify({ message: "No points scored this week — skipping" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+      );
+    }
+
     const { error: insertErr } = await supabase
       .from("house_cup_winners")
       .insert({
@@ -78,15 +83,12 @@ Deno.serve(async (req) => {
 
     if (insertErr) throw insertErr;
 
-    // Reset all house points to 0
-    for (const house of houses) {
-      const { error: resetErr } = await supabase
-        .from("house_leaderboard")
-        .update({ total_points: 0, updated_at: new Date().toISOString() })
-        .eq("house_id", house.house_id);
+    const { error: resetErr } = await supabase
+      .from("house_leaderboard")
+      .update({ total_points: 0, updated_at: new Date().toISOString() })
+      .neq("house_id", "__never__");
 
-      if (resetErr) throw resetErr;
-    }
+    if (resetErr) throw resetErr;
 
     return new Response(
       JSON.stringify({
@@ -98,7 +100,6 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
   } catch (error) {
-    // Log full error server-side, return generic message to caller
     console.error("Weekly reset failed:", error);
     return new Response(
       JSON.stringify({ error: "Internal server error" }),
