@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback, useState } from "react";
+import TouchControls from "./TouchControls";
 import type { DeathReason } from "./GameOver";
 import { WORLDS } from "@/lib/gameData";
 import { generateLevel, getLevelTheme, getBossSpells, type Platform, type Enemy, type Particle, type LevelData, type Projectile, type SpellDef, type HouseToken, type Coin } from "@/lib/levelGenerator";
@@ -2115,9 +2116,14 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     };
   }, [worldId, levelIdx, profile, paused, handleComplete, handleDeath, theme]);
 
+  const isTouchDevice = typeof window !== "undefined" &&
+    ("ontouchstart" in window || (navigator as any).maxTouchPoints > 0);
+
   return (
     <div className="relative w-full h-screen bg-background">
       <canvas ref={canvasRef} className="w-full h-full block" style={{ imageRendering: "pixelated" }} />
+
+      {isTouchDevice && !paused && <TouchControls keysRef={keysRef} />}
 
       {/* Top right controls */}
       <div className="absolute top-2 right-2 z-10 flex gap-2">
