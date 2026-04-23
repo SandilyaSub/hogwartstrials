@@ -23,7 +23,7 @@ import GameOver from "@/components/game/GameOver";
 import Tutorial from "@/components/game/Tutorial";
 import HouseLeaderboard from "@/components/game/HouseLeaderboard";
 import FestivalQuestCanvas from "@/components/game/FestivalQuestCanvas";
-import { getFestivalById } from "@/lib/festivalQuests";
+import { getFestivalById, getYearlyChapter } from "@/lib/festivalQuests";
 
 const Index = () => {
   const { user, loading, signUp, signIn, signOut } = useAuth();
@@ -350,6 +350,7 @@ const Index = () => {
         setScreen("worldmap");
         return null;
       }
+      const { chapter, year } = getYearlyChapter(quest);
       return (
         <div
           className="fixed inset-0 flex items-center justify-center p-6"
@@ -360,16 +361,19 @@ const Index = () => {
           <div className="max-w-md w-full card-illustrated p-8 text-center animate-pop-in">
             <div className="text-5xl mb-3 animate-bounce">{quest.emoji}</div>
             <p className="font-display text-xs uppercase tracking-widest text-muted-foreground mb-1">
-              Festival Quest Complete
+              Festival Quest Complete · {year}
             </p>
             <h2
-              className="font-display text-2xl font-bold mb-4"
+              className="font-display text-2xl font-bold mb-1"
               style={{ color: quest.primaryColor }}
             >
               {quest.name}
             </h2>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground font-display mb-4">
+              {chapter.subtitle}
+            </p>
             <p className="text-sm text-foreground/70 italic font-body mb-6">
-              "{quest.loreQuote}"
+              "{chapter.loreQuote}"
             </p>
 
             <div
