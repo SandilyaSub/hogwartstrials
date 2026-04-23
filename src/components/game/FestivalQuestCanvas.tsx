@@ -19,7 +19,6 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
   const rafRef = useRef<number>(0);
   const [collected, setCollected] = useState(0);
   const [timeLeft, setTimeLeft] = useState(quest.timeLimit);
-  const [paused, setPaused] = useState(false);
 
   // Stable refs read inside the loop without re-triggering effect
   const collectedRef = useRef(0);
@@ -98,11 +97,6 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
 
     function step(now: number) {
       if (finishedRef.current || failedRef.current) return;
-      if (paused) {
-        lastSecond = now;
-        rafRef.current = requestAnimationFrame(step);
-        return;
-      }
 
       // ---- Update timer ----
       if (quest.timeLimit > 0 && now - lastSecond >= 1000) {
@@ -293,7 +287,7 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
     };
-  }, [quest, paused, onComplete]);
+  }, [quest, onComplete]);
 
   // Failure -> exit (handled in render via effect)
   useEffect(() => {
