@@ -79,11 +79,16 @@ const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps
             ✨ LEGENDARY
           </span>
         )}
+        {isFestival && (
+          <span className="absolute top-2 right-2 text-[10px] font-display font-bold tracking-wider px-2 py-0.5 rounded-full bg-magic-glow/20 text-magic-glow border border-magic-glow/30">
+            🎊 FESTIVAL
+          </span>
+        )}
         <div className="flex items-center gap-3">
           <img
             src={PET_IMAGES[pet.id]}
             alt={pet.name}
-            className={`w-14 h-14 rounded-xl object-cover ${isLegendary ? "ring-2 ring-primary/40" : ""}`}
+            className={`w-14 h-14 rounded-xl object-cover ${isLegendary || isFestival ? "ring-2 ring-primary/40" : ""}`}
             loading="lazy"
             width={1024}
             height={1024}
@@ -112,7 +117,10 @@ const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps
             </span>
           </div>
         )}
-        {!unlocked && !isLegendary && (
+        {!unlocked && isFestival && (
+          <p className="text-xs text-muted-foreground/70 mt-2 font-body">🔒 Complete the matching festival side-quest to unlock</p>
+        )}
+        {!unlocked && !isLegendary && !isFestival && (
           <p className="text-xs text-muted-foreground/50 mt-2 font-body">🔒 Unlocks after World {pet.unlockWorld}</p>
         )}
       </button>
@@ -146,6 +154,14 @@ const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps
           <p className="text-xs text-muted-foreground font-body mb-3 px-1">Rare magical creatures, purchased with coins</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {legendaryPets.map((p, i) => renderPet(p, i))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="font-display text-sm font-semibold text-magic-glow uppercase tracking-wider mb-3 px-1 text-glow">🎊 Festival Exclusives</h3>
+          <p className="text-xs text-muted-foreground font-body mb-3 px-1">Earned only by completing limited-time festival side-quests</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {festivalPets.map((p, i) => renderPet(p, i))}
           </div>
         </div>
       </div>
