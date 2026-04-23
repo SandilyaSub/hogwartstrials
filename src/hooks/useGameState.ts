@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ShopItem } from "@/lib/shopData";
 import type { User } from "@supabase/supabase-js";
 
-export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "feedback" | "settings" | "levelIntro" | "playing" | "levelComplete" | "gameOver" | "tutorial" | "leaderboard";
+export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "feedback" | "settings" | "levelIntro" | "playing" | "levelComplete" | "gameOver" | "tutorial" | "leaderboard" | "festivalQuest" | "festivalComplete";
 
 export interface PlayerProfile {
   username: string;
@@ -268,6 +268,13 @@ export function useGameState(user: User | null) {
     }
   }, [profile, saveProfile, user]);
 
+  // Grant a festival quest reward (exclusive cosmetic pet) and persist.
+  const grantFestivalReward = useCallback((petId: string) => {
+    if (profile.unlockedPets.includes(petId)) return;
+    const newPets = [...profile.unlockedPets, petId];
+    saveProfile({ ...profile, unlockedPets: newPets });
+  }, [profile, saveProfile]);
+
   const resetGame = useCallback(() => {
     const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme };
     saveProfile(reset);
@@ -281,6 +288,7 @@ export function useGameState(user: User | null) {
     profile, saveProfile,
     setUsername, selectCharacter, selectHouse, selectPet, purchasePet,
     completeLevel, startLevel, resetGame, purchaseItem,
+    grantFestivalReward,
     hasSave, dbLoaded,
   };
 }
