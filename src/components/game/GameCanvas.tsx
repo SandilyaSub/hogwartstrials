@@ -2162,7 +2162,7 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
     ("ontouchstart" in window || (navigator as any).maxTouchPoints > 0);
 
   return (
-    <div className="relative w-full h-screen bg-background">
+    <div className="fixed inset-0 w-screen bg-background overflow-hidden" style={{ height: "100dvh" }}>
       <canvas ref={canvasRef} className="w-full h-full block" style={{ imageRendering: "pixelated" }} />
 
       {isTouchDevice && !paused && <TouchControls keysRef={keysRef} />}
