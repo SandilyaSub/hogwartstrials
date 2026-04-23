@@ -22,6 +22,8 @@ import LevelComplete from "@/components/game/LevelComplete";
 import GameOver from "@/components/game/GameOver";
 import Tutorial from "@/components/game/Tutorial";
 import HouseLeaderboard from "@/components/game/HouseLeaderboard";
+import FestivalQuestCanvas from "@/components/game/FestivalQuestCanvas";
+import { getFestivalById } from "@/lib/festivalQuests";
 
 const Index = () => {
   const { user, loading, signUp, signIn, signOut } = useAuth();
@@ -30,8 +32,12 @@ const Index = () => {
     profile, saveProfile,
     setUsername, selectCharacter, selectHouse, selectPet, purchasePet,
     completeLevel, startLevel, resetGame, purchaseItem,
+    grantFestivalReward,
     hasSave, dbLoaded,
   } = useGameState(user);
+
+  // Active festival quest (set when player starts one from WorldMap)
+  const [activeFestivalId, setActiveFestivalId] = useState<string | null>(null);
 
   // Monday winner overlay
   const [mondayWinner, setMondayWinner] = useState<{ house_color: string; house_name: string; house_emoji: string } | null>(null);
@@ -158,6 +164,10 @@ const Index = () => {
           onOpenFeedback={() => setScreen("feedback")}
           onOpenSettings={() => setScreen("settings")}
           onOpenLeaderboard={() => setScreen("leaderboard")}
+          onStartFestivalQuest={(questId) => {
+            setActiveFestivalId(questId);
+            setScreen("festivalQuest");
+          }}
           onResetGame={resetGame}
         />
       );
