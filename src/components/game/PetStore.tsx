@@ -45,6 +45,7 @@ const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps
     const unlocked = profile.unlockedPets.includes(pet.id);
     const equipped = profile.pet?.id === pet.id;
     const isLegendary = !!pet.legendary;
+    const isFestival = !!pet.festival;
     const canAfford = pet.cost ? profile.coins >= pet.cost : false;
 
     const handleClick = () => {
@@ -66,6 +67,7 @@ const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps
         className={`card-illustrated p-5 text-left transition-all duration-300 animate-pop-in relative overflow-hidden ${
           equipped ? "!border-primary box-glow !bg-primary/8" :
           unlocked ? "hover:border-primary/30 hover:scale-[1.02]" :
+          isFestival ? "!opacity-60 cursor-not-allowed !border-magic-glow/20" :
           isLegendary && canAfford ? "hover:border-primary/40 hover:scale-[1.02] !border-primary/20" :
           isLegendary ? "!opacity-60 cursor-not-allowed !border-primary/15" :
           "!opacity-40 cursor-not-allowed"
