@@ -1,6 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import TouchControls from "./TouchControls";
-import type { FestivalQuest } from "@/lib/festivalQuests";
+import {
+  getQuestSeed,
+  getYearlyChapter,
+  type ChapterModifier,
+  type FestivalQuest,
+} from "@/lib/festivalQuests";
 
 interface FestivalQuestCanvasProps {
   quest: FestivalQuest;
@@ -8,19 +13,37 @@ interface FestivalQuestCanvasProps {
   onExit: () => void;
 }
 
-interface Platform { x: number; y: number; w: number; h: number; }
+interface Platform {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** moving platforms: horizontal drift parameters */
+  baseX: number;
+  driftAmp: number;
+  driftSpeed: number;
+}
 interface Collectible { x: number; y: number; collected: boolean; bob: number; }
 
-// Self-contained mini-platformer for festival side-quests. Reuses keysRef
-// pattern so TouchControls works unchanged on mobile.
+// Self-contained mini-platformer for festival side-quests. The active chapter
+// rotates each year and seeds the procedural layout, so no two yearly
+// challenges are identical.
 const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasProps) => {
+  // Resolve the year's chapter once — used for HUD, layout, modifiers.
+  const { chapter, index: chapterIndex, year, total } = useMemo(
+    () => getYearlyChapter(quest),
+    [quest]
+  );
+  const seed = useMemo(() => getQuestSeed(quest), [quest]);
+  const modifiers = chapter.modifiers ?? [];
+  const hasMod = (m: ChapterModifier) => modifiers.includes(m);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const keysRef = useRef<Set<string>>(new Set());
   const rafRef = useRef<number>(0);
   const [collected, setCollected] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(quest.timeLimit);
+  const [timeLeft, setTimeLeft] = useState(chapter.timeLimit);
 
-  // Stable refs read inside the loop without re-triggering effect
   const collectedRef = useRef(0);
   const finishedRef = useRef(false);
   const failedRef = useRef(false);
@@ -32,38 +55,59 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
     const W = (canvas.width = canvas.offsetWidth);
     const H = (canvas.height = canvas.offsetHeight);
 
-    // ---------- Procedural mini-level ----------
+    // ---------- Tunable physics ----------
     const GROUND_Y = H - 60;
     const PLAYER_W = 28;
     const PLAYER_H = 36;
-    const GRAVITY = 0.55;
+    const BASE_GRAVITY = 0.55;
     const JUMP_POWER = -11.5;
     const SPEED = 4.2;
 
-    const platforms: Platform[] = [{ x: 0, y: GROUND_Y, w: W * 4, h: 60 }];
-    let x = 80;
-    const seed = quest.id.length * 7 + 13;
+    // Modifier-driven physics tweaks
+    const friction = hasMod("ice_floor") ? 0.96 : 0.8; // slippery if icy
+    const windEnabled = hasMod("wind_gusts");
+    const swapGravityEnabled = hasMod("swap_gravity");
+    const dimLights = hasMod("dim_lights");
+    const movingPlatformsEnabled = hasMod("moving_platforms");
+
+    // ---------- Seeded RNG ----------
     let rng = seed;
     const rand = () => {
       rng = (rng * 1664525 + 1013904223) % 4294967296;
       return rng / 4294967296;
     };
-    for (let i = 0; i < quest.platformCount; i++) {
+
+    // ---------- Procedural mini-level ----------
+    const platforms: Platform[] = [
+      { x: 0, y: GROUND_Y, w: W * 4, h: 60, baseX: 0, driftAmp: 0, driftSpeed: 0 },
+    ];
+    let x = 80;
+    for (let i = 0; i < chapter.platformCount; i++) {
       x += 110 + rand() * 90;
       const py = GROUND_Y - 80 - rand() * 200;
       const pw = 70 + rand() * 90;
-      platforms.push({ x, y: py, w: pw, h: 14 });
+      // Roughly 1-in-3 platforms drift horizontally if the modifier is on.
+      const drifts = movingPlatformsEnabled && rand() < 0.4;
+      platforms.push({
+        x,
+        y: py,
+        w: pw,
+        h: 14,
+        baseX: x,
+        driftAmp: drifts ? 30 + rand() * 50 : 0,
+        driftSpeed: drifts ? 0.01 + rand() * 0.02 : 0,
+      });
     }
     const LEVEL_END = x + 200;
 
     // Collectibles distributed across platforms (not on the start ground)
     const collectibles: Collectible[] = [];
-    const target = quest.objective.target;
+    const target = chapter.objective.target;
     const elevated = platforms.slice(1);
     for (let i = 0; i < target; i++) {
       const p = elevated[i % elevated.length];
       collectibles.push({
-        x: p.x + p.w / 2 + (rand() - 0.5) * (p.w * 0.6),
+        x: p.baseX + p.w / 2 + (rand() - 0.5) * (p.w * 0.6),
         y: p.y - 26,
         collected: false,
         bob: rand() * Math.PI * 2,
@@ -80,8 +124,14 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
     let facing = 1;
     let frameTick = 0;
 
-    // Particle pool for collect effects
     const particles: { x: number; y: number; vx: number; vy: number; life: number; color: string }[] = [];
+
+    // Wind gust state — periodic horizontal pushes
+    let windPhase = rand() * Math.PI * 2;
+
+    // Swap-gravity state — pulses every ~6 sec
+    let gravitySign = 1;
+    let nextGravityFlip = 360 + Math.floor(rand() * 240);
 
     // ---------- Input ----------
     const onKeyDown = (e: KeyboardEvent) => {
@@ -92,14 +142,13 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
 
-    // ---------- Timer (uses real seconds, paused when state is paused) ----------
     let lastSecond = performance.now();
 
     function step(now: number) {
       if (finishedRef.current || failedRef.current) return;
 
       // ---- Update timer ----
-      if (quest.timeLimit > 0 && now - lastSecond >= 1000) {
+      if (chapter.timeLimit > 0 && now - lastSecond >= 1000) {
         lastSecond = now;
         setTimeLeft(t => {
           const next = t - 1;
@@ -112,6 +161,26 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
 
       frameTick++;
 
+      // ---- Modifier ticks ----
+      let windAccel = 0;
+      if (windEnabled) {
+        windPhase += 0.012;
+        windAccel = Math.sin(windPhase) * 0.18;
+      }
+      if (swapGravityEnabled && frameTick > nextGravityFlip) {
+        gravitySign *= -1;
+        nextGravityFlip = frameTick + 360 + Math.floor(rand() * 240);
+      }
+
+      // ---- Move platforms (must happen BEFORE collision so positions are current) ----
+      if (movingPlatformsEnabled) {
+        for (const p of platforms) {
+          if (p.driftAmp > 0) {
+            p.x = p.baseX + Math.sin(frameTick * p.driftSpeed) * p.driftAmp;
+          }
+        }
+      }
+
       // ---- Movement ----
       const k = keysRef.current;
       const left = k.has("ArrowLeft") || k.has("a");
@@ -120,37 +189,43 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
 
       if (left) { vx = -SPEED; facing = -1; }
       else if (right) { vx = SPEED; facing = 1; }
-      else vx *= 0.8;
+      else vx *= friction;
+
+      vx += windAccel;
 
       if (jump && onGround) {
-        vy = JUMP_POWER;
+        vy = JUMP_POWER * gravitySign;
         onGround = false;
       }
-      vy += GRAVITY;
+      vy += BASE_GRAVITY * gravitySign;
       px += vx;
       py += vy;
 
-      // Clamp left edge
       if (px < 0) px = 0;
 
-      // ---- Platform collision ----
+      // ---- Platform collision (works for both gravity directions) ----
       onGround = false;
       for (const p of platforms) {
-        if (
-          px + PLAYER_W > p.x &&
-          px < p.x + p.w &&
-          py + PLAYER_H > p.y &&
-          py + PLAYER_H < p.y + p.h + 20 &&
-          vy >= 0
-        ) {
-          py = p.y - PLAYER_H;
-          vy = 0;
-          onGround = true;
+        const overlapsX = px + PLAYER_W > p.x && px < p.x + p.w;
+        if (!overlapsX) continue;
+        if (gravitySign > 0) {
+          if (py + PLAYER_H > p.y && py + PLAYER_H < p.y + p.h + 20 && vy >= 0) {
+            py = p.y - PLAYER_H;
+            vy = 0;
+            onGround = true;
+          }
+        } else {
+          // Inverted gravity: land on the bottom of the platform
+          if (py < p.y + p.h && py > p.y - 20 && vy <= 0) {
+            py = p.y + p.h;
+            vy = 0;
+            onGround = true;
+          }
         }
       }
 
-      // ---- Death by falling ----
-      if (py > H + 100) {
+      // ---- Death by leaving the world ----
+      if (py > H + 100 || py < -200) {
         failedRef.current = true;
       }
 
@@ -176,31 +251,25 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
           }
           if (collectedRef.current >= target) {
             finishedRef.current = true;
-            // Defer state-changing callback so we don't unmount mid-frame
             setTimeout(() => onComplete(), 600);
           }
         }
       }
 
-      // ---- Camera ----
       cameraX = Math.max(0, Math.min(LEVEL_END - W, px - W * 0.4));
 
-      // ---- Render ----
-      // Sky gradient
+      // ---- Render: sky ----
       const grad = ctx.createLinearGradient(0, 0, 0, H);
       grad.addColorStop(0, quest.skyTop);
       grad.addColorStop(1, quest.skyBottom);
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
 
-      // Festival-specific atmospheric layer
       drawAtmosphere(ctx, W, H, quest.id, frameTick);
 
-      // World transform
       ctx.save();
       ctx.translate(-cameraX, 0);
 
-      // Platforms
       for (const p of platforms) {
         ctx.fillStyle = quest.groundColor;
         ctx.fillRect(p.x, p.y, p.w, p.h);
@@ -215,7 +284,6 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
       for (const c of collectibles) {
         if (c.collected) continue;
         const bobY = Math.sin(c.bob) * 4;
-        // Glow halo
         const halo = ctx.createRadialGradient(c.x, c.y + bobY, 4, c.x, c.y + bobY, 24);
         halo.addColorStop(0, quest.primaryColor);
         halo.addColorStop(1, "transparent");
@@ -225,7 +293,7 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
         ctx.arc(c.x, c.y + bobY, 24, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 1;
-        ctx.fillText(quest.objective.itemEmoji, c.x, c.y + bobY);
+        ctx.fillText(chapter.objective.itemEmoji, c.x, c.y + bobY);
       }
 
       // Particles
@@ -244,18 +312,15 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
         }
       }
 
-      // Player (simple wizard sprite — themed accent)
+      // Player sprite
       const bob = Math.abs(vx) > 0.3 ? Math.sin(frameTick * 0.3) * 1.5 : 0;
       ctx.save();
       ctx.translate(px + PLAYER_W / 2, py + PLAYER_H / 2 + bob);
-      ctx.scale(facing, 1);
-      // Robe
+      ctx.scale(facing, gravitySign);
       ctx.fillStyle = quest.secondaryColor;
       ctx.fillRect(-PLAYER_W / 2, -2, PLAYER_W, PLAYER_H / 2 + 2);
-      // Head
       ctx.fillStyle = "hsl(35, 60%, 75%)";
       ctx.fillRect(-9, -PLAYER_H / 2, 18, 16);
-      // Hat
       ctx.fillStyle = quest.primaryColor;
       ctx.beginPath();
       ctx.moveTo(-12, -PLAYER_H / 2);
@@ -267,7 +332,7 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
 
       ctx.restore();
 
-      // ---- Goal beacon (visible from afar) ----
+      // Goal beacon
       ctx.save();
       ctx.translate(-cameraX, 0);
       const goalX = LEVEL_END - 80;
@@ -276,6 +341,39 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
       ctx.fillRect(goalX, 0, 4, GROUND_Y);
       ctx.globalAlpha = 1;
       ctx.restore();
+
+      // Dim-lights vignette: dark overlay with a hole around the player
+      if (dimLights) {
+        const playerScreenX = px + PLAYER_W / 2 - cameraX;
+        const playerScreenY = py + PLAYER_H / 2;
+        const radial = ctx.createRadialGradient(
+          playerScreenX, playerScreenY, 60,
+          playerScreenX, playerScreenY, 280
+        );
+        radial.addColorStop(0, "rgba(0,0,0,0)");
+        radial.addColorStop(1, "rgba(0,0,0,0.78)");
+        ctx.fillStyle = radial;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // Wind direction indicator
+      if (windEnabled && Math.abs(windAccel) > 0.05) {
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = "white";
+        ctx.font = "20px serif";
+        ctx.textAlign = "center";
+        ctx.fillText(windAccel > 0 ? "💨›" : "‹💨", W / 2, 40);
+        ctx.restore();
+      }
+
+      // Inverted-gravity indicator
+      if (swapGravityEnabled && gravitySign < 0) {
+        ctx.save();
+        ctx.fillStyle = "rgba(180, 100, 255, 0.18)";
+        ctx.fillRect(0, 0, W, H);
+        ctx.restore();
+      }
 
       rafRef.current = requestAnimationFrame(step);
     }
@@ -287,9 +385,11 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
     };
-  }, [quest, onComplete]);
+    // Re-init only when the quest or its yearly chapter changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quest, seed, chapter, onComplete]);
 
-  // Failure -> exit (handled in render via effect)
+  // Failure -> exit
   useEffect(() => {
     const id = setInterval(() => {
       if (failedRef.current) onExit();
@@ -321,16 +421,21 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
           style={{ background: "rgba(0,0,0,0.45)", color: "white" }}
         >
           <span className="text-xl">{quest.emoji}</span>
-          <span>{quest.name}</span>
+          <div className="flex flex-col leading-tight">
+            <span>{quest.name} · {chapter.subtitle}</span>
+            <span className="text-[10px] opacity-70">
+              {year} edition · chapter {chapterIndex + 1}/{total}
+            </span>
+          </div>
         </div>
         <div className="flex gap-2 pointer-events-auto">
           <div
             className="px-3 py-2 rounded-2xl backdrop-blur-md border border-white/20 font-display text-sm shadow-lg"
             style={{ background: "rgba(0,0,0,0.45)", color: "white" }}
           >
-            {quest.objective.itemEmoji} {collected}/{quest.objective.target}
+            {chapter.objective.itemEmoji} {collected}/{chapter.objective.target}
           </div>
-          {quest.timeLimit > 0 && (
+          {chapter.timeLimit > 0 && (
             <div
               className="px-3 py-2 rounded-2xl backdrop-blur-md border border-white/20 font-display text-sm shadow-lg"
               style={{
@@ -351,6 +456,21 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
         </div>
       </div>
 
+      {/* Modifier badges */}
+      {modifiers.length > 0 && (
+        <div className="absolute top-20 left-3 flex flex-col gap-1 pointer-events-none z-10">
+          {modifiers.map((m) => (
+            <span
+              key={m}
+              className="px-2 py-0.5 rounded-full text-[10px] font-display font-semibold border border-white/20 shadow-sm"
+              style={{ background: "rgba(0,0,0,0.45)", color: "white" }}
+            >
+              {modifierLabel(m)}
+            </span>
+          ))}
+        </div>
+      )}
+
       {/* Bottom hint */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs text-white/60 font-display pointer-events-none z-10">
         Arrow keys / WASD · Space to jump
@@ -358,6 +478,17 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
     </div>
   );
 };
+
+function modifierLabel(m: ChapterModifier): string {
+  switch (m) {
+    case "ice_floor": return "❄ Slippery floor";
+    case "dim_lights": return "🌑 Dim lights";
+    case "wind_gusts": return "💨 Wind gusts";
+    case "rising_water": return "🌊 Rising water";
+    case "swap_gravity": return "🔄 Gravity flips";
+    case "moving_platforms": return "↔ Drifting platforms";
+  }
+}
 
 // ---------- Atmosphere drawing per festival ----------
 function drawAtmosphere(
@@ -370,7 +501,6 @@ function drawAtmosphere(
   ctx.save();
   switch (id) {
     case "halloween": {
-      // Drifting bats
       ctx.fillStyle = "hsl(280, 30%, 8%)";
       for (let i = 0; i < 6; i++) {
         const bx = ((tick * 1.2 + i * 220) % (W + 40)) - 20;
@@ -383,7 +513,6 @@ function drawAtmosphere(
         ctx.closePath();
         ctx.fill();
       }
-      // Crescent moon
       ctx.fillStyle = "hsl(45, 100%, 85%)";
       ctx.beginPath();
       ctx.arc(W - 90, 80, 32, 0, Math.PI * 2);
@@ -395,7 +524,6 @@ function drawAtmosphere(
       break;
     }
     case "yule": {
-      // Snowflakes
       ctx.fillStyle = "rgba(255,255,255,0.85)";
       for (let i = 0; i < 60; i++) {
         const sx = (i * 53 + tick * 0.5) % W;
@@ -406,7 +534,6 @@ function drawAtmosphere(
       break;
     }
     case "diwali": {
-      // Floating diya glows + stars
       ctx.fillStyle = "rgba(255,255,255,0.6)";
       for (let i = 0; i < 30; i++) {
         const sx = (i * 71) % W;
@@ -427,7 +554,6 @@ function drawAtmosphere(
       break;
     }
     case "valentines": {
-      // Floating hearts
       for (let i = 0; i < 8; i++) {
         const hx = ((tick * 0.4 + i * 130) % (W + 40)) - 20;
         const hy = (H - ((tick * 0.6 + i * 90) % H));
