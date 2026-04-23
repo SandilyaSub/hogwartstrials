@@ -2,6 +2,7 @@ import { WORLDS, MENTOR_QUOTES } from "@/lib/gameData";
 import type { PlayerProfile } from "@/hooks/useGameState";
 import { useState } from "react";
 import GoldCoin from "./GoldCoin";
+import FestivalsPanel from "./FestivalsPanel";
 
 import harryImg from "@/assets/characters/harry.png";
 import hermioneImg from "@/assets/characters/hermione.png";
@@ -60,10 +61,11 @@ interface WorldMapProps {
   onOpenFeedback?: () => void;
   onOpenSettings?: () => void;
   onOpenLeaderboard?: () => void;
+  onStartFestivalQuest?: (questId: string) => void;
   onResetGame: () => void;
 }
 
-const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onOpenSettings, onOpenLeaderboard, onResetGame }: WorldMapProps) => {
+const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onOpenSettings, onOpenLeaderboard, onStartFestivalQuest, onResetGame }: WorldMapProps) => {
   const [expandedWorld, setExpandedWorld] = useState<number | null>(null);
   const [showMentor, setShowMentor] = useState(false);
 
@@ -152,6 +154,11 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
               <button onClick={() => setShowMentor(false)} className="text-muted-foreground hover:text-foreground transition-colors p-1">✕</button>
             </div>
           </div>
+        )}
+
+        {/* Festival side-quests */}
+        {onStartFestivalQuest && (
+          <FestivalsPanel profile={profile} onStartQuest={onStartFestivalQuest} />
         )}
 
         {/* Worlds */}
