@@ -26,6 +26,10 @@ import nifflerImg from "@/assets/pets/niffler.png";
 import basiliskImg from "@/assets/pets/basilisk.png";
 import occamyImg from "@/assets/pets/occamy.png";
 import grimImg from "@/assets/pets/grim.png";
+import spectreCatImg from "@/assets/festivals/pet_spectre_cat.png";
+import yuleFoxImg from "@/assets/festivals/pet_yule_fox.png";
+import diyaPeacockImg from "@/assets/festivals/pet_diya_peacock.png";
+import amourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
 
 import world1Img from "@/assets/worlds/world1_philosopher.png";
 import world2Img from "@/assets/worlds/world2_chamber.png";
@@ -51,6 +55,10 @@ const PET_IMAGES: Record<string, string> = {
   phoenix: phoenixImg, hippogriff: hippogriffImg, thestral: thestralImg,
   dragon: dragonImg, niffler: nifflerImg, basilisk: basiliskImg,
   occamy: occamyImg, grim: grimImg,
+  festival_spectre_cat: spectreCatImg,
+  festival_yule_fox: yuleFoxImg,
+  festival_diya_peacock: diyaPeacockImg,
+  festival_amour_fawn: amourFawnImg,
 };
 
 interface WorldMapProps {
