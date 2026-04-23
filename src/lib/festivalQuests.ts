@@ -1,5 +1,9 @@
 // Festival side-quest definitions. Each quest auto-unlocks during a real-world
-// date window and rewards an exclusive cosmetic pet not available anywhere else.
+// date window and rewards an exclusive cosmetic pet. Each festival ships with
+// multiple "yearly chapters" that rotate so the challenge feels different
+// every year (different objective wording, item, target, layout, time limit,
+// and lore quote). The procedural level layout is also seeded by the year,
+// so even within a single chapter the platforms are not identical year-to-year.
 
 import spectreCatImg from "@/assets/festivals/pet_spectre_cat.png";
 import yuleFoxImg from "@/assets/festivals/pet_yule_fox.png";
@@ -8,46 +12,71 @@ import amourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
 
 export type FestivalId = "halloween" | "yule" | "diwali" | "valentines";
 
-export type FestivalObjective =
-  | { kind: "collect"; target: number; itemEmoji: string; itemLabel: string }
-  | { kind: "defeat"; target: number; itemEmoji: string; itemLabel: string }
-  | { kind: "deliver"; target: number; itemEmoji: string; itemLabel: string }
-  | { kind: "light"; target: number; itemEmoji: string; itemLabel: string };
+export type FestivalObjectiveKind = "collect" | "defeat" | "deliver" | "light";
+
+export interface FestivalObjective {
+  kind: FestivalObjectiveKind;
+  target: number;
+  itemEmoji: string;
+  itemLabel: string;
+}
 
 export interface FestivalReward {
-  petId: string;          // unique festival pet id (stored in unlockedPets)
+  petId: string;
   petName: string;
   petImg: string;
-  petEmoji: string;       // fallback for menus
+  petEmoji: string;
 }
+
+/**
+ * A single yearly variant of a festival quest. The active chapter is chosen
+ * deterministically from the current year, so it cycles through over multiple
+ * years. The chapter index is also folded into the procedural seed.
+ */
+export interface FestivalChapter {
+  /** Short title appended after the festival name, e.g. "All Hallows' Hunt — Pumpkin Patch". */
+  subtitle: string;
+  description: string;
+  loreQuote: string;
+  objective: FestivalObjective;
+  /** Number of platforms in the procedurally generated mini-level. */
+  platformCount: number;
+  /** Time limit in seconds (0 = no limit). */
+  timeLimit: number;
+  /** Optional twist tags affecting the canvas (icy floor, dim lights, wind, etc.). */
+  modifiers?: ChapterModifier[];
+}
+
+export type ChapterModifier =
+  | "ice_floor"        // reduced friction (Yule)
+  | "dim_lights"       // darker overlay, smaller vision halo (Halloween / Diwali)
+  | "wind_gusts"       // periodic horizontal push (Valentine's / Halloween)
+  | "rising_water"     // floor rises slowly (Yule extreme)
+  | "swap_gravity"     // briefly flipped gravity pulses (Halloween chaos)
+  | "moving_platforms";// some platforms drift horizontally
 
 export interface FestivalQuest {
   id: FestivalId;
+  /** Base name of the festival (chapter subtitle is appended at runtime). */
   name: string;
   emoji: string;
-  /** Tailwind/inline gradient for cards */
   primaryColor: string;
   secondaryColor: string;
-  /** Background sky for canvas (HSL strings) */
   skyTop: string;
   skyBottom: string;
   groundColor: string;
-  description: string;
-  loreQuote: string;
-  /** Inclusive month range (1-12) when quest is available each year */
+  /** Inclusive month range (1-12) when quest is available each year. */
   monthStart: number;
   dayStart: number;
   monthEnd: number;
   dayEnd: number;
-  objective: FestivalObjective;
   reward: FestivalReward;
-  /** Number of platforms in the procedurally generated mini-level */
-  platformCount: number;
-  /** Time limit in seconds (0 = no limit) */
-  timeLimit: number;
+  /** Yearly variants — cycle through across years. Must have ≥1 entry. */
+  chapters: FestivalChapter[];
 }
 
 export const FESTIVAL_QUESTS: FestivalQuest[] = [
+  // ─────────────────────────── HALLOWEEN ───────────────────────────
   {
     id: "halloween",
     name: "All Hallows' Hunt",
@@ -57,20 +86,50 @@ export const FESTIVAL_QUESTS: FestivalQuest[] = [
     skyTop: "hsl(280, 60%, 12%)",
     skyBottom: "hsl(25, 80%, 25%)",
     groundColor: "hsl(280, 40%, 18%)",
-    description: "The Forbidden Forest crawls with shadows. Gather enchanted pumpkins before the witching hour ends.",
-    loreQuote: "On Hallowe'en, the very air seemed thick with magic and mischief.",
     monthStart: 10, dayStart: 20,
     monthEnd: 11, dayEnd: 2,
-    objective: { kind: "collect", target: 13, itemEmoji: "🎃", itemLabel: "Pumpkins" },
     reward: {
       petId: "festival_spectre_cat",
       petName: "Spectre Cat",
       petImg: spectreCatImg,
       petEmoji: "🐈‍⬛",
     },
-    platformCount: 14,
-    timeLimit: 90,
+    chapters: [
+      {
+        subtitle: "Pumpkin Patch",
+        description: "The Forbidden Forest crawls with shadows. Gather enchanted pumpkins before the witching hour ends.",
+        loreQuote: "On Hallowe'en, the very air seemed thick with magic and mischief.",
+        objective: { kind: "collect", target: 13, itemEmoji: "🎃", itemLabel: "Pumpkins" },
+        platformCount: 14, timeLimit: 90,
+      },
+      {
+        subtitle: "Bat Swarm",
+        description: "Hagrid's bats have escaped! Catch every last one as they swirl through the moonlit ruins.",
+        loreQuote: "A fluttering of wings... and then darkness.",
+        objective: { kind: "collect", target: 16, itemEmoji: "🦇", itemLabel: "Bats" },
+        platformCount: 17, timeLimit: 95,
+        modifiers: ["wind_gusts"],
+      },
+      {
+        subtitle: "Spirit Lanterns",
+        description: "Candles guide lost souls home. Light each lantern across the haunted graveyard.",
+        loreQuote: "The candles flickered as if greeting old friends.",
+        objective: { kind: "light", target: 11, itemEmoji: "🕯️", itemLabel: "Lanterns" },
+        platformCount: 13, timeLimit: 80,
+        modifiers: ["dim_lights"],
+      },
+      {
+        subtitle: "Mischief Night",
+        description: "Peeves has flipped the rules — gravity itself stumbles tonight. Snag every candy in the chaos.",
+        loreQuote: "Mischief managed... eventually.",
+        objective: { kind: "collect", target: 18, itemEmoji: "🍬", itemLabel: "Candies" },
+        platformCount: 18, timeLimit: 110,
+        modifiers: ["swap_gravity", "moving_platforms"],
+      },
+    ],
   },
+
+  // ──────────────────────────── YULE ────────────────────────────
   {
     id: "yule",
     name: "The Yule Ball",
@@ -80,20 +139,50 @@ export const FESTIVAL_QUESTS: FestivalQuest[] = [
     skyTop: "hsl(220, 50%, 15%)",
     skyBottom: "hsl(200, 60%, 35%)",
     groundColor: "hsl(210, 30%, 85%)",
-    description: "The Great Hall is decked for the feast. Gather missing presents from the snowy grounds before the ball begins.",
-    loreQuote: "Twelve frost-covered Christmas trees, glittering with hundreds of candles, lined the walls.",
     monthStart: 12, dayStart: 15,
     monthEnd: 12, dayEnd: 31,
-    objective: { kind: "collect", target: 12, itemEmoji: "🎁", itemLabel: "Gifts" },
     reward: {
       petId: "festival_yule_fox",
       petName: "Yule Fox",
       petImg: yuleFoxImg,
       petEmoji: "🦊",
     },
-    platformCount: 13,
-    timeLimit: 90,
+    chapters: [
+      {
+        subtitle: "Gift Run",
+        description: "The Great Hall is decked for the feast. Gather missing presents from the snowy grounds before the ball begins.",
+        loreQuote: "Twelve frost-covered Christmas trees lined the walls.",
+        objective: { kind: "collect", target: 12, itemEmoji: "🎁", itemLabel: "Gifts" },
+        platformCount: 13, timeLimit: 90,
+      },
+      {
+        subtitle: "Frozen Lake",
+        description: "Skate across the Black Lake's frozen shore. Snowflakes scatter — gather every last one before they melt.",
+        loreQuote: "The lake was a sheet of black glass under a blanket of snow.",
+        objective: { kind: "collect", target: 15, itemEmoji: "❄️", itemLabel: "Snowflakes" },
+        platformCount: 14, timeLimit: 95,
+        modifiers: ["ice_floor"],
+      },
+      {
+        subtitle: "Ornament Hunt",
+        description: "The trees in the Great Hall need decorating. Find each enchanted ornament hidden in the courtyards.",
+        loreQuote: "Hundreds of candles floated above the ornaments, twinkling like stars.",
+        objective: { kind: "collect", target: 14, itemEmoji: "🔔", itemLabel: "Ornaments" },
+        platformCount: 15, timeLimit: 90,
+        modifiers: ["moving_platforms"],
+      },
+      {
+        subtitle: "Light the Hearths",
+        description: "A blizzard has snuffed every fireplace. Relight them before the castle freezes through.",
+        loreQuote: "The fire roared back to life, and warmth returned to the stones.",
+        objective: { kind: "light", target: 13, itemEmoji: "🔥", itemLabel: "Hearths" },
+        platformCount: 16, timeLimit: 100,
+        modifiers: ["ice_floor", "dim_lights"],
+      },
+    ],
   },
+
+  // ─────────────────────────── DIWALI ───────────────────────────
   {
     id: "diwali",
     name: "Festival of Lights",
@@ -103,20 +192,50 @@ export const FESTIVAL_QUESTS: FestivalQuest[] = [
     skyTop: "hsl(260, 50%, 20%)",
     skyBottom: "hsl(30, 70%, 45%)",
     groundColor: "hsl(30, 40%, 25%)",
-    description: "Illuminate the Hogwarts grounds. Light every diya across the rooftops to banish the shadows.",
-    loreQuote: "Where there is light, the darkest shadows must flee.",
     monthStart: 10, dayStart: 25,
     monthEnd: 11, dayEnd: 15,
-    objective: { kind: "light", target: 15, itemEmoji: "🪔", itemLabel: "Diyas" },
     reward: {
       petId: "festival_diya_peacock",
       petName: "Diya Peacock",
       petImg: diyaPeacockImg,
       petEmoji: "🦚",
     },
-    platformCount: 16,
-    timeLimit: 100,
+    chapters: [
+      {
+        subtitle: "Diya Path",
+        description: "Illuminate the Hogwarts grounds. Light every diya across the rooftops to banish the shadows.",
+        loreQuote: "Where there is light, the darkest shadows must flee.",
+        objective: { kind: "light", target: 15, itemEmoji: "🪔", itemLabel: "Diyas" },
+        platformCount: 16, timeLimit: 100,
+      },
+      {
+        subtitle: "Rangoli Run",
+        description: "Petals are scattered across the courtyards. Gather them to complete the rangoli before sundown.",
+        loreQuote: "Color answers color, and the night begins to glow.",
+        objective: { kind: "collect", target: 18, itemEmoji: "🌸", itemLabel: "Petals" },
+        platformCount: 17, timeLimit: 100,
+        modifiers: ["moving_platforms"],
+      },
+      {
+        subtitle: "Sky Sparklers",
+        description: "Catch every sparkler the sky throws — wind from the celebrations keeps tossing them about.",
+        loreQuote: "Sparks rose like stars unwilling to fade.",
+        objective: { kind: "collect", target: 20, itemEmoji: "🎆", itemLabel: "Sparklers" },
+        platformCount: 18, timeLimit: 105,
+        modifiers: ["wind_gusts"],
+      },
+      {
+        subtitle: "Banish the Shadows",
+        description: "Even the brightest festival has its shadows. Light each torch in the deep gloom of the dungeons.",
+        loreQuote: "One flame is enough to remember a thousand more.",
+        objective: { kind: "light", target: 12, itemEmoji: "🔥", itemLabel: "Torches" },
+        platformCount: 14, timeLimit: 90,
+        modifiers: ["dim_lights"],
+      },
+    ],
   },
+
+  // ─────────────────────── VALENTINE'S ───────────────────────
   {
     id: "valentines",
     name: "Owls of Affection",
@@ -126,25 +245,51 @@ export const FESTIVAL_QUESTS: FestivalQuest[] = [
     skyTop: "hsl(330, 60%, 35%)",
     skyBottom: "hsl(20, 70%, 60%)",
     groundColor: "hsl(340, 50%, 30%)",
-    description: "Owls weave through the towers carrying love letters. Catch every last one before they're scattered.",
-    loreQuote: "Hundreds of owls came flooding into the Great Hall, each carrying a tiny pink envelope.",
     monthStart: 2, dayStart: 10,
     monthEnd: 2, dayEnd: 20,
-    objective: { kind: "deliver", target: 11, itemEmoji: "💌", itemLabel: "Letters" },
     reward: {
       petId: "festival_amour_fawn",
       petName: "Amour Fawn",
       petImg: amourFawnImg,
       petEmoji: "🦌",
     },
-    platformCount: 12,
-    timeLimit: 80,
+    chapters: [
+      {
+        subtitle: "Letter Delivery",
+        description: "Owls weave through the towers carrying love letters. Catch every last one before they're scattered.",
+        loreQuote: "Hundreds of owls came flooding into the Great Hall, each carrying a tiny pink envelope.",
+        objective: { kind: "deliver", target: 11, itemEmoji: "💌", itemLabel: "Letters" },
+        platformCount: 12, timeLimit: 80,
+      },
+      {
+        subtitle: "Heart Hunt",
+        description: "Floating hearts drift through the corridors. Catch them before the wind sweeps them out the windows.",
+        loreQuote: "Some things are too soft to last, and so we hold them while we can.",
+        objective: { kind: "collect", target: 16, itemEmoji: "💖", itemLabel: "Hearts" },
+        platformCount: 14, timeLimit: 85,
+        modifiers: ["wind_gusts"],
+      },
+      {
+        subtitle: "Rose Garden",
+        description: "Madam Sprout's enchanted rose garden has bloomed. Pluck a bouquet from the highest perches.",
+        loreQuote: "The roses sang quietly to themselves, in a language only the brave hear.",
+        objective: { kind: "collect", target: 13, itemEmoji: "🌹", itemLabel: "Roses" },
+        platformCount: 13, timeLimit: 80,
+        modifiers: ["moving_platforms"],
+      },
+      {
+        subtitle: "Amortentia Brew",
+        description: "Find every drifting potion vial — each holds a memory worth keeping.",
+        loreQuote: "It smelt different to each person, according to what attracted them.",
+        objective: { kind: "collect", target: 14, itemEmoji: "🧪", itemLabel: "Vials" },
+        platformCount: 15, timeLimit: 90,
+      },
+    ],
   },
 ];
 
 /**
  * Returns true if today's real-world date falls within the quest's window.
- * Window may cross month boundary (e.g. Oct 20 → Nov 2).
  */
 export function isFestivalActive(quest: FestivalQuest, now: Date = new Date()): boolean {
   const m = now.getMonth() + 1;
@@ -153,11 +298,10 @@ export function isFestivalActive(quest: FestivalQuest, now: Date = new Date()): 
   const end = quest.monthEnd * 100 + quest.dayEnd;
   const today = m * 100 + d;
   if (start <= end) return today >= start && today <= end;
-  // Window wraps year boundary (not used today but future-proof)
   return today >= start || today <= end;
 }
 
-/** Days until the festival opens, or 0 if active, or null if past this year. */
+/** Days until the festival opens, or 0 if active. */
 export function daysUntilFestival(quest: FestivalQuest, now: Date = new Date()): number {
   if (isFestivalActive(quest, now)) return 0;
   const year = now.getFullYear();
@@ -169,6 +313,48 @@ export function daysUntilFestival(quest: FestivalQuest, now: Date = new Date()):
 
 export function getFestivalById(id: string): FestivalQuest | undefined {
   return FESTIVAL_QUESTS.find(q => q.id === id);
+}
+
+/**
+ * Pick the active yearly chapter. Different per festival per year so two
+ * festivals don't rotate in lockstep. Includes a per-festival offset so the
+ * sequence each festival rotates through is independent.
+ */
+export function getYearlyChapter(
+  quest: FestivalQuest,
+  now: Date = new Date()
+): { chapter: FestivalChapter; index: number; year: number; total: number } {
+  const year = now.getFullYear();
+  const offset = festivalOffset(quest.id);
+  const index = ((year - 2024) + offset) % quest.chapters.length;
+  const safeIndex = (index + quest.chapters.length) % quest.chapters.length;
+  return {
+    chapter: quest.chapters[safeIndex],
+    index: safeIndex,
+    year,
+    total: quest.chapters.length,
+  };
+}
+
+/** Stable per-festival offset so each festival cycles through chapters in its own order. */
+function festivalOffset(id: FestivalId): number {
+  switch (id) {
+    case "halloween": return 0;
+    case "yule": return 1;
+    case "diwali": return 2;
+    case "valentines": return 3;
+  }
+}
+
+/**
+ * Deterministic seed for the procedural mini-level generator. Folds in the
+ * year and chapter so the layout is different every year — even when the
+ * objective happens to repeat.
+ */
+export function getQuestSeed(quest: FestivalQuest, now: Date = new Date()): number {
+  const { index, year } = getYearlyChapter(quest, now);
+  // Mix year + chapter + festival id length so the seed is well-distributed.
+  return (year * 9301 + index * 49297 + quest.id.length * 233 + 1013904223) % 4294967296;
 }
 
 /** All festival pet ids — useful for filtering them out of regular pet store. */
