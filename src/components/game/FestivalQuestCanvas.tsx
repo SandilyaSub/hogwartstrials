@@ -312,7 +312,7 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
         style={{ imageRendering: "pixelated" }}
       />
 
-      {isTouchDevice && !paused && <TouchControls keysRef={keysRef} />}
+      {isTouchDevice && <TouchControls keysRef={keysRef} />}
 
       {/* HUD */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none z-10">
