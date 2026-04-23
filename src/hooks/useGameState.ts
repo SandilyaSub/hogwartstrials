@@ -194,6 +194,8 @@ export function useGameState(user: User | null) {
 
     if (world && levelIdx === world.levels.length - 1) {
       PETS.forEach(p => {
+        // Festival & legendary pets are NOT auto-unlocked by world progression
+        if (p.legendary || p.festival) return;
         if (p.unlockWorld <= world.id && !newPets.includes(p.id)) {
           newPets.push(p.id);
         }
