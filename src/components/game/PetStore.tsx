@@ -13,12 +13,20 @@ import nifflerImg from "@/assets/pets/niffler.png";
 import basiliskImg from "@/assets/pets/basilisk.png";
 import occamyImg from "@/assets/pets/occamy.png";
 import grimImg from "@/assets/pets/grim.png";
+import spectreCatImg from "@/assets/festivals/pet_spectre_cat.png";
+import yuleFoxImg from "@/assets/festivals/pet_yule_fox.png";
+import diyaPeacockImg from "@/assets/festivals/pet_diya_peacock.png";
+import amourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
 
 const PET_IMAGES: Record<string, string> = {
   owl: owlImg, cat: catImg, toad: toadImg, rat: ratImg,
   phoenix: phoenixImg, hippogriff: hippogriffImg, thestral: thestralImg,
   dragon: dragonImg, niffler: nifflerImg, basilisk: basiliskImg,
   occamy: occamyImg, grim: grimImg,
+  festival_spectre_cat: spectreCatImg,
+  festival_yule_fox: yuleFoxImg,
+  festival_diya_peacock: diyaPeacockImg,
+  festival_amour_fawn: amourFawnImg,
 };
 
 interface PetStoreProps {
@@ -29,8 +37,9 @@ interface PetStoreProps {
 }
 
 const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps) => {
-  const standardPets = PETS.filter(p => !p.legendary);
+  const standardPets = PETS.filter(p => !p.legendary && !p.festival);
   const legendaryPets = PETS.filter(p => p.legendary);
+  const festivalPets = PETS.filter(p => p.festival);
 
   const renderPet = (pet: typeof PETS[number], i: number) => {
     const unlocked = profile.unlockedPets.includes(pet.id);
