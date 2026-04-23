@@ -13,12 +13,20 @@ import nifflerImg from "@/assets/pets/niffler.png";
 import basiliskImg from "@/assets/pets/basilisk.png";
 import occamyImg from "@/assets/pets/occamy.png";
 import grimImg from "@/assets/pets/grim.png";
+import spectreCatImg from "@/assets/festivals/pet_spectre_cat.png";
+import yuleFoxImg from "@/assets/festivals/pet_yule_fox.png";
+import diyaPeacockImg from "@/assets/festivals/pet_diya_peacock.png";
+import amourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
 
 const PET_IMAGES: Record<string, string> = {
   owl: owlImg, cat: catImg, toad: toadImg, rat: ratImg,
   phoenix: phoenixImg, hippogriff: hippogriffImg, thestral: thestralImg,
   dragon: dragonImg, niffler: nifflerImg, basilisk: basiliskImg,
   occamy: occamyImg, grim: grimImg,
+  festival_spectre_cat: spectreCatImg,
+  festival_yule_fox: yuleFoxImg,
+  festival_diya_peacock: diyaPeacockImg,
+  festival_amour_fawn: amourFawnImg,
 };
 
 interface PetStoreProps {
@@ -29,13 +37,15 @@ interface PetStoreProps {
 }
 
 const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps) => {
-  const standardPets = PETS.filter(p => !p.legendary);
+  const standardPets = PETS.filter(p => !p.legendary && !p.festival);
   const legendaryPets = PETS.filter(p => p.legendary);
+  const festivalPets = PETS.filter(p => p.festival);
 
   const renderPet = (pet: typeof PETS[number], i: number) => {
     const unlocked = profile.unlockedPets.includes(pet.id);
     const equipped = profile.pet?.id === pet.id;
     const isLegendary = !!pet.legendary;
+    const isFestival = !!pet.festival;
     const canAfford = pet.cost ? profile.coins >= pet.cost : false;
 
     const handleClick = () => {
@@ -57,6 +67,7 @@ const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps
         className={`card-illustrated p-5 text-left transition-all duration-300 animate-pop-in relative overflow-hidden ${
           equipped ? "!border-primary box-glow !bg-primary/8" :
           unlocked ? "hover:border-primary/30 hover:scale-[1.02]" :
+          isFestival ? "!opacity-60 cursor-not-allowed !border-magic-glow/20" :
           isLegendary && canAfford ? "hover:border-primary/40 hover:scale-[1.02] !border-primary/20" :
           isLegendary ? "!opacity-60 cursor-not-allowed !border-primary/15" :
           "!opacity-40 cursor-not-allowed"
@@ -68,11 +79,16 @@ const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps
             ✨ LEGENDARY
           </span>
         )}
+        {isFestival && (
+          <span className="absolute top-2 right-2 text-[10px] font-display font-bold tracking-wider px-2 py-0.5 rounded-full bg-magic-glow/20 text-magic-glow border border-magic-glow/30">
+            🎊 FESTIVAL
+          </span>
+        )}
         <div className="flex items-center gap-3">
           <img
             src={PET_IMAGES[pet.id]}
             alt={pet.name}
-            className={`w-14 h-14 rounded-xl object-cover ${isLegendary ? "ring-2 ring-primary/40" : ""}`}
+            className={`w-14 h-14 rounded-xl object-cover ${isLegendary || isFestival ? "ring-2 ring-primary/40" : ""}`}
             loading="lazy"
             width={1024}
             height={1024}
@@ -101,7 +117,10 @@ const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps
             </span>
           </div>
         )}
-        {!unlocked && !isLegendary && (
+        {!unlocked && isFestival && (
+          <p className="text-xs text-muted-foreground/70 mt-2 font-body">🔒 Complete the matching festival side-quest to unlock</p>
+        )}
+        {!unlocked && !isLegendary && !isFestival && (
           <p className="text-xs text-muted-foreground/50 mt-2 font-body">🔒 Unlocks after World {pet.unlockWorld}</p>
         )}
       </button>
@@ -135,6 +154,14 @@ const PetStore = ({ profile, onSelectPet, onPurchasePet, onBack }: PetStoreProps
           <p className="text-xs text-muted-foreground font-body mb-3 px-1">Rare magical creatures, purchased with coins</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {legendaryPets.map((p, i) => renderPet(p, i))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="font-display text-sm font-semibold text-magic-glow uppercase tracking-wider mb-3 px-1 text-glow">🎊 Festival Exclusives</h3>
+          <p className="text-xs text-muted-foreground font-body mb-3 px-1">Earned only by completing limited-time festival side-quests</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {festivalPets.map((p, i) => renderPet(p, i))}
           </div>
         </div>
       </div>

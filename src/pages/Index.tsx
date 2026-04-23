@@ -22,6 +22,8 @@ import LevelComplete from "@/components/game/LevelComplete";
 import GameOver from "@/components/game/GameOver";
 import Tutorial from "@/components/game/Tutorial";
 import HouseLeaderboard from "@/components/game/HouseLeaderboard";
+import FestivalQuestCanvas from "@/components/game/FestivalQuestCanvas";
+import { getFestivalById } from "@/lib/festivalQuests";
 
 const Index = () => {
   const { user, loading, signUp, signIn, signOut } = useAuth();
@@ -30,8 +32,12 @@ const Index = () => {
     profile, saveProfile,
     setUsername, selectCharacter, selectHouse, selectPet, purchasePet,
     completeLevel, startLevel, resetGame, purchaseItem,
+    grantFestivalReward,
     hasSave, dbLoaded,
   } = useGameState(user);
+
+  // Active festival quest (set when player starts one from WorldMap)
+  const [activeFestivalId, setActiveFestivalId] = useState<string | null>(null);
 
   // Monday winner overlay
   const [mondayWinner, setMondayWinner] = useState<{ house_color: string; house_name: string; house_emoji: string } | null>(null);
@@ -158,6 +164,10 @@ const Index = () => {
           onOpenFeedback={() => setScreen("feedback")}
           onOpenSettings={() => setScreen("settings")}
           onOpenLeaderboard={() => setScreen("leaderboard")}
+          onStartFestivalQuest={(questId) => {
+            setActiveFestivalId(questId);
+            setScreen("festivalQuest");
+          }}
           onResetGame={resetGame}
         />
       );
@@ -312,6 +322,91 @@ const Index = () => {
           onBack={() => setScreen("worldmap")}
         />
       );
+
+    case "festivalQuest": {
+      const quest = activeFestivalId ? getFestivalById(activeFestivalId) : undefined;
+      if (!quest) {
+        setScreen("worldmap");
+        return null;
+      }
+      return (
+        <FestivalQuestCanvas
+          quest={quest}
+          onComplete={() => {
+            grantFestivalReward(quest.reward.petId);
+            setScreen("festivalComplete");
+          }}
+          onExit={() => {
+            setActiveFestivalId(null);
+            setScreen("worldmap");
+          }}
+        />
+      );
+    }
+
+    case "festivalComplete": {
+      const quest = activeFestivalId ? getFestivalById(activeFestivalId) : undefined;
+      if (!quest) {
+        setScreen("worldmap");
+        return null;
+      }
+      return (
+        <div
+          className="fixed inset-0 flex items-center justify-center p-6"
+          style={{
+            background: `radial-gradient(ellipse at center, ${quest.primaryColor}30, hsl(var(--background)))`,
+          }}
+        >
+          <div className="max-w-md w-full card-illustrated p-8 text-center animate-pop-in">
+            <div className="text-5xl mb-3 animate-bounce">{quest.emoji}</div>
+            <p className="font-display text-xs uppercase tracking-widest text-muted-foreground mb-1">
+              Festival Quest Complete
+            </p>
+            <h2
+              className="font-display text-2xl font-bold mb-4"
+              style={{ color: quest.primaryColor }}
+            >
+              {quest.name}
+            </h2>
+            <p className="text-sm text-foreground/70 italic font-body mb-6">
+              "{quest.loreQuote}"
+            </p>
+
+            <div
+              className="rounded-2xl p-4 mb-5"
+              style={{
+                background: `linear-gradient(135deg, ${quest.primaryColor}25, ${quest.secondaryColor}25)`,
+                border: `2px solid ${quest.primaryColor}60`,
+              }}
+            >
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-display mb-2">
+                Exclusive Reward Unlocked
+              </p>
+              <img
+                src={quest.reward.petImg}
+                alt={quest.reward.petName}
+                width={96}
+                height={96}
+                className="w-24 h-24 mx-auto object-contain mb-2"
+              />
+              <p className="font-display text-lg font-semibold text-foreground">
+                {quest.reward.petName}
+              </p>
+            </div>
+
+            <button
+              onClick={() => {
+                setActiveFestivalId(null);
+                setScreen("worldmap");
+              }}
+              className="btn-primary w-full font-display"
+            >
+              Return to Map
+            </button>
+          </div>
+        </div>
+      );
+    }
 
     default:
       return null;
