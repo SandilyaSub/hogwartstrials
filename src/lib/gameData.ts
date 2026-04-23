@@ -27,6 +27,8 @@ export interface Pet {
   /** If set, this pet is legendary and must be purchased from the Pet Store with coins. */
   cost?: number;
   legendary?: boolean;
+  /** Festival-exclusive pet — only obtainable by completing a festival side-quest. */
+  festival?: boolean;
 }
 
 export interface Level {
@@ -80,6 +82,12 @@ export const PETS: Pet[] = [
   { id: "basilisk", name: "Basilisk", emoji: "🐍", ability: "Petrifying Gaze", description: "Legendary serpent — stuns nearby enemies with a single look", unlockWorld: 1, effect: { type: "stun", value: 1 }, legendary: true, cost: 3000 },
   { id: "occamy", name: "Occamy", emoji: "🪶", ability: "Featherlight", description: "Legendary winged serpent — extends your jump and float dramatically", unlockWorld: 1, effect: { type: "jump", value: 2 }, legendary: true, cost: 2200 },
   { id: "grim", name: "The Grim", emoji: "🐺", ability: "Death's Shield", description: "Legendary spectral hound — guards you from one fatal blow per level", unlockWorld: 1, effect: { type: "revive", value: 1 }, legendary: true, cost: 2800 },
+
+  // ─── Festival Exclusives (only obtainable from limited-time side-quests) ───
+  { id: "festival_spectre_cat", name: "Spectre Cat", emoji: "🐈‍⬛", ability: "Witching Hour", description: "Halloween exclusive — phases through one obstacle per level", unlockWorld: 1, effect: { type: "balance", value: 2 }, festival: true },
+  { id: "festival_yule_fox", name: "Yule Fox", emoji: "🦊", ability: "Snow Step", description: "Yule Ball exclusive — soft landings & boosted dash on icy levels", unlockWorld: 1, effect: { type: "speed", value: 1 }, festival: true },
+  { id: "festival_diya_peacock", name: "Diya Peacock", emoji: "🦚", ability: "Light the Path", description: "Diwali exclusive — illuminates dark levels with floating diyas", unlockWorld: 1, effect: { type: "vision", value: 2 }, festival: true },
+  { id: "festival_amour_fawn", name: "Amour Fawn", emoji: "🦌", ability: "Heartfelt Leap", description: "Valentine's exclusive — graceful double-jump fueled by love", unlockWorld: 1, effect: { type: "jump", value: 1 }, festival: true },
 ];
 
 export const WORLDS: World[] = [
