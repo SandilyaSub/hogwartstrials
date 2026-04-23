@@ -1,4 +1,10 @@
-import { FESTIVAL_QUESTS, isFestivalActive, daysUntilFestival, type FestivalQuest } from "@/lib/festivalQuests";
+import {
+  FESTIVAL_QUESTS,
+  isFestivalActive,
+  daysUntilFestival,
+  getYearlyChapter,
+  type FestivalQuest,
+} from "@/lib/festivalQuests";
 import type { PlayerProfile } from "@/hooks/useGameState";
 
 interface FestivalsPanelProps {
@@ -54,6 +60,8 @@ interface FestivalCardProps {
 
 const FestivalCard = ({ quest, active, owned, daysUntil, delay, onStart }: FestivalCardProps) => {
   const disabled = !active || owned;
+  // Resolve the year's chapter so the card preview matches what the player will play.
+  const { chapter, index, year, total } = getYearlyChapter(quest);
 
   return (
     <button
@@ -98,11 +106,14 @@ const FestivalCard = ({ quest, active, owned, daysUntil, delay, onStart }: Festi
         )}
       </div>
 
-      <h3 className="font-display text-sm font-bold mb-1" style={{ color: quest.primaryColor }}>
+      <h3 className="font-display text-sm font-bold mb-0.5" style={{ color: quest.primaryColor }}>
         {quest.name}
       </h3>
+      <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-display mb-1">
+        {year} · {chapter.subtitle} · {index + 1}/{total}
+      </p>
       <p className="text-xs text-muted-foreground font-body line-clamp-2 mb-3">
-        {quest.description}
+        {chapter.description}
       </p>
 
       {/* Reward preview */}
