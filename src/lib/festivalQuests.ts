@@ -9,8 +9,9 @@ import spectreCatImg from "@/assets/festivals/pet_spectre_cat.png";
 import yuleFoxImg from "@/assets/festivals/pet_yule_fox.png";
 import diyaPeacockImg from "@/assets/festivals/pet_diya_peacock.png";
 import amourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
+import sunPhoenixImg from "@/assets/festivals/pet_sun_phoenix.png";
 
-export type FestivalId = "halloween" | "yule" | "diwali" | "valentines";
+export type FestivalId = "halloween" | "yule" | "diwali" | "valentines" | "summer";
 
 export type FestivalObjectiveKind = "collect" | "defeat" | "deliver" | "light";
 
@@ -286,6 +287,58 @@ export const FESTIVAL_QUESTS: FestivalQuest[] = [
       },
     ],
   },
+
+  // ─────────────────────── SUMMER SOLSTICE ───────────────────────
+  {
+    id: "summer",
+    name: "Solstice Spectacle",
+    emoji: "☀️",
+    primaryColor: "hsl(45, 100%, 60%)",
+    secondaryColor: "hsl(195, 85%, 55%)",
+    skyTop: "hsl(200, 90%, 65%)",
+    skyBottom: "hsl(45, 95%, 75%)",
+    groundColor: "hsl(40, 70%, 55%)",
+    monthStart: 6, dayStart: 15,
+    monthEnd: 7, dayEnd: 5,
+    reward: {
+      petId: "festival_sun_phoenix",
+      petName: "Sun Phoenix",
+      petImg: sunPhoenixImg,
+      petEmoji: "🔥",
+    },
+    chapters: [
+      {
+        subtitle: "Sunbeam Hunt",
+        description: "The longest day blazes over Hogwarts. Catch every sunbeam before dusk dims the towers.",
+        loreQuote: "The summer sun lingered on the lake, painting it gold.",
+        objective: { kind: "collect", target: 15, itemEmoji: "☀️", itemLabel: "Sunbeams" },
+        platformCount: 15, timeLimit: 90,
+      },
+      {
+        subtitle: "Quidditch Cup Prep",
+        description: "Stray Quaffles drift across the pitch in the summer breeze. Round them all up before the match.",
+        loreQuote: "The pitch shimmered under the heat, brooms whispering through the haze.",
+        objective: { kind: "collect", target: 17, itemEmoji: "🏆", itemLabel: "Quaffles" },
+        platformCount: 16, timeLimit: 95,
+        modifiers: ["wind_gusts"],
+      },
+      {
+        subtitle: "Ice Cream Run",
+        description: "Florean Fortescue's enchanted ice cream is melting fast! Save every scoop before it's lost.",
+        loreQuote: "A free ice cream every half hour — Diagon Alley had never been kinder.",
+        objective: { kind: "collect", target: 18, itemEmoji: "🍦", itemLabel: "Scoops" },
+        platformCount: 17, timeLimit: 85,
+        modifiers: ["moving_platforms"],
+      },
+      {
+        subtitle: "Solstice Bonfires",
+        description: "Tradition says the longest night still falls — light each bonfire to greet the dawn.",
+        loreQuote: "Where flame meets sky, the year turns once more.",
+        objective: { kind: "light", target: 13, itemEmoji: "🔥", itemLabel: "Bonfires" },
+        platformCount: 16, timeLimit: 95,
+      },
+    ],
+  },
 ];
 
 /**
@@ -343,6 +396,7 @@ function festivalOffset(id: FestivalId): number {
     case "yule": return 1;
     case "diwali": return 2;
     case "valentines": return 3;
+    case "summer": return 4;
   }
 }
 
