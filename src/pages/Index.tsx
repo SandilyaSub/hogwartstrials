@@ -34,11 +34,13 @@ const Index = () => {
     setUsername, selectCharacter, selectHouse, selectPet, purchasePet,
     completeLevel, startLevel, resetGame, purchaseItem,
     grantFestivalReward,
+    advanceFestivalLevel,
     hasSave, dbLoaded,
   } = useGameState(user);
 
   // Active festival quest (set when player starts one from WorldMap)
   const [activeFestivalId, setActiveFestivalId] = useState<string | null>(null);
+  const [activeFestivalLevel, setActiveFestivalLevel] = useState<number>(0);
 
   // Monday winner overlay
   const [mondayWinner, setMondayWinner] = useState<{ house_color: string; house_name: string; house_emoji: string } | null>(null);
