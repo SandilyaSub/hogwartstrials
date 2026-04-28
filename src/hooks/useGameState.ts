@@ -80,6 +80,7 @@ export function useGameState(user: User | null) {
         let activeCharacterSkin: string | undefined;
         let activeAccessories: string[] = [];
         let activeUpgrades: Record<string, boolean> = {};
+        let festivalProgress: Record<string, number> = {};
         try {
           const raw = localStorage.getItem(`equip_${user.id}`);
           if (raw) {
@@ -87,6 +88,7 @@ export function useGameState(user: User | null) {
             activeCharacterSkin = parsed.activeCharacterSkin;
             activeAccessories = parsed.activeAccessories || [];
             activeUpgrades = parsed.activeUpgrades || {};
+            festivalProgress = parsed.festivalProgress || {};
           }
         } catch {}
 
