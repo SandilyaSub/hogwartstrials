@@ -351,8 +351,8 @@ export const FESTIVAL_QUESTS: FestivalQuest[] = [
     skyTop: "hsl(200, 95%, 70%)",
     skyBottom: "hsl(190, 80%, 85%)",
     groundColor: "hsl(45, 80%, 70%)",
-    monthStart: 7, dayStart: 6,
-    monthEnd: 8, dayEnd: 31,
+    monthStart: 4, dayStart: 1,
+    monthEnd: 5, dayEnd: 31,
     reward: {
       petId: "festival_seashell_turtle",
       petName: "Seashell Turtle",
