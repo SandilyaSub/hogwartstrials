@@ -89,7 +89,8 @@ interface FestivalCardProps {
 }
 
 const FestivalCard = ({ quest, active, owned, daysUntil, progress, delay, onStart }: FestivalCardProps) => {
-  const disabled = !active || owned;
+  const playable = active; // owned quests are still replayable while live
+  const disabled = !playable;
   const { chapter, index, year, total } = getYearlyChapter(quest);
 
   return (
@@ -97,16 +98,16 @@ const FestivalCard = ({ quest, active, owned, daysUntil, progress, delay, onStar
       onClick={() => !disabled && onStart()}
       disabled={disabled}
       className={`relative p-4 rounded-2xl text-left transition-all duration-300 animate-pop-in border-2 overflow-hidden group ${
-        active && !owned
+        playable
           ? "border-transparent hover:scale-[1.02] cursor-pointer"
           : "border-border/30 opacity-60 cursor-not-allowed"
       }`}
       style={{
         animationDelay: `${delay}s`,
-        background: active && !owned
+        background: playable
           ? `linear-gradient(135deg, ${quest.primaryColor}25, ${quest.secondaryColor}25)`
           : `linear-gradient(135deg, hsl(var(--secondary) / 0.4), hsl(var(--secondary) / 0.2))`,
-        boxShadow: active && !owned
+        boxShadow: playable
           ? `0 0 24px ${quest.primaryColor}30, inset 0 0 0 1px ${quest.primaryColor}50`
           : undefined,
       }}
@@ -144,8 +145,8 @@ const FestivalCard = ({ quest, active, owned, daysUntil, progress, delay, onStar
         {chapter.description}
       </p>
 
-      {/* Quest progress (15-level campaign) */}
-      {active && !owned && (
+      {/* Quest progress (15-level campaign) — hidden once reward is earned */}
+      {playable && !owned && (
         <div className="mb-2">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] uppercase tracking-wide font-display text-muted-foreground">
@@ -181,14 +182,16 @@ const FestivalCard = ({ quest, active, owned, daysUntil, progress, delay, onStar
           style={{ filter: owned || active ? "none" : "grayscale(0.8)" }}
         />
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-display">Reward</p>
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-display">
+            {owned ? "Replay for fun" : "Reward"}
+          </p>
           <p className="text-xs font-display font-semibold truncate text-foreground">
             {quest.reward.petName}
           </p>
         </div>
-        {active && !owned && (
+        {playable && (
           <span className="text-xs font-display font-bold" style={{ color: quest.primaryColor }}>
-            {progress > 0 ? "RESUME ▸" : "PLAY ▸"}
+            {owned ? "REPLAY ▸" : progress > 0 ? "RESUME ▸" : "PLAY ▸"}
           </span>
         )}
       </div>
