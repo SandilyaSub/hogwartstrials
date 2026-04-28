@@ -11,8 +11,9 @@ import diyaPeacockImg from "@/assets/festivals/pet_diya_peacock.png";
 import amourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
 import sunPhoenixImg from "@/assets/festivals/pet_sun_phoenix.png";
 import seashellTurtleImg from "@/assets/festivals/pet_seashell_turtle.png";
+import newYearOwlImg from "@/assets/festivals/pet_new_year_owl.png";
 
-export type FestivalId = "halloween" | "yule" | "diwali" | "valentines" | "summer" | "summer_holiday";
+export type FestivalId = "halloween" | "yule" | "diwali" | "valentines" | "summer" | "summer_holiday" | "new_year";
 
 export type FestivalObjectiveKind = "collect" | "defeat" | "deliver" | "light";
 
