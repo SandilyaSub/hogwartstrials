@@ -88,6 +88,9 @@ export const PETS: Pet[] = [
   { id: "festival_yule_fox", name: "Yule Fox", emoji: "🦊", ability: "Snow Step", description: "Yule Ball exclusive — soft landings & boosted dash on icy levels", unlockWorld: 1, effect: { type: "speed", value: 1 }, festival: true },
   { id: "festival_diya_peacock", name: "Diya Peacock", emoji: "🦚", ability: "Light the Path", description: "Diwali exclusive — illuminates dark levels with floating diyas", unlockWorld: 1, effect: { type: "vision", value: 2 }, festival: true },
   { id: "festival_amour_fawn", name: "Amour Fawn", emoji: "🦌", ability: "Heartfelt Leap", description: "Valentine's exclusive — graceful double-jump fueled by love", unlockWorld: 1, effect: { type: "jump", value: 1 }, festival: true },
+  { id: "festival_sun_phoenix", name: "Sun Phoenix", emoji: "🔥", ability: "Solar Flare", description: "Solstice exclusive — radiant phoenix that scorches passing enemies", unlockWorld: 1, effect: { type: "revive", value: 1 }, festival: true },
+  { id: "festival_seashell_turtle", name: "Seashell Turtle", emoji: "🐢", ability: "Tidewalker", description: "Seaside Holiday exclusive — surfs across gaps on a wave of sea-foam", unlockWorld: 1, effect: { type: "balance", value: 1 }, festival: true },
+  { id: "festival_new_year_owl", name: "Midnight Owl", emoji: "🦉", ability: "Countdown Glide", description: "New Year's exclusive — golden-hatted owl that grants a slow-fall finale", unlockWorld: 1, effect: { type: "flying", value: 1 }, festival: true },
 ];
 
 export const WORLDS: World[] = [
