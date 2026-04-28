@@ -339,10 +339,17 @@ const Index = () => {
       }
       return (
         <FestivalQuestCanvas
+          key={`${quest.id}-${activeFestivalLevel}`}
           quest={quest}
+          levelIndex={activeFestivalLevel}
           onComplete={() => {
-            grantFestivalReward(quest.reward.petId);
-            setScreen("festivalComplete");
+            const next = advanceFestivalLevel(quest.id, activeFestivalLevel, LEVELS_PER_QUEST);
+            if (next === null) {
+              grantFestivalReward(quest.reward.petId);
+              setScreen("festivalComplete");
+            } else {
+              setScreen("festivalLevelComplete");
+            }
           }}
           onExit={() => {
             setActiveFestivalId(null);
@@ -351,6 +358,80 @@ const Index = () => {
         />
       );
     }
+
+    case "festivalLevelComplete": {
+      const quest = activeFestivalId ? getFestivalById(activeFestivalId) : undefined;
+      if (!quest) {
+        setScreen("worldmap");
+        return null;
+      }
+      const justCleared = activeFestivalLevel + 1;
+      const isLast = justCleared >= LEVELS_PER_QUEST;
+      return (
+        <div
+          className="fixed inset-0 flex items-center justify-center p-6"
+          style={{
+            background: `radial-gradient(ellipse at center, ${quest.primaryColor}30, hsl(var(--background)))`,
+          }}
+        >
+          <div className="max-w-md w-full card-illustrated p-8 text-center animate-pop-in">
+            <div className="text-5xl mb-3">{quest.emoji}</div>
+            <p className="font-display text-xs uppercase tracking-widest text-muted-foreground mb-1">
+              {quest.name}
+            </p>
+            <h2 className="font-display text-2xl font-bold mb-2" style={{ color: quest.primaryColor }}>
+              Level {justCleared}/{LEVELS_PER_QUEST} Cleared
+            </h2>
+            <div className="w-full h-2 rounded-full bg-muted/40 overflow-hidden mb-4">
+              <div
+                className="h-full transition-all duration-500"
+                style={{
+                  width: `${(justCleared / LEVELS_PER_QUEST) * 100}%`,
+                  background: `linear-gradient(90deg, ${quest.primaryColor}, ${quest.secondaryColor})`,
+                }}
+              />
+            </div>
+            <p className="text-sm text-foreground/70 font-body mb-6">
+              {LEVELS_PER_QUEST - justCleared} level{LEVELS_PER_QUEST - justCleared === 1 ? "" : "s"} until you unlock the <span className="font-semibold text-foreground">{quest.reward.petName}</span>!
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setActiveFestivalId(null);
+                  setScreen("worldmap");
+                }}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition font-display text-sm"
+              >
+                Map
+              </button>
+              <button
+                onClick={() => {
+                  if (isLast) {
+                    grantFestivalReward(quest.reward.petId);
+                    setScreen("festivalComplete");
+                  } else {
+                    setActiveFestivalLevel(activeFestivalLevel + 1);
+                    setScreen("festivalQuest");
+                  }
+                }}
+                className="flex-1 btn-primary font-display text-sm"
+              >
+                Next Level ▸
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    case "festivalRewards":
+      return (
+        <FestivalRewardsGallery
+          profile={profile}
+          onSelectPet={selectPet}
+          onBack={() => setScreen("worldmap")}
+        />
+      );
 
     case "festivalComplete": {
       const quest = activeFestivalId ? getFestivalById(activeFestivalId) : undefined;
