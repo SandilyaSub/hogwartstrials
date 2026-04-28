@@ -26,6 +26,8 @@ export interface PlayerProfile {
   activeAccessories?: string[];
   /** Per-upgrade equip toggle. If a key is missing, the upgrade is considered ON (back-compat). */
   activeUpgrades?: Record<string, boolean>;
+  /** Highest completed level index per festival quest id. Reward unlocks after the 15th level. */
+  festivalProgress?: Record<string, number>;
 }
 
 const DEFAULT_PROFILE: PlayerProfile = {
