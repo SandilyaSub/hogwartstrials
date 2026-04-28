@@ -92,12 +92,30 @@ export function useGameState(user: User | null) {
           }
         } catch {}
 
+        // Reconcile unlocked pets: legendary pets must have a verified
+        // shop_purchases record, otherwise strip them so the user must buy
+        // them with coins (fixes legacy data where legendaries were granted
+        // for free).
+        let unlockedPets: string[] = data.unlocked_pets || ["owl", "cat"];
+        try {
+          const { data: purchases } = await supabase
+            .from("shop_purchases")
+            .select("item_id")
+            .eq("user_id", user.id)
+            .eq("item_type", "pet");
+          const purchasedIds = new Set((purchases || []).map((p: any) => p.item_id));
+          const legendaryIds = new Set(PETS.filter(p => p.legendary).map(p => p.id));
+          unlockedPets = unlockedPets.filter(
+            (pid) => !legendaryIds.has(pid) || purchasedIds.has(pid)
+          );
+        } catch {}
+
         setProfile({
           username: data.username || "",
           character: char,
           house: house,
-          pet: pet,
-          unlockedPets: data.unlocked_pets || ["owl", "cat"],
+          pet: pet && (!pet.legendary || unlockedPets.includes(pet.id)) ? pet : null,
+          unlockedPets,
           currentWorld: data.current_world || 1,
           currentLevel: data.current_level || 0,
           completedLevels: data.completed_levels || [],
