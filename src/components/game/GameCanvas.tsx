@@ -1793,7 +1793,13 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
             });
           }
         } else {
-          // Flying Ford Anglia sprite
+          // Flying Ford Anglia sprite.
+          // ⚠️ ORIENTATION CONTRACT: the car asset MUST face RIGHT (grille/headlights
+          // on the right side of the image). The level auto-scrolls right and the
+          // wizard avatar is drawn on the right half of the sprite (driver seat).
+          // If a replacement asset faces left, set FLYING_CAR_FACES_LEFT = true
+          // below instead of shipping a backwards car.
+          const FLYING_CAR_FACES_LEFT = false;
           const carW = 78, carH = 44;
           if (!(window as any).__mountImg_flyingcar) {
             const img = new Image();
@@ -1808,6 +1814,11 @@ const GameCanvas = ({ profile, worldId, levelIdx, onComplete, onDeath, onBack }:
           if (flash) ctx.globalAlpha = 0.55;
           if (carSpriteImg.complete && carSpriteImg.naturalWidth > 0) {
             ctx.imageSmoothingEnabled = true;
+            if (FLYING_CAR_FACES_LEFT) {
+              // Mirror so the car always faces the scroll direction (right).
+              ctx.translate(carW, 0);
+              ctx.scale(-1, 1);
+            }
             ctx.drawImage(carSpriteImg, 0, 0, carW, carH);
           } else {
             // Fallback while sprite loads
