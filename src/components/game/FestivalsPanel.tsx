@@ -66,6 +66,7 @@ const FestivalsPanel = ({ profile, onStartQuest }: FestivalsPanelProps) => {
                 active={active}
                 owned={owned}
                 daysUntil={days}
+                progress={profile.festivalProgress?.[quest.id] ?? 0}
                 delay={i * 0.04}
                 onStart={() => onStartQuest(quest.id)}
               />
