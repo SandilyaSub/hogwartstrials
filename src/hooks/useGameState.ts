@@ -284,6 +284,18 @@ export function useGameState(user: User | null) {
     saveProfile({ ...profile, unlockedPets: newPets });
   }, [profile, saveProfile]);
 
+  /**
+   * Record completion of a festival quest level. Returns the next level index
+   * to play (or null if the quest's final level was just cleared).
+   */
+  const advanceFestivalLevel = useCallback((questId: string, levelIndex: number, totalLevels: number): number | null => {
+    const current = profile.festivalProgress?.[questId] ?? 0;
+    const newProgress = Math.max(current, levelIndex + 1);
+    const nextProgress = { ...(profile.festivalProgress || {}), [questId]: Math.min(newProgress, totalLevels) };
+    saveProfile({ ...profile, festivalProgress: nextProgress });
+    return levelIndex + 1 < totalLevels ? levelIndex + 1 : null;
+  }, [profile, saveProfile]);
+
   const resetGame = useCallback(() => {
     const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme };
     saveProfile(reset);
