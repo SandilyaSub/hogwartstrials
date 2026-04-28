@@ -5,6 +5,7 @@ import {
   isFestivalActive,
   daysUntilFestival,
   getYearlyChapter,
+  LEVELS_PER_QUEST,
   type FestivalQuest,
 } from "@/lib/festivalQuests";
 import type { PlayerProfile } from "@/hooks/useGameState";
