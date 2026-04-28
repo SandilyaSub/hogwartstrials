@@ -487,15 +487,29 @@ const Index = () => {
               </p>
             </div>
 
-            <button
-              onClick={() => {
-                setActiveFestivalId(null);
-                setScreen("worldmap");
-              }}
-              className="btn-primary w-full font-display"
-            >
-              Return to Map
-            </button>
+            <p className="text-[11px] text-muted-foreground font-body mb-4">
+              Equip it any time from the 🎁 <span className="font-semibold text-foreground">Festival Rewards</span> gallery on the World Map, or from the 🐾 Pet Store.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setActiveFestivalId(null);
+                  setScreen("worldmap");
+                }}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition font-display text-sm"
+              >
+                Map
+              </button>
+              <button
+                onClick={() => {
+                  setActiveFestivalId(null);
+                  setScreen("festivalRewards");
+                }}
+                className="flex-1 btn-primary font-display text-sm"
+              >
+                🎁 View Reward
+              </button>
+            </div>
           </div>
         </div>
       );
