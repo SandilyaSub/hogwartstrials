@@ -168,9 +168,14 @@ const Index = () => {
           onOpenSettings={() => setScreen("settings")}
           onOpenLeaderboard={() => setScreen("leaderboard")}
           onStartFestivalQuest={(questId) => {
+            const startAt = profile.festivalProgress?.[questId] ?? 0;
+            // If quest is already fully completed, replay from level 1.
+            const lvl = startAt >= LEVELS_PER_QUEST ? 0 : startAt;
             setActiveFestivalId(questId);
+            setActiveFestivalLevel(lvl);
             setScreen("festivalQuest");
           }}
+          onOpenFestivalRewards={() => setScreen("festivalRewards")}
           onResetGame={resetGame}
         />
       );
