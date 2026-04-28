@@ -47,6 +47,7 @@ const DEFAULT_PROFILE: PlayerProfile = {
   activeCharacterSkin: undefined,
   activeAccessories: [],
   activeUpgrades: {},
+  festivalProgress: {},
 };
 
 export function useGameState(user: User | null) {
