@@ -23,7 +23,8 @@ import GameOver from "@/components/game/GameOver";
 import Tutorial from "@/components/game/Tutorial";
 import HouseLeaderboard from "@/components/game/HouseLeaderboard";
 import FestivalQuestCanvas from "@/components/game/FestivalQuestCanvas";
-import { getFestivalById, getYearlyChapter } from "@/lib/festivalQuests";
+import FestivalRewardsGallery from "@/components/game/FestivalRewardsGallery";
+import { getFestivalById, getYearlyChapter, LEVELS_PER_QUEST } from "@/lib/festivalQuests";
 
 const Index = () => {
   const { user, loading, signUp, signIn, signOut } = useAuth();
