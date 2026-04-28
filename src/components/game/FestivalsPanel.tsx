@@ -83,11 +83,12 @@ interface FestivalCardProps {
   active: boolean;
   owned: boolean;
   daysUntil: number;
+  progress: number;
   delay: number;
   onStart: () => void;
 }
 
-const FestivalCard = ({ quest, active, owned, daysUntil, delay, onStart }: FestivalCardProps) => {
+const FestivalCard = ({ quest, active, owned, daysUntil, progress, delay, onStart }: FestivalCardProps) => {
   const disabled = !active || owned;
   const { chapter, index, year, total } = getYearlyChapter(quest);
 
