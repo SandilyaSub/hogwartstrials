@@ -129,6 +129,7 @@ export function useGameState(user: User | null) {
         activeCharacterSkin: p.activeCharacterSkin,
         activeAccessories: p.activeAccessories || [],
         activeUpgrades: p.activeUpgrades || {},
+        festivalProgress: p.festivalProgress || {},
       }));
     } catch {}
 
