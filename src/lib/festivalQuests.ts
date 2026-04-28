@@ -393,6 +393,59 @@ export const FESTIVAL_QUESTS: FestivalQuest[] = [
       },
     ],
   },
+
+  // ─────────────────────── NEW YEAR ───────────────────────
+  {
+    id: "new_year",
+    name: "New Year's Eve Gala",
+    emoji: "🎆",
+    primaryColor: "hsl(45, 100%, 60%)",
+    secondaryColor: "hsl(260, 70%, 45%)",
+    skyTop: "hsl(255, 70%, 12%)",
+    skyBottom: "hsl(280, 60%, 28%)",
+    groundColor: "hsl(250, 40%, 18%)",
+    monthStart: 12, dayStart: 28,
+    monthEnd: 1, dayEnd: 5,
+    reward: {
+      petId: "festival_new_year_owl",
+      petName: "Midnight Owl",
+      petImg: newYearOwlImg,
+      petEmoji: "🦉",
+    },
+    chapters: [
+      {
+        subtitle: "Countdown Chase",
+        description: "The clock tower strikes toward midnight. Catch every glowing numeral before the year flips!",
+        loreQuote: "Time, like magic, waits for no witch nor wizard.",
+        objective: { kind: "collect", target: 12, itemEmoji: "🔢", itemLabel: "Numerals" },
+        platformCount: 14, timeLimit: 90,
+      },
+      {
+        subtitle: "Fireworks Finale",
+        description: "Weasleys' Wizard Wheezes set off a sky full of sparks. Catch each firework before it fizzles.",
+        loreQuote: "The sky exploded in dragons of light, one for every wish made.",
+        objective: { kind: "collect", target: 18, itemEmoji: "🎆", itemLabel: "Fireworks" },
+        platformCount: 17, timeLimit: 100,
+        modifiers: ["wind_gusts"],
+      },
+      {
+        subtitle: "Champagne Toast",
+        description: "Floating goblets drift through the Great Hall — gather them before midnight's toast.",
+        loreQuote: "To the year ahead, and the friends who'll see us through it.",
+        objective: { kind: "collect", target: 15, itemEmoji: "🥂", itemLabel: "Goblets" },
+        platformCount: 16, timeLimit: 95,
+        modifiers: ["moving_platforms"],
+      },
+      {
+        subtitle: "Resolution Lanterns",
+        description: "Light each wish-lantern at the stroke of twelve to send hopes skyward for the new year.",
+        loreQuote: "A new year, a new spell, a new chance to choose what we shall be.",
+        objective: { kind: "light", target: 13, itemEmoji: "🏮", itemLabel: "Lanterns" },
+        platformCount: 15, timeLimit: 90,
+        modifiers: ["dim_lights"],
+      },
+    ],
+  },
 ];
 
 /**
