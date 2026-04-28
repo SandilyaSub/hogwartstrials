@@ -511,14 +511,53 @@ function festivalOffset(id: FestivalId): number {
 
 /**
  * Deterministic seed for the procedural mini-level generator. Folds in the
- * year and chapter so the layout is different every year — even when the
- * objective happens to repeat.
+ * year, chapter, and level index so every level of every quest has its own
+ * unique layout.
  */
-export function getQuestSeed(quest: FestivalQuest, now: Date = new Date()): number {
+export function getQuestSeed(quest: FestivalQuest, levelIndex = 0, now: Date = new Date()): number {
   const { index, year } = getYearlyChapter(quest, now);
-  // Mix year + chapter + festival id length so the seed is well-distributed.
-  return (year * 9301 + index * 49297 + quest.id.length * 233 + 1013904223) % 4294967296;
+  return (year * 9301 + index * 49297 + (levelIndex + 1) * 7919 + quest.id.length * 233 + 1013904223) % 4294967296;
+}
+
+/** Total number of levels in every festival quest. Reward unlocks after the final level. */
+export const LEVELS_PER_QUEST = 15;
+
+/**
+ * Build the chapter to play at a given level (0-indexed) within a quest.
+ * Cycles through the quest's chapter pool while ramping difficulty: more
+ * platforms, more targets to collect, slightly tighter time limits.
+ */
+export function getQuestLevelChapter(
+  quest: FestivalQuest,
+  levelIndex: number,
+  now: Date = new Date()
+): { chapter: FestivalChapter; chapterIndex: number; level: number; totalLevels: number } {
+  const yearly = getYearlyChapter(quest, now);
+  // Rotate through chapters offset by the yearly index so each year starts differently.
+  const chapterIndex = (yearly.index + levelIndex) % quest.chapters.length;
+  const base = quest.chapters[chapterIndex];
+
+  // Difficulty curve: t goes 0 → 1 across the 15 levels.
+  const t = levelIndex / Math.max(1, LEVELS_PER_QUEST - 1);
+  const platformBoost = Math.round(t * 8);          // up to +8 platforms
+  const targetBoost = Math.round(t * 6);            // up to +6 items
+  const timeShrink = base.timeLimit > 0 ? Math.round(t * 15) : 0; // up to -15s
+
+  const scaled: FestivalChapter = {
+    ...base,
+    platformCount: base.platformCount + platformBoost,
+    objective: { ...base.objective, target: base.objective.target + targetBoost },
+    timeLimit: base.timeLimit > 0 ? Math.max(45, base.timeLimit - timeShrink) : 0,
+  };
+
+  return {
+    chapter: scaled,
+    chapterIndex,
+    level: levelIndex,
+    totalLevels: LEVELS_PER_QUEST,
+  };
 }
 
 /** All festival pet ids — useful for filtering them out of regular pet store. */
 export const FESTIVAL_PET_IDS = FESTIVAL_QUESTS.map(q => q.reward.petId);
+

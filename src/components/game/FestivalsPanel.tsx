@@ -5,6 +5,7 @@ import {
   isFestivalActive,
   daysUntilFestival,
   getYearlyChapter,
+  LEVELS_PER_QUEST,
   type FestivalQuest,
 } from "@/lib/festivalQuests";
 import type { PlayerProfile } from "@/hooks/useGameState";
@@ -65,6 +66,7 @@ const FestivalsPanel = ({ profile, onStartQuest }: FestivalsPanelProps) => {
                 active={active}
                 owned={owned}
                 daysUntil={days}
+                progress={profile.festivalProgress?.[quest.id] ?? 0}
                 delay={i * 0.04}
                 onStart={() => onStartQuest(quest.id)}
               />
@@ -81,11 +83,12 @@ interface FestivalCardProps {
   active: boolean;
   owned: boolean;
   daysUntil: number;
+  progress: number;
   delay: number;
   onStart: () => void;
 }
 
-const FestivalCard = ({ quest, active, owned, daysUntil, delay, onStart }: FestivalCardProps) => {
+const FestivalCard = ({ quest, active, owned, daysUntil, progress, delay, onStart }: FestivalCardProps) => {
   const disabled = !active || owned;
   const { chapter, index, year, total } = getYearlyChapter(quest);
 
@@ -137,9 +140,35 @@ const FestivalCard = ({ quest, active, owned, daysUntil, delay, onStart }: Festi
       <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-display mb-1">
         {year} · {chapter.subtitle} · {index + 1}/{total}
       </p>
-      <p className="text-xs text-muted-foreground font-body line-clamp-2 mb-3">
+      <p className="text-xs text-muted-foreground font-body line-clamp-2 mb-2">
         {chapter.description}
       </p>
+
+      {/* Quest progress (15-level campaign) */}
+      {active && !owned && (
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] uppercase tracking-wide font-display text-muted-foreground">
+              {progress > 0 ? `Resume · ${progress}/${LEVELS_PER_QUEST}` : `Level 1/${LEVELS_PER_QUEST}`}
+            </span>
+            <span
+              className="text-[10px] font-display font-bold"
+              style={{ color: quest.primaryColor }}
+            >
+              {Math.round((progress / LEVELS_PER_QUEST) * 100)}%
+            </span>
+          </div>
+          <div className="w-full h-1 rounded-full bg-muted/40 overflow-hidden">
+            <div
+              className="h-full transition-all"
+              style={{
+                width: `${(progress / LEVELS_PER_QUEST) * 100}%`,
+                background: `linear-gradient(90deg, ${quest.primaryColor}, ${quest.secondaryColor})`,
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="flex items-center gap-2 pt-2 border-t border-border/20">
         <img
@@ -159,7 +188,7 @@ const FestivalCard = ({ quest, active, owned, daysUntil, delay, onStart }: Festi
         </div>
         {active && !owned && (
           <span className="text-xs font-display font-bold" style={{ color: quest.primaryColor }}>
-            PLAY ▸
+            {progress > 0 ? "RESUME ▸" : "PLAY ▸"}
           </span>
         )}
       </div>

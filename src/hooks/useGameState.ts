@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ShopItem } from "@/lib/shopData";
 import type { User } from "@supabase/supabase-js";
 
-export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "feedback" | "settings" | "levelIntro" | "playing" | "levelComplete" | "gameOver" | "tutorial" | "leaderboard" | "festivalQuest" | "festivalComplete";
+export type GameScreen = "title" | "auth" | "profile" | "character" | "house" | "worldmap" | "petstore" | "shop" | "feedback" | "settings" | "levelIntro" | "playing" | "levelComplete" | "gameOver" | "tutorial" | "leaderboard" | "festivalQuest" | "festivalLevelComplete" | "festivalComplete" | "festivalRewards";
 
 export interface PlayerProfile {
   username: string;
@@ -26,6 +26,8 @@ export interface PlayerProfile {
   activeAccessories?: string[];
   /** Per-upgrade equip toggle. If a key is missing, the upgrade is considered ON (back-compat). */
   activeUpgrades?: Record<string, boolean>;
+  /** Highest completed level index per festival quest id. Reward unlocks after the 15th level. */
+  festivalProgress?: Record<string, number>;
 }
 
 const DEFAULT_PROFILE: PlayerProfile = {
@@ -45,6 +47,7 @@ const DEFAULT_PROFILE: PlayerProfile = {
   activeCharacterSkin: undefined,
   activeAccessories: [],
   activeUpgrades: {},
+  festivalProgress: {},
 };
 
 export function useGameState(user: User | null) {
@@ -77,6 +80,7 @@ export function useGameState(user: User | null) {
         let activeCharacterSkin: string | undefined;
         let activeAccessories: string[] = [];
         let activeUpgrades: Record<string, boolean> = {};
+        let festivalProgress: Record<string, number> = {};
         try {
           const raw = localStorage.getItem(`equip_${user.id}`);
           if (raw) {
@@ -84,6 +88,7 @@ export function useGameState(user: User | null) {
             activeCharacterSkin = parsed.activeCharacterSkin;
             activeAccessories = parsed.activeAccessories || [];
             activeUpgrades = parsed.activeUpgrades || {};
+            festivalProgress = parsed.festivalProgress || {};
           }
         } catch {}
 
@@ -104,6 +109,7 @@ export function useGameState(user: User | null) {
           activeCharacterSkin,
           activeAccessories,
           activeUpgrades,
+          festivalProgress,
         });
       }
       setDbLoaded(true);
@@ -123,6 +129,7 @@ export function useGameState(user: User | null) {
         activeCharacterSkin: p.activeCharacterSkin,
         activeAccessories: p.activeAccessories || [],
         activeUpgrades: p.activeUpgrades || {},
+        festivalProgress: p.festivalProgress || {},
       }));
     } catch {}
 
@@ -277,6 +284,18 @@ export function useGameState(user: User | null) {
     saveProfile({ ...profile, unlockedPets: newPets });
   }, [profile, saveProfile]);
 
+  /**
+   * Record completion of a festival quest level. Returns the next level index
+   * to play (or null if the quest's final level was just cleared).
+   */
+  const advanceFestivalLevel = useCallback((questId: string, levelIndex: number, totalLevels: number): number | null => {
+    const current = profile.festivalProgress?.[questId] ?? 0;
+    const newProgress = Math.max(current, levelIndex + 1);
+    const nextProgress = { ...(profile.festivalProgress || {}), [questId]: Math.min(newProgress, totalLevels) };
+    saveProfile({ ...profile, festivalProgress: nextProgress });
+    return levelIndex + 1 < totalLevels ? levelIndex + 1 : null;
+  }, [profile, saveProfile]);
+
   const resetGame = useCallback(() => {
     const reset = { ...DEFAULT_PROFILE, purchasedUpgrades: profile.purchasedUpgrades, activeTheme: profile.activeTheme };
     saveProfile(reset);
@@ -291,6 +310,7 @@ export function useGameState(user: User | null) {
     setUsername, selectCharacter, selectHouse, selectPet, purchasePet,
     completeLevel, startLevel, resetGame, purchaseItem,
     grantFestivalReward,
+    advanceFestivalLevel,
     hasSave, dbLoaded,
   };
 }

@@ -2,13 +2,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import TouchControls from "./TouchControls";
 import {
   getQuestSeed,
-  getYearlyChapter,
+  getQuestLevelChapter,
   type ChapterModifier,
   type FestivalQuest,
 } from "@/lib/festivalQuests";
 
 interface FestivalQuestCanvasProps {
   quest: FestivalQuest;
+  /** 0-indexed level within the quest (0..14). */
+  levelIndex: number;
   onComplete: () => void;
   onExit: () => void;
 }
@@ -25,16 +27,15 @@ interface Platform {
 }
 interface Collectible { x: number; y: number; collected: boolean; bob: number; }
 
-// Self-contained mini-platformer for festival side-quests. The active chapter
-// rotates each year and seeds the procedural layout, so no two yearly
-// challenges are identical.
-const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasProps) => {
-  // Resolve the year's chapter once — used for HUD, layout, modifiers.
-  const { chapter, index: chapterIndex, year, total } = useMemo(
-    () => getYearlyChapter(quest),
-    [quest]
+// Self-contained mini-platformer for festival side-quests. Each quest is a
+// 15-level mini-campaign; the chapter rotates through the quest's pool and
+// difficulty (platforms / targets / time) scales with the level index.
+const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: FestivalQuestCanvasProps) => {
+  const { chapter, chapterIndex, totalLevels } = useMemo(
+    () => getQuestLevelChapter(quest, levelIndex),
+    [quest, levelIndex]
   );
-  const seed = useMemo(() => getQuestSeed(quest), [quest]);
+  const seed = useMemo(() => getQuestSeed(quest, levelIndex), [quest, levelIndex]);
   const modifiers = chapter.modifiers ?? [];
   const hasMod = (m: ChapterModifier) => modifiers.includes(m);
 
@@ -424,7 +425,7 @@ const FestivalQuestCanvas = ({ quest, onComplete, onExit }: FestivalQuestCanvasP
           <div className="flex flex-col leading-tight">
             <span>{quest.name} · {chapter.subtitle}</span>
             <span className="text-[10px] opacity-70">
-              {year} edition · chapter {chapterIndex + 1}/{total}
+              Level {levelIndex + 1}/{totalLevels} · chapter {chapterIndex + 1}/{quest.chapters.length}
             </span>
           </div>
         </div>

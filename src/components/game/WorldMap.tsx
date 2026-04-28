@@ -70,10 +70,11 @@ interface WorldMapProps {
   onOpenSettings?: () => void;
   onOpenLeaderboard?: () => void;
   onStartFestivalQuest?: (questId: string) => void;
+  onOpenFestivalRewards?: () => void;
   onResetGame: () => void;
 }
 
-const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onOpenSettings, onOpenLeaderboard, onStartFestivalQuest, onResetGame }: WorldMapProps) => {
+const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onOpenSettings, onOpenLeaderboard, onStartFestivalQuest, onOpenFestivalRewards, onResetGame }: WorldMapProps) => {
   const [expandedWorld, setExpandedWorld] = useState<number | null>(null);
   const [showMentor, setShowMentor] = useState(false);
 
@@ -139,6 +140,15 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
                {onOpenLeaderboard && (
                  <button onClick={onOpenLeaderboard} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
                    🏆
+                 </button>
+               )}
+               {onOpenFestivalRewards && (
+                 <button
+                   onClick={onOpenFestivalRewards}
+                   className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm"
+                   title="Festival Rewards"
+                 >
+                   🎁
                  </button>
                )}
               <button onClick={() => setShowMentor(true)} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
