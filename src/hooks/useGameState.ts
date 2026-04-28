@@ -109,6 +109,7 @@ export function useGameState(user: User | null) {
           activeCharacterSkin,
           activeAccessories,
           activeUpgrades,
+          festivalProgress,
         });
       }
       setDbLoaded(true);
