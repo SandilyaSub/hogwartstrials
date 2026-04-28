@@ -505,6 +505,7 @@ function festivalOffset(id: FestivalId): number {
     case "valentines": return 3;
     case "summer": return 4;
     case "summer_holiday": return 5;
+    case "new_year": return 6;
   }
 }
 
