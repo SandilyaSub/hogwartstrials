@@ -310,6 +310,7 @@ export function useGameState(user: User | null) {
     setUsername, selectCharacter, selectHouse, selectPet, purchasePet,
     completeLevel, startLevel, resetGame, purchaseItem,
     grantFestivalReward,
+    advanceFestivalLevel,
     hasSave, dbLoaded,
   };
 }
