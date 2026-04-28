@@ -450,6 +450,7 @@ function festivalOffset(id: FestivalId): number {
     case "diwali": return 2;
     case "valentines": return 3;
     case "summer": return 4;
+    case "summer_holiday": return 5;
   }
 }
 
