@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import {
   FESTIVAL_QUESTS,
   isFestivalActive,
@@ -13,9 +15,20 @@ interface FestivalsPanelProps {
 }
 
 const FestivalsPanel = ({ profile, onStartQuest }: FestivalsPanelProps) => {
+  const [open, setOpen] = useState(false);
+
+  const activeCount = FESTIVAL_QUESTS.filter(
+    (q) => isFestivalActive(q) && !profile.unlockedPets.includes(q.reward.petId)
+  ).length;
+
   return (
     <div className="card-illustrated p-5 mb-5 animate-slide-up">
-      <div className="flex items-center justify-between mb-4">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="w-full flex items-center justify-between gap-3 text-left"
+      >
         <div>
           <h2 className="font-display text-lg font-semibold text-primary text-glow flex items-center gap-2">
             <span>🎊</span> Festival Side-Quests
@@ -24,27 +37,41 @@ const FestivalsPanel = ({ profile, onStartQuest }: FestivalsPanelProps) => {
             Limited-time quests · exclusive cosmetic pets
           </p>
         </div>
-      </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {activeCount > 0 && (
+            <span className="text-[10px] font-display font-bold px-2 py-0.5 rounded-full bg-primary text-primary-foreground animate-pulse">
+              {activeCount} LIVE
+            </span>
+          )}
+          <ChevronDown
+            className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${
+              open ? "rotate-180" : ""
+            }`}
+          />
+        </div>
+      </button>
 
-      <div className="grid sm:grid-cols-2 gap-3">
-        {FESTIVAL_QUESTS.map((quest, i) => {
-          const active = isFestivalActive(quest);
-          const owned = profile.unlockedPets.includes(quest.reward.petId);
-          const days = daysUntilFestival(quest);
+      {open && (
+        <div className="grid sm:grid-cols-2 gap-3 mt-4 animate-slide-up">
+          {FESTIVAL_QUESTS.map((quest, i) => {
+            const active = isFestivalActive(quest);
+            const owned = profile.unlockedPets.includes(quest.reward.petId);
+            const days = daysUntilFestival(quest);
 
-          return (
-            <FestivalCard
-              key={quest.id}
-              quest={quest}
-              active={active}
-              owned={owned}
-              daysUntil={days}
-              delay={i * 0.06}
-              onStart={() => onStartQuest(quest.id)}
-            />
-          );
-        })}
-      </div>
+            return (
+              <FestivalCard
+                key={quest.id}
+                quest={quest}
+                active={active}
+                owned={owned}
+                daysUntil={days}
+                delay={i * 0.04}
+                onStart={() => onStartQuest(quest.id)}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
@@ -60,7 +87,6 @@ interface FestivalCardProps {
 
 const FestivalCard = ({ quest, active, owned, daysUntil, delay, onStart }: FestivalCardProps) => {
   const disabled = !active || owned;
-  // Resolve the year's chapter so the card preview matches what the player will play.
   const { chapter, index, year, total } = getYearlyChapter(quest);
 
   return (
@@ -82,7 +108,6 @@ const FestivalCard = ({ quest, active, owned, daysUntil, delay, onStart }: Festi
           : undefined,
       }}
     >
-      {/* Status pill */}
       <div className="flex items-center justify-between mb-2">
         <span className="text-3xl drop-shadow-md">{quest.emoji}</span>
         {owned ? (
@@ -116,7 +141,6 @@ const FestivalCard = ({ quest, active, owned, daysUntil, delay, onStart }: Festi
         {chapter.description}
       </p>
 
-      {/* Reward preview */}
       <div className="flex items-center gap-2 pt-2 border-t border-border/20">
         <img
           src={quest.reward.petImg}
