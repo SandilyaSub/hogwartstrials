@@ -17,6 +17,9 @@ import spectreCatImg from "@/assets/festivals/pet_spectre_cat.png";
 import yuleFoxImg from "@/assets/festivals/pet_yule_fox.png";
 import diyaPeacockImg from "@/assets/festivals/pet_diya_peacock.png";
 import amourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
+import sunPhoenixImg from "@/assets/festivals/pet_sun_phoenix.png";
+import seashellTurtleImg from "@/assets/festivals/pet_seashell_turtle.png";
+import newYearOwlImg from "@/assets/festivals/pet_new_year_owl.png";
 
 const PET_IMAGES: Record<string, string> = {
   owl: owlImg, cat: catImg, toad: toadImg, rat: ratImg,
@@ -27,6 +30,9 @@ const PET_IMAGES: Record<string, string> = {
   festival_yule_fox: yuleFoxImg,
   festival_diya_peacock: diyaPeacockImg,
   festival_amour_fawn: amourFawnImg,
+  festival_sun_phoenix: sunPhoenixImg,
+  festival_seashell_turtle: seashellTurtleImg,
+  festival_new_year_owl: newYearOwlImg,
 };
 
 interface PetStoreProps {
