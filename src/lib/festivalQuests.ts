@@ -10,8 +10,9 @@ import yuleFoxImg from "@/assets/festivals/pet_yule_fox.png";
 import diyaPeacockImg from "@/assets/festivals/pet_diya_peacock.png";
 import amourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
 import sunPhoenixImg from "@/assets/festivals/pet_sun_phoenix.png";
+import seashellTurtleImg from "@/assets/festivals/pet_seashell_turtle.png";
 
-export type FestivalId = "halloween" | "yule" | "diwali" | "valentines" | "summer";
+export type FestivalId = "halloween" | "yule" | "diwali" | "valentines" | "summer" | "summer_holiday";
 
 export type FestivalObjectiveKind = "collect" | "defeat" | "deliver" | "light";
 
@@ -339,6 +340,58 @@ export const FESTIVAL_QUESTS: FestivalQuest[] = [
       },
     ],
   },
+
+  // ─────────────────────── SUMMER HOLIDAY (BEACH) ───────────────────────
+  {
+    id: "summer_holiday",
+    name: "Seaside Holiday",
+    emoji: "🏖️",
+    primaryColor: "hsl(195, 90%, 50%)",
+    secondaryColor: "hsl(40, 95%, 65%)",
+    skyTop: "hsl(200, 95%, 70%)",
+    skyBottom: "hsl(190, 80%, 85%)",
+    groundColor: "hsl(45, 80%, 70%)",
+    monthStart: 7, dayStart: 6,
+    monthEnd: 8, dayEnd: 31,
+    reward: {
+      petId: "festival_seashell_turtle",
+      petName: "Seashell Turtle",
+      petImg: seashellTurtleImg,
+      petEmoji: "🐢",
+    },
+    chapters: [
+      {
+        subtitle: "Shell Beachcombing",
+        description: "Term is over! Comb the enchanted Cornish coast for rare shells washed up by the morning tide.",
+        loreQuote: "The summer holidays stretched ahead, long and golden as the sand.",
+        objective: { kind: "collect", target: 16, itemEmoji: "🐚", itemLabel: "Shells" },
+        platformCount: 16, timeLimit: 90,
+      },
+      {
+        subtitle: "Tide Pool Rescue",
+        description: "Stranded starfish dot the rocks. Return each one to the sea before the tide turns.",
+        loreQuote: "Every small life mattered, even the smallest ones glittering in a pool.",
+        objective: { kind: "deliver", target: 14, itemEmoji: "⭐", itemLabel: "Starfish" },
+        platformCount: 17, timeLimit: 95,
+        modifiers: ["moving_platforms"],
+      },
+      {
+        subtitle: "Sandcastle Beacons",
+        description: "Light each driftwood torch atop the sandcastles to guide the merfolk's sunset parade.",
+        loreQuote: "From the deep they came, drawn by the warm flicker of the shore.",
+        objective: { kind: "light", target: 12, itemEmoji: "🏰", itemLabel: "Beacons" },
+        platformCount: 15, timeLimit: 85,
+      },
+      {
+        subtitle: "Boardwalk Breeze",
+        description: "Coconuts and beach balls roll loose across the boardwalk in the salty wind. Catch them all!",
+        loreQuote: "The seaside wind smelled of salt, sugar, and freedom.",
+        objective: { kind: "collect", target: 19, itemEmoji: "🥥", itemLabel: "Coconuts" },
+        platformCount: 18, timeLimit: 100,
+        modifiers: ["wind_gusts", "moving_platforms"],
+      },
+    ],
+  },
 ];
 
 /**
@@ -397,6 +450,7 @@ function festivalOffset(id: FestivalId): number {
     case "diwali": return 2;
     case "valentines": return 3;
     case "summer": return 4;
+    case "summer_holiday": return 5;
   }
 }
 
