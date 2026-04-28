@@ -425,7 +425,7 @@ const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: Festival
           <div className="flex flex-col leading-tight">
             <span>{quest.name} · {chapter.subtitle}</span>
             <span className="text-[10px] opacity-70">
-              {year} edition · chapter {chapterIndex + 1}/{total}
+              Level {levelIndex + 1}/{totalLevels} · chapter {chapterIndex + 1}/{quest.chapters.length}
             </span>
           </div>
         </div>
