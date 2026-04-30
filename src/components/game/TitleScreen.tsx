@@ -3,13 +3,12 @@ import heroBg from "@/assets/hero-bg.jpg";
 import { useTheme } from "@/hooks/useTheme";
 
 interface TitleScreenProps {
-  onNewGame: () => void;
   onContinue: () => void;
   hasSave: boolean;
   onSignOut?: () => void;
 }
 
-const TitleScreen = ({ onNewGame, onContinue, hasSave, onSignOut }: TitleScreenProps) => {
+const TitleScreen = ({ onContinue, hasSave, onSignOut }: TitleScreenProps) => {
   const { theme, toggleTheme } = useTheme();
   const handleAction = (action: () => void) => {
     action();
