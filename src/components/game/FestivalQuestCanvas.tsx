@@ -69,6 +69,11 @@ const FestivalQuestCanvas = ({ quest, levelIndex, houseId, onComplete, onExit }:
     const W = (canvas.width = canvas.offsetWidth);
     const H = (canvas.height = canvas.offsetHeight);
 
+    // Load chibi avatar for the player's house (falls back to Gryffindor).
+    const chibiSrc = (houseId && CHIBI_BY_HOUSE[houseId]) || chibiGryffindor;
+    const chibiImg = new Image();
+    chibiImg.src = chibiSrc;
+
     // ---------- Tunable physics ----------
     const GROUND_Y = H - 60;
     const PLAYER_W = 28;
