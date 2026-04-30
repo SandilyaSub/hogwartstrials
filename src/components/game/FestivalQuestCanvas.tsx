@@ -560,4 +560,230 @@ function drawAtmosphere(
   ctx.restore();
 }
 
+// ---------- Themed platform ----------
+function drawThemedPlatform(
+  ctx: CanvasRenderingContext2D,
+  p: { x: number; y: number; w: number; h: number },
+  quest: FestivalQuest,
+  tick: number,
+) {
+  const { x, y, w, h } = p;
+  // Shadow
+  ctx.fillStyle = "rgba(0,0,0,0.25)";
+  ctx.fillRect(x + 2, y + h, w, 4);
+
+  // Body
+  const grad = ctx.createLinearGradient(0, y, 0, y + h);
+  grad.addColorStop(0, quest.groundColor);
+  grad.addColorStop(1, shade(quest.groundColor, -25));
+  ctx.fillStyle = grad;
+  roundRect(ctx, x, y, w, h, 4);
+  ctx.fill();
+
+  // Top accent strip
+  ctx.fillStyle = quest.primaryColor;
+  roundRect(ctx, x, y, w, 4, 2);
+  ctx.fill();
+
+  // Theme overlay
+  switch (quest.id) {
+    case "halloween": {
+      // pumpkin dots
+      for (let i = 6; i < w - 6; i += 14) {
+        ctx.fillStyle = "hsla(25, 90%, 55%, 0.85)";
+        ctx.beginPath();
+        ctx.arc(x + i, y + h / 2 + 2, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      break;
+    }
+    case "yule": {
+      // snow caps
+      ctx.fillStyle = "rgba(255,255,255,0.95)";
+      for (let i = 3; i < w - 3; i += 8) {
+        const sh = 3 + ((i * 7) % 4);
+        ctx.beginPath();
+        ctx.arc(x + i, y + 2, sh, Math.PI, 0);
+        ctx.fill();
+      }
+      break;
+    }
+    case "diwali": {
+      // string lights
+      for (let i = 8; i < w - 4; i += 12) {
+        const flick = 0.6 + Math.sin(tick * 0.2 + i) * 0.4;
+        ctx.fillStyle = `hsla(${(i * 23) % 360}, 90%, 65%, ${flick})`;
+        ctx.beginPath();
+        ctx.arc(x + i, y - 2, 2.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      break;
+    }
+    case "valentines": {
+      ctx.fillStyle = "hsla(340, 90%, 75%, 0.85)";
+      for (let i = 10; i < w - 6; i += 18) {
+        ctx.font = "10px serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("♥", x + i, y + h / 2 + 1);
+      }
+      break;
+    }
+    default: {
+      // grass tufts
+      ctx.fillStyle = shade(quest.primaryColor, 10);
+      for (let i = 4; i < w - 4; i += 10) {
+        ctx.fillRect(x + i, y - 2, 2, 3);
+      }
+    }
+  }
+}
+
+// ---------- Chibi wizard player ----------
+function drawWizard(
+  ctx: CanvasRenderingContext2D,
+  px: number, py: number,
+  W: number, H: number,
+  facing: number, gravitySign: number,
+  bob: number, tick: number,
+  quest: FestivalQuest,
+) {
+  ctx.save();
+  ctx.translate(px + W / 2, py + H / 2 + bob);
+  ctx.scale(facing, gravitySign);
+
+  const skin = "hsl(32, 60%, 80%)";
+  const robe = quest.secondaryColor;
+  const trim = quest.primaryColor;
+  const hat = shade(quest.primaryColor, -15);
+  const cape = shade(quest.secondaryColor, -25);
+
+  // Cape behind body
+  ctx.fillStyle = cape;
+  ctx.beginPath();
+  ctx.moveTo(-8, -8);
+  ctx.quadraticCurveTo(-14 - Math.sin(tick * 0.2) * 2, 0, -10, H / 2);
+  ctx.lineTo(8, H / 2);
+  ctx.quadraticCurveTo(6, 4, 4, -8);
+  ctx.closePath();
+  ctx.fill();
+
+  // Body / robe
+  ctx.fillStyle = robe;
+  roundRect(ctx, -W / 2 + 2, -2, W - 4, H / 2 + 2, 4);
+  ctx.fill();
+
+  // Robe trim
+  ctx.fillStyle = trim;
+  ctx.fillRect(-W / 2 + 2, H / 2 - 2, W - 4, 3);
+
+  // Belt
+  ctx.fillStyle = "hsl(40, 70%, 30%)";
+  ctx.fillRect(-W / 2 + 2, 4, W - 4, 3);
+
+  // Head
+  ctx.fillStyle = skin;
+  ctx.beginPath();
+  ctx.arc(0, -H / 2 + 8, 9, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = "#222";
+  ctx.fillRect(-3, -H / 2 + 7, 2, 2);
+  ctx.fillRect(2, -H / 2 + 7, 2, 2);
+  // Cheek
+  ctx.fillStyle = "hsla(340, 80%, 70%, 0.6)";
+  ctx.beginPath();
+  ctx.arc(4, -H / 2 + 11, 1.6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Wizard hat
+  ctx.fillStyle = hat;
+  ctx.beginPath();
+  ctx.moveTo(-11, -H / 2);
+  ctx.lineTo(11, -H / 2);
+  ctx.lineTo(3, -H / 2 - 18);
+  ctx.closePath();
+  ctx.fill();
+  // Hat band
+  ctx.fillStyle = trim;
+  ctx.fillRect(-11, -H / 2 - 2, 22, 3);
+  // Hat star
+  ctx.fillStyle = "hsl(50, 100%, 65%)";
+  ctx.font = "8px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("★", 1, -H / 2 - 8);
+
+  // Wand with sparkle tip
+  ctx.strokeStyle = "hsl(30, 50%, 25%)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(8, 2);
+  ctx.lineTo(15, -6);
+  ctx.stroke();
+  const tipGlow = ctx.createRadialGradient(15, -6, 0, 15, -6, 5);
+  tipGlow.addColorStop(0, "hsl(50, 100%, 80%)");
+  tipGlow.addColorStop(1, "transparent");
+  ctx.fillStyle = tipGlow;
+  ctx.beginPath();
+  ctx.arc(15, -6, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+// ---------- Goal flag ----------
+function drawGoalFlag(
+  ctx: CanvasRenderingContext2D,
+  goalX: number, groundY: number,
+  tick: number, quest: FestivalQuest,
+) {
+  // Pole
+  ctx.fillStyle = "hsl(0, 0%, 25%)";
+  ctx.fillRect(goalX, groundY - 80, 3, 80);
+  // Glow
+  const glow = ctx.createRadialGradient(goalX + 1, groundY - 70, 4, goalX + 1, groundY - 70, 40);
+  glow.addColorStop(0, `hsla(0,0%,100%,${0.25 + Math.sin(tick * 0.1) * 0.1})`);
+  glow.addColorStop(1, "transparent");
+  ctx.fillStyle = glow;
+  ctx.fillRect(goalX - 40, groundY - 110, 80, 80);
+  // Checkered flag
+  const wave = Math.sin(tick * 0.15) * 3;
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 6; c++) {
+      ctx.fillStyle = (r + c) % 2 === 0 ? quest.primaryColor : "white";
+      ctx.fillRect(goalX + 3 + c * 5 + wave * (c / 6), groundY - 80 + r * 5, 5, 5);
+    }
+  }
+  // Star on top
+  ctx.fillStyle = "hsl(50, 100%, 65%)";
+  ctx.font = "16px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("★", goalX + 2, groundY - 84);
+}
+
+// ---------- helpers ----------
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number, r: number,
+) {
+  const rr = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + rr, y);
+  ctx.arcTo(x + w, y, x + w, y + h, rr);
+  ctx.arcTo(x + w, y + h, x, y + h, rr);
+  ctx.arcTo(x, y + h, x, y, rr);
+  ctx.arcTo(x, y, x + w, y, rr);
+  ctx.closePath();
+}
+
+function shade(hsl: string, deltaL: number): string {
+  // expects "hsl(H, S%, L%)"
+  const m = hsl.match(/hsl\(\s*(\d+(?:\.\d+)?)\s*,\s*(\d+(?:\.\d+)?)%\s*,\s*(\d+(?:\.\d+)?)%\s*\)/i);
+  if (!m) return hsl;
+  const h = +m[1], s = +m[2];
+  const l = Math.max(0, Math.min(100, +m[3] + deltaL));
+  return `hsl(${h}, ${s}%, ${l}%)`;
+}
+
 export default FestivalQuestCanvas;
