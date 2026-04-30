@@ -71,10 +71,11 @@ interface WorldMapProps {
   onOpenLeaderboard?: () => void;
   onStartFestivalQuest?: (questId: string) => void;
   onOpenFestivalRewards?: () => void;
-  onResetGame: () => void;
+  onOpenSocial?: () => void;
+  onResetGame?: () => void;
 }
 
-const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onOpenSettings, onOpenLeaderboard, onStartFestivalQuest, onOpenFestivalRewards, onResetGame }: WorldMapProps) => {
+const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFeedback, onOpenSettings, onOpenLeaderboard, onStartFestivalQuest, onOpenFestivalRewards, onOpenSocial, onResetGame }: WorldMapProps) => {
   const [expandedWorld, setExpandedWorld] = useState<number | null>(null);
   const [showMentor, setShowMentor] = useState(false);
 
