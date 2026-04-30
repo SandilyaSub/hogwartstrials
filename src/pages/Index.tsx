@@ -24,6 +24,7 @@ import Tutorial from "@/components/game/Tutorial";
 import HouseLeaderboard from "@/components/game/HouseLeaderboard";
 import FestivalQuestCanvas from "@/components/game/FestivalQuestCanvas";
 import FestivalRewardsGallery from "@/components/game/FestivalRewardsGallery";
+import Social from "@/components/game/Social";
 import { getFestivalById, getYearlyChapter, LEVELS_PER_QUEST } from "@/lib/festivalQuests";
 
 const Index = () => {
