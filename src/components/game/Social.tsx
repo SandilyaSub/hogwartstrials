@@ -49,6 +49,9 @@ export default function Social({ userId, username, onBack }: SocialProps) {
   const [searching, setSearching] = useState(false);
   const [reportTarget, setReportTarget] = useState<{ id: string; name: string } | null>(null);
   const [reportReason, setReportReason] = useState("");
+  const [reportEvidence, setReportEvidence] = useState<File | null>(null);
+  const [reportEvidencePreview, setReportEvidencePreview] = useState<string | null>(null);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
   const [showNewGroup, setShowNewGroup] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupSelected, setGroupSelected] = useState<Set<string>>(new Set());
