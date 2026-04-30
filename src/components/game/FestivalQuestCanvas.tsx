@@ -310,34 +310,29 @@ const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: Festival
         }
       }
 
-      // Player sprite
+      // Sparkle trail when moving
+      if (Math.abs(vx) > 1 && frameTick % 4 === 0) {
+        particles.push({
+          x: px + PLAYER_W / 2 - facing * 8,
+          y: py + PLAYER_H - 4,
+          vx: -facing * (0.5 + Math.random()),
+          vy: -Math.random() * 1.2,
+          life: 18,
+          color: quest.primaryColor,
+        });
+      }
+
+      // Player sprite — chibi wizard with cape, hat & wand
       const bob = Math.abs(vx) > 0.3 ? Math.sin(frameTick * 0.3) * 1.5 : 0;
-      ctx.save();
-      ctx.translate(px + PLAYER_W / 2, py + PLAYER_H / 2 + bob);
-      ctx.scale(facing, gravitySign);
-      ctx.fillStyle = quest.secondaryColor;
-      ctx.fillRect(-PLAYER_W / 2, -2, PLAYER_W, PLAYER_H / 2 + 2);
-      ctx.fillStyle = "hsl(35, 60%, 75%)";
-      ctx.fillRect(-9, -PLAYER_H / 2, 18, 16);
-      ctx.fillStyle = quest.primaryColor;
-      ctx.beginPath();
-      ctx.moveTo(-12, -PLAYER_H / 2);
-      ctx.lineTo(12, -PLAYER_H / 2);
-      ctx.lineTo(2, -PLAYER_H / 2 - 14);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
+      drawWizard(ctx, px, py, PLAYER_W, PLAYER_H, facing, gravitySign, bob, frameTick, quest);
 
       ctx.restore();
 
-      // Goal beacon
+      // Goal: animated checkered flag
       ctx.save();
       ctx.translate(-cameraX, 0);
       const goalX = LEVEL_END - 80;
-      ctx.fillStyle = quest.primaryColor;
-      ctx.globalAlpha = 0.4 + Math.sin(frameTick * 0.1) * 0.2;
-      ctx.fillRect(goalX, 0, 4, GROUND_Y);
-      ctx.globalAlpha = 1;
+      drawGoalFlag(ctx, goalX, GROUND_Y, frameTick, quest);
       ctx.restore();
 
       // Dim-lights vignette: dark overlay with a hole around the player
