@@ -49,6 +49,9 @@ export default function Social({ userId, username, onBack }: SocialProps) {
   const [searching, setSearching] = useState(false);
   const [reportTarget, setReportTarget] = useState<{ id: string; name: string } | null>(null);
   const [reportReason, setReportReason] = useState("");
+  const [reportEvidence, setReportEvidence] = useState<File | null>(null);
+  const [reportEvidencePreview, setReportEvidencePreview] = useState<string | null>(null);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
   const [showNewGroup, setShowNewGroup] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupSelected, setGroupSelected] = useState<Set<string>>(new Set());
@@ -304,24 +307,64 @@ export default function Social({ userId, username, onBack }: SocialProps) {
     }
   };
 
+  const closeReport = () => {
+    setReportTarget(null);
+    setReportReason("");
+    setReportEvidence(null);
+    if (reportEvidencePreview) URL.revokeObjectURL(reportEvidencePreview);
+    setReportEvidencePreview(null);
+    setReportSubmitting(false);
+  };
+
+  const pickEvidence = (file: File | null) => {
+    if (reportEvidencePreview) URL.revokeObjectURL(reportEvidencePreview);
+    if (!file) {
+      setReportEvidence(null);
+      setReportEvidencePreview(null);
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Evidence must be an image", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image too large (max 5MB)", variant: "destructive" });
+      return;
+    }
+    setReportEvidence(file);
+    setReportEvidencePreview(URL.createObjectURL(file));
+  };
+
   const submitReport = async () => {
-    if (!reportTarget || !reportReason.trim()) return;
+    if (!reportTarget || !reportReason.trim() || !reportEvidence) return;
+    setReportSubmitting(true);
+    const ext = reportEvidence.name.split(".").pop()?.toLowerCase() || "png";
+    const path = `${userId}/${reportTarget.id}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("report-evidence")
+      .upload(path, reportEvidence, { contentType: reportEvidence.type, upsert: false });
+    if (upErr) {
+      toast({ title: "Couldn't upload evidence", description: upErr.message, variant: "destructive" });
+      setReportSubmitting(false);
+      return;
+    }
     const { error } = await supabase.from("user_reports").insert({
       reporter_id: userId,
       reported_id: reportTarget.id,
       reason: reportReason.trim().slice(0, 500),
+      evidence_url: path,
     });
     if (error) {
       toast({ title: "Couldn't submit report", description: error.message, variant: "destructive" });
-    } else {
-      toast({
-        title: "Report submitted",
-        description: "Repeat reports auto-block the user. Thank you for keeping the realm safe. 🛡️",
-      });
-      loadBlocks();
+      setReportSubmitting(false);
+      return;
     }
-    setReportTarget(null);
-    setReportReason("");
+    toast({
+      title: "Report submitted",
+      description: "Evidence received. Repeat reports auto-block the user. 🛡️",
+    });
+    loadBlocks();
+    closeReport();
   };
 
   const blockUser = async (id: string) => {
@@ -448,10 +491,11 @@ export default function Social({ userId, username, onBack }: SocialProps) {
             target={reportTarget}
             reason={reportReason}
             setReason={setReportReason}
-            onCancel={() => {
-              setReportTarget(null);
-              setReportReason("");
-            }}
+            evidence={reportEvidence}
+            evidencePreview={reportEvidencePreview}
+            onPickEvidence={pickEvidence}
+            submitting={reportSubmitting}
+            onCancel={closeReport}
             onSubmit={submitReport}
           />
         )}
@@ -733,10 +777,11 @@ export default function Social({ userId, username, onBack }: SocialProps) {
           target={reportTarget}
           reason={reportReason}
           setReason={setReportReason}
-          onCancel={() => {
-            setReportTarget(null);
-            setReportReason("");
-          }}
+          evidence={reportEvidence}
+          evidencePreview={reportEvidencePreview}
+          onPickEvidence={pickEvidence}
+          submitting={reportSubmitting}
+          onCancel={closeReport}
           onSubmit={submitReport}
         />
       )}
@@ -748,45 +793,85 @@ function ReportModal({
   target,
   reason,
   setReason,
+  evidence,
+  evidencePreview,
+  onPickEvidence,
+  submitting,
   onCancel,
   onSubmit,
 }: {
   target: { id: string; name: string };
   reason: string;
   setReason: (v: string) => void;
+  evidence: File | null;
+  evidencePreview: string | null;
+  onPickEvidence: (file: File | null) => void;
+  submitting: boolean;
   onCancel: () => void;
   onSubmit: () => void;
 }) {
+  const canSubmit = !!reason.trim() && !!evidence && !submitting;
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="card-illustrated w-full max-w-md p-5">
         <h3 className="font-display text-lg mb-1">Report {target.name} 🚩</h3>
         <p className="text-xs text-muted-foreground mb-3">
-          After 3 reports against the same user from you, they're auto-blocked. After 5 different reporters, they're
-          flagged for moderator review.
+          A screenshot is required as evidence. After 3 reports from you against the same user, they're auto-blocked.
+          After 5 different reporters, they're flagged for moderator review. False reports may result in your own
+          account being penalized.
         </p>
         <textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           maxLength={500}
-          rows={4}
+          rows={3}
           placeholder="What happened?"
           className="w-full px-3 py-2 rounded-xl bg-secondary/60 border border-border focus:border-primary outline-none text-sm resize-none"
         />
         <p className="text-[10px] text-muted-foreground text-right mt-1">{reason.length}/500</p>
-        <div className="flex gap-2 mt-3">
+
+        <div className="mt-3">
+          <p className="text-xs font-display mb-1">
+            Evidence (screenshot, required) <span className="text-destructive">*</span>
+          </p>
+          {evidencePreview ? (
+            <div className="relative rounded-xl overflow-hidden border border-border">
+              <img src={evidencePreview} alt="Evidence preview" className="w-full max-h-48 object-contain bg-black/30" />
+              <button
+                type="button"
+                onClick={() => onPickEvidence(null)}
+                className="absolute top-1 right-1 px-2 py-1 rounded-lg bg-background/80 border border-border text-xs"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <label className="block w-full px-3 py-4 rounded-xl bg-secondary/60 border border-dashed border-border hover:border-primary/40 cursor-pointer text-center text-xs text-muted-foreground">
+              📎 Tap to attach a screenshot (PNG/JPG, max 5MB)
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => onPickEvidence(e.target.files?.[0] || null)}
+              />
+            </label>
+          )}
+        </div>
+
+        <div className="flex gap-2 mt-4">
           <button
             onClick={onCancel}
-            className="flex-1 px-3 py-2 rounded-xl bg-secondary/60 border border-border text-sm font-display"
+            disabled={submitting}
+            className="flex-1 px-3 py-2 rounded-xl bg-secondary/60 border border-border text-sm font-display disabled:opacity-40"
           >
             Cancel
           </button>
           <button
             onClick={onSubmit}
-            disabled={!reason.trim()}
+            disabled={!canSubmit}
             className="flex-1 px-3 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm font-display disabled:opacity-40"
           >
-            Submit Report
+            {submitting ? "Submitting…" : "Submit Report"}
           </button>
         </div>
       </div>
