@@ -6,11 +6,24 @@ import {
   type ChapterModifier,
   type FestivalQuest,
 } from "@/lib/festivalQuests";
+import chibiGryffindor from "@/assets/chibi/chibi_gryffindor.png";
+import chibiSlytherin from "@/assets/chibi/chibi_slytherin.png";
+import chibiRavenclaw from "@/assets/chibi/chibi_ravenclaw.png";
+import chibiHufflepuff from "@/assets/chibi/chibi_hufflepuff.png";
+
+const CHIBI_BY_HOUSE: Record<string, string> = {
+  gryffindor: chibiGryffindor,
+  slytherin: chibiSlytherin,
+  ravenclaw: chibiRavenclaw,
+  hufflepuff: chibiHufflepuff,
+};
 
 interface FestivalQuestCanvasProps {
   quest: FestivalQuest;
   /** 0-indexed level within the quest (0..14). */
   levelIndex: number;
+  /** Player's selected Hogwarts house — picks the chibi avatar to render. */
+  houseId?: string | null;
   onComplete: () => void;
   onExit: () => void;
 }
