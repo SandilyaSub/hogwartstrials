@@ -61,8 +61,8 @@ const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: Festival
     const PLAYER_W = 28;
     const PLAYER_H = 36;
     const BASE_GRAVITY = 0.55;
-    const JUMP_POWER = -11.5;
-    const SPEED = 4.2;
+    const JUMP_POWER = -12.5;
+    const SPEED = 4.6;
 
     // Modifier-driven physics tweaks
     const friction = hasMod("ice_floor") ? 0.96 : 0.8; // slippery if icy
