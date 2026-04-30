@@ -272,10 +272,7 @@ const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: Festival
       ctx.translate(-cameraX, 0);
 
       for (const p of platforms) {
-        ctx.fillStyle = quest.groundColor;
-        ctx.fillRect(p.x, p.y, p.w, p.h);
-        ctx.fillStyle = quest.primaryColor;
-        ctx.fillRect(p.x, p.y, p.w, 3);
+        drawThemedPlatform(ctx, p, quest, frameTick);
       }
 
       // Collectibles
