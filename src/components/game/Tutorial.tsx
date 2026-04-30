@@ -81,6 +81,12 @@ const TUTORIAL_STEPS: TutorialStep[] = [
     visual: "💖 💙 🐍 💛 🖤",
   },
   {
+    title: "Festival Quests 🎃",
+    description: "Special seasonal campaigns appear throughout the year — Halloween, Yule Ball, Quidditch World Cup, and more! Each festival is a 15-level mini-adventure with its own chibi hero and a unique reward at the final level. Collect them all in the Festival Rewards gallery!",
+    emoji: "🎉",
+    visual: "🎃 ❄️ 🏆 🎁 ✨",
+  },
+  {
     title: "House Cup 🏆",
     description: "Every coin you earn adds points to your House on the weekly leaderboard! Compete with Gryffindor, Slytherin, Ravenclaw, and Hufflepuff. Winners are crowned each week — make your House proud!",
     emoji: "🏆",
