@@ -347,9 +347,9 @@ const FestivalQuestCanvas = ({ quest, levelIndex, houseId, onComplete, onExit }:
         });
       }
 
-      // Player sprite — chibi wizard with cape, hat & wand
+      // Player sprite — house-themed chibi avatar (image), with subtle bob
       const bob = Math.abs(vx) > 0.3 ? Math.sin(frameTick * 0.3) * 1.5 : 0;
-      drawWizard(ctx, px, py, PLAYER_W, PLAYER_H, facing, gravitySign, bob, frameTick, quest);
+      drawChibi(ctx, chibiImg, px, py, PLAYER_W, PLAYER_H, facing, gravitySign, bob, quest);
 
       ctx.restore();
 
