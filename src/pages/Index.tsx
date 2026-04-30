@@ -258,6 +258,15 @@ const Index = () => {
         />
       );
 
+    case "social":
+      return (
+        <Social
+          userId={user?.id || ""}
+          username={profile.username}
+          onBack={() => setScreen("worldmap")}
+        />
+      );
+
     case "levelIntro":
       return (
         <LevelIntro
