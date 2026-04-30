@@ -133,6 +133,11 @@ const WorldMap = ({ profile, onStartLevel, onOpenPetStore, onOpenShop, onOpenFee
                   🏪
                 </button>
                )}
+              {onOpenSocial && (
+                <button onClick={onOpenSocial} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm" title="Owl Post">
+                  🦉
+                </button>
+              )}
               {onOpenFeedback && (
                 <button onClick={onOpenFeedback} className="p-2.5 rounded-xl bg-secondary/60 border border-border hover:border-primary/30 transition-all duration-300 text-foreground/60 hover:text-foreground font-display text-sm">
                   📝
