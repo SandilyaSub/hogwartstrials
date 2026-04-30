@@ -6,11 +6,24 @@ import {
   type ChapterModifier,
   type FestivalQuest,
 } from "@/lib/festivalQuests";
+import chibiGryffindor from "@/assets/chibi/chibi_gryffindor.png";
+import chibiSlytherin from "@/assets/chibi/chibi_slytherin.png";
+import chibiRavenclaw from "@/assets/chibi/chibi_ravenclaw.png";
+import chibiHufflepuff from "@/assets/chibi/chibi_hufflepuff.png";
+
+const CHIBI_BY_HOUSE: Record<string, string> = {
+  gryffindor: chibiGryffindor,
+  slytherin: chibiSlytherin,
+  ravenclaw: chibiRavenclaw,
+  hufflepuff: chibiHufflepuff,
+};
 
 interface FestivalQuestCanvasProps {
   quest: FestivalQuest;
   /** 0-indexed level within the quest (0..14). */
   levelIndex: number;
+  /** Player's selected Hogwarts house — picks the chibi avatar to render. */
+  houseId?: string | null;
   onComplete: () => void;
   onExit: () => void;
 }
@@ -30,7 +43,7 @@ interface Collectible { x: number; y: number; collected: boolean; bob: number; }
 // Self-contained mini-platformer for festival side-quests. Each quest is a
 // 15-level mini-campaign; the chapter rotates through the quest's pool and
 // difficulty (platforms / targets / time) scales with the level index.
-const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: FestivalQuestCanvasProps) => {
+const FestivalQuestCanvas = ({ quest, levelIndex, houseId, onComplete, onExit }: FestivalQuestCanvasProps) => {
   const { chapter, chapterIndex, totalLevels } = useMemo(
     () => getQuestLevelChapter(quest, levelIndex),
     [quest, levelIndex]
@@ -55,6 +68,11 @@ const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: Festival
     const ctx = canvas.getContext("2d")!;
     const W = (canvas.width = canvas.offsetWidth);
     const H = (canvas.height = canvas.offsetHeight);
+
+    // Load chibi avatar for the player's house (falls back to Gryffindor).
+    const chibiSrc = (houseId && CHIBI_BY_HOUSE[houseId]) || chibiGryffindor;
+    const chibiImg = new Image();
+    chibiImg.src = chibiSrc;
 
     // ---------- Tunable physics ----------
     const GROUND_Y = H - 60;
@@ -329,9 +347,9 @@ const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: Festival
         });
       }
 
-      // Player sprite — chibi wizard with cape, hat & wand
+      // Player sprite — house-themed chibi avatar (image), with subtle bob
       const bob = Math.abs(vx) > 0.3 ? Math.sin(frameTick * 0.3) * 1.5 : 0;
-      drawWizard(ctx, px, py, PLAYER_W, PLAYER_H, facing, gravitySign, bob, frameTick, quest);
+      drawChibi(ctx, chibiImg, px, py, PLAYER_W, PLAYER_H, facing, gravitySign, bob, quest);
 
       ctx.restore();
 
@@ -646,7 +664,48 @@ function drawThemedPlatform(
   }
 }
 
-// ---------- Chibi wizard player ----------
+// ---------- Chibi avatar (house-themed image) ----------
+function drawChibi(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  px: number, py: number,
+  W: number, H: number,
+  facing: number, gravitySign: number,
+  bob: number,
+  quest: FestivalQuest,
+) {
+  // Render at ~1.8x player hitbox so the big chibi head sits above the feet
+  const drawW = W * 2;
+  const drawH = H * 2;
+  const cx = px + W / 2;
+  const feetY = py + H;
+
+  ctx.save();
+  // Soft shadow under the feet
+  ctx.globalAlpha = 0.28;
+  ctx.fillStyle = "#000";
+  ctx.beginPath();
+  ctx.ellipse(cx, feetY + 2, W * 0.7, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  if (!img.complete || !img.naturalWidth) {
+    // Image still loading — draw a quick placeholder dot
+    ctx.fillStyle = quest.primaryColor;
+    ctx.fillRect(px, py, W, H);
+    return;
+  }
+
+  ctx.save();
+  ctx.translate(cx, feetY + bob);
+  ctx.scale(facing, gravitySign);
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(img, -drawW / 2, -drawH, drawW, drawH);
+  ctx.restore();
+}
+
+// ---------- Chibi wizard player (legacy procedural sprite, kept for fallback) ----------
 function drawWizard(
   ctx: CanvasRenderingContext2D,
   px: number, py: number,

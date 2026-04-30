@@ -342,6 +342,7 @@ const Index = () => {
           key={`${quest.id}-${activeFestivalLevel}`}
           quest={quest}
           levelIndex={activeFestivalLevel}
+          houseId={profile.house?.id ?? null}
           onComplete={() => {
             const next = advanceFestivalLevel(quest.id, activeFestivalLevel, LEVELS_PER_QUEST);
             if (next === null) {
