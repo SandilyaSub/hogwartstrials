@@ -664,7 +664,48 @@ function drawThemedPlatform(
   }
 }
 
-// ---------- Chibi wizard player ----------
+// ---------- Chibi avatar (house-themed image) ----------
+function drawChibi(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  px: number, py: number,
+  W: number, H: number,
+  facing: number, gravitySign: number,
+  bob: number,
+  quest: FestivalQuest,
+) {
+  // Render at ~1.8x player hitbox so the big chibi head sits above the feet
+  const drawW = W * 2;
+  const drawH = H * 2;
+  const cx = px + W / 2;
+  const feetY = py + H;
+
+  ctx.save();
+  // Soft shadow under the feet
+  ctx.globalAlpha = 0.28;
+  ctx.fillStyle = "#000";
+  ctx.beginPath();
+  ctx.ellipse(cx, feetY + 2, W * 0.7, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  if (!img.complete || !img.naturalWidth) {
+    // Image still loading — draw a quick placeholder dot
+    ctx.fillStyle = quest.primaryColor;
+    ctx.fillRect(px, py, W, H);
+    return;
+  }
+
+  ctx.save();
+  ctx.translate(cx, feetY + bob);
+  ctx.scale(facing, gravitySign);
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(img, -drawW / 2, -drawH, drawW, drawH);
+  ctx.restore();
+}
+
+// ---------- Chibi wizard player (legacy procedural sprite, kept for fallback) ----------
 function drawWizard(
   ctx: CanvasRenderingContext2D,
   px: number, py: number,
