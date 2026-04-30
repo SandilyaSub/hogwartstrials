@@ -491,10 +491,11 @@ export default function Social({ userId, username, onBack }: SocialProps) {
             target={reportTarget}
             reason={reportReason}
             setReason={setReportReason}
-            onCancel={() => {
-              setReportTarget(null);
-              setReportReason("");
-            }}
+            evidence={reportEvidence}
+            evidencePreview={reportEvidencePreview}
+            onPickEvidence={pickEvidence}
+            submitting={reportSubmitting}
+            onCancel={closeReport}
             onSubmit={submitReport}
           />
         )}
