@@ -136,8 +136,7 @@ const Index = () => {
       return (
         <TitleScreen
           hasSave={hasSave}
-          onNewGame={() => { resetGame(); setScreen("profile"); }}
-          onContinue={() => setScreen("worldmap")}
+          onContinue={() => setScreen(hasSave ? "worldmap" : "profile")}
           onSignOut={signOut}
         />
       );
