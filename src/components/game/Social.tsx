@@ -307,24 +307,64 @@ export default function Social({ userId, username, onBack }: SocialProps) {
     }
   };
 
+  const closeReport = () => {
+    setReportTarget(null);
+    setReportReason("");
+    setReportEvidence(null);
+    if (reportEvidencePreview) URL.revokeObjectURL(reportEvidencePreview);
+    setReportEvidencePreview(null);
+    setReportSubmitting(false);
+  };
+
+  const pickEvidence = (file: File | null) => {
+    if (reportEvidencePreview) URL.revokeObjectURL(reportEvidencePreview);
+    if (!file) {
+      setReportEvidence(null);
+      setReportEvidencePreview(null);
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Evidence must be an image", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image too large (max 5MB)", variant: "destructive" });
+      return;
+    }
+    setReportEvidence(file);
+    setReportEvidencePreview(URL.createObjectURL(file));
+  };
+
   const submitReport = async () => {
-    if (!reportTarget || !reportReason.trim()) return;
+    if (!reportTarget || !reportReason.trim() || !reportEvidence) return;
+    setReportSubmitting(true);
+    const ext = reportEvidence.name.split(".").pop()?.toLowerCase() || "png";
+    const path = `${userId}/${reportTarget.id}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("report-evidence")
+      .upload(path, reportEvidence, { contentType: reportEvidence.type, upsert: false });
+    if (upErr) {
+      toast({ title: "Couldn't upload evidence", description: upErr.message, variant: "destructive" });
+      setReportSubmitting(false);
+      return;
+    }
     const { error } = await supabase.from("user_reports").insert({
       reporter_id: userId,
       reported_id: reportTarget.id,
       reason: reportReason.trim().slice(0, 500),
+      evidence_url: path,
     });
     if (error) {
       toast({ title: "Couldn't submit report", description: error.message, variant: "destructive" });
-    } else {
-      toast({
-        title: "Report submitted",
-        description: "Repeat reports auto-block the user. Thank you for keeping the realm safe. 🛡️",
-      });
-      loadBlocks();
+      setReportSubmitting(false);
+      return;
     }
-    setReportTarget(null);
-    setReportReason("");
+    toast({
+      title: "Report submitted",
+      description: "Evidence received. Repeat reports auto-block the user. 🛡️",
+    });
+    loadBlocks();
+    closeReport();
   };
 
   const blockUser = async (id: string) => {
