@@ -43,7 +43,7 @@ interface Collectible { x: number; y: number; collected: boolean; bob: number; }
 // Self-contained mini-platformer for festival side-quests. Each quest is a
 // 15-level mini-campaign; the chapter rotates through the quest's pool and
 // difficulty (platforms / targets / time) scales with the level index.
-const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: FestivalQuestCanvasProps) => {
+const FestivalQuestCanvas = ({ quest, levelIndex, houseId, onComplete, onExit }: FestivalQuestCanvasProps) => {
   const { chapter, chapterIndex, totalLevels } = useMemo(
     () => getQuestLevelChapter(quest, levelIndex),
     [quest, levelIndex]
