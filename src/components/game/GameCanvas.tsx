@@ -74,11 +74,27 @@ import petBasiliskImg from "@/assets/pets/basilisk.png";
 import petOccamyImg from "@/assets/pets/occamy.png";
 import petGrimImg from "@/assets/pets/grim.png";
 
+// Festival pets
+import petFestSpectreCatImg from "@/assets/festivals/pet_spectre_cat.png";
+import petFestYuleFoxImg from "@/assets/festivals/pet_yule_fox.png";
+import petFestDiyaPeacockImg from "@/assets/festivals/pet_diya_peacock.png";
+import petFestAmourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
+import petFestSunPhoenixImg from "@/assets/festivals/pet_sun_phoenix.png";
+import petFestSeashellTurtleImg from "@/assets/festivals/pet_seashell_turtle.png";
+import petFestNewYearOwlImg from "@/assets/festivals/pet_new_year_owl.png";
+
 const PET_IMAGES: Record<string, string> = {
   owl: petOwlImg, cat: petCatImg, toad: petToadImg, rat: petRatImg,
   phoenix: petPhoenixImg, hippogriff: petHippogriffImg, thestral: petThestralImg,
   dragon: petDragonImg, niffler: petNifflerImg, basilisk: petBasiliskImg,
   occamy: petOccamyImg, grim: petGrimImg,
+  festival_spectre_cat: petFestSpectreCatImg,
+  festival_yule_fox: petFestYuleFoxImg,
+  festival_diya_peacock: petFestDiyaPeacockImg,
+  festival_amour_fawn: petFestAmourFawnImg,
+  festival_sun_phoenix: petFestSunPhoenixImg,
+  festival_seashell_turtle: petFestSeashellTurtleImg,
+  festival_new_year_owl: petFestNewYearOwlImg,
 };
 
 const CHARACTER_IMAGES: Record<string, string> = {
