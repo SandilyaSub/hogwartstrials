@@ -83,10 +83,17 @@ const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: Festival
       { x: 0, y: GROUND_Y, w: W * 4, h: 60, baseX: 0, driftAmp: 0, driftSpeed: 0 },
     ];
     let x = 80;
+    let prevY = GROUND_Y;
     for (let i = 0; i < chapter.platformCount; i++) {
-      x += 110 + rand() * 90;
-      const py = GROUND_Y - 80 - rand() * 200;
-      const pw = 70 + rand() * 90;
+      // Horizontal gap kept within jump range (~95px max horizontal travel at jump apex)
+      x += 70 + rand() * 55;
+      // Vertical step relative to previous platform, capped so the player can always reach it
+      const maxRise = 70;   // safely under jump apex (~120px)
+      const maxDrop = 110;
+      const dy = (rand() * (maxRise + maxDrop)) - maxRise; // -maxRise..+maxDrop
+      let py = Math.min(GROUND_Y - 60, Math.max(120, prevY + dy));
+      prevY = py;
+      const pw = 90 + rand() * 80;
       // Roughly 1-in-3 platforms drift horizontally if the modifier is on.
       const drifts = movingPlatformsEnabled && rand() < 0.4;
       platforms.push({
