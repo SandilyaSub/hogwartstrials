@@ -64,6 +64,7 @@ const TitleScreen = ({ onContinue, hasSave, onSignOut }: TitleScreenProps) => {
               ✨ Begin Adventure
             </button>
           )}
+        </div>
 
         {/* Stats */}
         <div className="flex gap-8 justify-center text-foreground/40 text-sm font-display animate-slide-up" style={{ animationDelay: "0.4s" }}>
