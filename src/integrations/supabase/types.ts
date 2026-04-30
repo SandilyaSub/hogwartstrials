@@ -336,6 +336,7 @@ export type Database = {
       user_reports: {
         Row: {
           created_at: string
+          evidence_url: string
           id: string
           reason: string
           reported_id: string
@@ -343,6 +344,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          evidence_url: string
           id?: string
           reason: string
           reported_id: string
@@ -350,6 +352,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          evidence_url?: string
           id?: string
           reason?: string
           reported_id?: string
