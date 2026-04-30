@@ -3,13 +3,12 @@ import heroBg from "@/assets/hero-bg.jpg";
 import { useTheme } from "@/hooks/useTheme";
 
 interface TitleScreenProps {
-  onNewGame: () => void;
   onContinue: () => void;
   hasSave: boolean;
   onSignOut?: () => void;
 }
 
-const TitleScreen = ({ onNewGame, onContinue, hasSave, onSignOut }: TitleScreenProps) => {
+const TitleScreen = ({ onContinue, hasSave, onSignOut }: TitleScreenProps) => {
   const { theme, toggleTheme } = useTheme();
   const handleAction = (action: () => void) => {
     action();
@@ -57,12 +56,14 @@ const TitleScreen = ({ onNewGame, onContinue, hasSave, onSignOut }: TitleScreenP
               ✨ Continue Adventure
             </button>
           )}
-          <button
-            onClick={() => handleAction(onNewGame)}
-            className="btn-storybook text-lg px-12 py-4 border-2 border-primary/40 text-primary hover:bg-primary/10 bg-card/50 backdrop-blur-sm"
-          >
-            📜 New Game
-          </button>
+          {!hasSave && (
+            <button
+              onClick={() => handleAction(onContinue)}
+              className="btn-storybook text-lg px-12 py-4 bg-primary text-primary-foreground animate-magic-pulse"
+            >
+              ✨ Begin Adventure
+            </button>
+          )}
         </div>
 
         {/* Stats */}
