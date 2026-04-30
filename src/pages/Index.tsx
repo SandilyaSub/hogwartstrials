@@ -24,6 +24,7 @@ import Tutorial from "@/components/game/Tutorial";
 import HouseLeaderboard from "@/components/game/HouseLeaderboard";
 import FestivalQuestCanvas from "@/components/game/FestivalQuestCanvas";
 import FestivalRewardsGallery from "@/components/game/FestivalRewardsGallery";
+import Social from "@/components/game/Social";
 import { getFestivalById, getYearlyChapter, LEVELS_PER_QUEST } from "@/lib/festivalQuests";
 
 const Index = () => {
@@ -175,6 +176,7 @@ const Index = () => {
             setScreen("festivalQuest");
           }}
           onOpenFestivalRewards={() => setScreen("festivalRewards")}
+          onOpenSocial={() => setScreen("social")}
           onResetGame={resetGame}
         />
       );
@@ -250,6 +252,15 @@ const Index = () => {
     case "feedback":
       return (
         <Feedback
+          userId={user?.id || ""}
+          username={profile.username}
+          onBack={() => setScreen("worldmap")}
+        />
+      );
+
+    case "social":
+      return (
+        <Social
           userId={user?.id || ""}
           username={profile.username}
           onBack={() => setScreen("worldmap")}
