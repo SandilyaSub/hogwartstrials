@@ -537,17 +537,19 @@ export function getQuestLevelChapter(
   const chapterIndex = (yearly.index + levelIndex) % quest.chapters.length;
   const base = quest.chapters[chapterIndex];
 
-  // Difficulty curve: t goes 0 → 1 across the 15 levels.
+  // Difficulty curve: t goes 0 → 1 across the 15 levels. Slightly stiffer than
+  // before — a bit more to collect, tighter timer, baseline target bump so even
+  // level 1 isn't trivial.
   const t = levelIndex / Math.max(1, LEVELS_PER_QUEST - 1);
-  const platformBoost = Math.round(t * 8);          // up to +8 platforms
-  const targetBoost = Math.round(t * 6);            // up to +6 items
-  const timeShrink = base.timeLimit > 0 ? Math.round(t * 15) : 0; // up to -15s
+  const platformBoost = Math.round(t * 10);         // up to +10 platforms
+  const targetBoost = 2 + Math.round(t * 8);        // +2 baseline, up to +10 items
+  const timeShrink = base.timeLimit > 0 ? 5 + Math.round(t * 22) : 0; // -5..-27s
 
   const scaled: FestivalChapter = {
     ...base,
     platformCount: base.platformCount + platformBoost,
     objective: { ...base.objective, target: base.objective.target + targetBoost },
-    timeLimit: base.timeLimit > 0 ? Math.max(45, base.timeLimit - timeShrink) : 0,
+    timeLimit: base.timeLimit > 0 ? Math.max(40, base.timeLimit - timeShrink) : 0,
   };
 
   return {
