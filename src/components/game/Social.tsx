@@ -777,10 +777,11 @@ export default function Social({ userId, username, onBack }: SocialProps) {
           target={reportTarget}
           reason={reportReason}
           setReason={setReportReason}
-          onCancel={() => {
-            setReportTarget(null);
-            setReportReason("");
-          }}
+          evidence={reportEvidence}
+          evidencePreview={reportEvidencePreview}
+          onPickEvidence={pickEvidence}
+          submitting={reportSubmitting}
+          onCancel={closeReport}
           onSubmit={submitReport}
         />
       )}
@@ -792,45 +793,85 @@ function ReportModal({
   target,
   reason,
   setReason,
+  evidence,
+  evidencePreview,
+  onPickEvidence,
+  submitting,
   onCancel,
   onSubmit,
 }: {
   target: { id: string; name: string };
   reason: string;
   setReason: (v: string) => void;
+  evidence: File | null;
+  evidencePreview: string | null;
+  onPickEvidence: (file: File | null) => void;
+  submitting: boolean;
   onCancel: () => void;
   onSubmit: () => void;
 }) {
+  const canSubmit = !!reason.trim() && !!evidence && !submitting;
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="card-illustrated w-full max-w-md p-5">
         <h3 className="font-display text-lg mb-1">Report {target.name} 🚩</h3>
         <p className="text-xs text-muted-foreground mb-3">
-          After 3 reports against the same user from you, they're auto-blocked. After 5 different reporters, they're
-          flagged for moderator review.
+          A screenshot is required as evidence. After 3 reports from you against the same user, they're auto-blocked.
+          After 5 different reporters, they're flagged for moderator review. False reports may result in your own
+          account being penalized.
         </p>
         <textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           maxLength={500}
-          rows={4}
+          rows={3}
           placeholder="What happened?"
           className="w-full px-3 py-2 rounded-xl bg-secondary/60 border border-border focus:border-primary outline-none text-sm resize-none"
         />
         <p className="text-[10px] text-muted-foreground text-right mt-1">{reason.length}/500</p>
-        <div className="flex gap-2 mt-3">
+
+        <div className="mt-3">
+          <p className="text-xs font-display mb-1">
+            Evidence (screenshot, required) <span className="text-destructive">*</span>
+          </p>
+          {evidencePreview ? (
+            <div className="relative rounded-xl overflow-hidden border border-border">
+              <img src={evidencePreview} alt="Evidence preview" className="w-full max-h-48 object-contain bg-black/30" />
+              <button
+                type="button"
+                onClick={() => onPickEvidence(null)}
+                className="absolute top-1 right-1 px-2 py-1 rounded-lg bg-background/80 border border-border text-xs"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <label className="block w-full px-3 py-4 rounded-xl bg-secondary/60 border border-dashed border-border hover:border-primary/40 cursor-pointer text-center text-xs text-muted-foreground">
+              📎 Tap to attach a screenshot (PNG/JPG, max 5MB)
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => onPickEvidence(e.target.files?.[0] || null)}
+              />
+            </label>
+          )}
+        </div>
+
+        <div className="flex gap-2 mt-4">
           <button
             onClick={onCancel}
-            className="flex-1 px-3 py-2 rounded-xl bg-secondary/60 border border-border text-sm font-display"
+            disabled={submitting}
+            className="flex-1 px-3 py-2 rounded-xl bg-secondary/60 border border-border text-sm font-display disabled:opacity-40"
           >
             Cancel
           </button>
           <button
             onClick={onSubmit}
-            disabled={!reason.trim()}
+            disabled={!canSubmit}
             className="flex-1 px-3 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm font-display disabled:opacity-40"
           >
-            Submit Report
+            {submitting ? "Submitting…" : "Submit Report"}
           </button>
         </div>
       </div>
