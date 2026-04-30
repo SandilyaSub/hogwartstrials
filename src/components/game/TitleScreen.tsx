@@ -56,13 +56,14 @@ const TitleScreen = ({ onContinue, hasSave, onSignOut }: TitleScreenProps) => {
               ✨ Continue Adventure
             </button>
           )}
-          <button
-            onClick={() => handleAction(onNewGame)}
-            className="btn-storybook text-lg px-12 py-4 border-2 border-primary/40 text-primary hover:bg-primary/10 bg-card/50 backdrop-blur-sm"
-          >
-            📜 New Game
-          </button>
-        </div>
+          {!hasSave && (
+            <button
+              onClick={() => handleAction(onContinue)}
+              className="btn-storybook text-lg px-12 py-4 bg-primary text-primary-foreground animate-magic-pulse"
+            >
+              ✨ Begin Adventure
+            </button>
+          )}
 
         {/* Stats */}
         <div className="flex gap-8 justify-center text-foreground/40 text-sm font-display animate-slide-up" style={{ animationDelay: "0.4s" }}>
