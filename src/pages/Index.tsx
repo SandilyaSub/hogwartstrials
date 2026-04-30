@@ -176,6 +176,7 @@ const Index = () => {
             setScreen("festivalQuest");
           }}
           onOpenFestivalRewards={() => setScreen("festivalRewards")}
+          onOpenSocial={() => setScreen("social")}
           onResetGame={resetGame}
         />
       );
