@@ -102,8 +102,8 @@ const FestivalQuestCanvas = ({ quest, levelIndex, onComplete, onExit }: Festival
         w: pw,
         h: 14,
         baseX: x,
-        driftAmp: drifts ? 30 + rand() * 50 : 0,
-        driftSpeed: drifts ? 0.01 + rand() * 0.02 : 0,
+        driftAmp: drifts ? 20 + rand() * 30 : 0,
+        driftSpeed: drifts ? 0.008 + rand() * 0.014 : 0,
       });
     }
     const LEVEL_END = x + 200;
