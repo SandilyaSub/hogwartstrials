@@ -30,6 +30,9 @@ import spectreCatImg from "@/assets/festivals/pet_spectre_cat.png";
 import yuleFoxImg from "@/assets/festivals/pet_yule_fox.png";
 import diyaPeacockImg from "@/assets/festivals/pet_diya_peacock.png";
 import amourFawnImg from "@/assets/festivals/pet_amour_fawn.png";
+import seashellTurtleImg from "@/assets/festivals/pet_seashell_turtle.png";
+import sunPhoenixImg from "@/assets/festivals/pet_sun_phoenix.png";
+import newYearOwlImg from "@/assets/festivals/pet_new_year_owl.png";
 
 import world1Img from "@/assets/worlds/world1_philosopher.png";
 import world2Img from "@/assets/worlds/world2_chamber.png";
