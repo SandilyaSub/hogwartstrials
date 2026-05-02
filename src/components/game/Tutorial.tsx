@@ -22,7 +22,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   },
   {
     title: "Movement Controls 🏃",
-    description: "Use Arrow Keys or W/A/S/D to move left and right. Press Space, W, or Up Arrow to jump. On mobile, tap the left side to go left, right side to go right, and the top half to jump!",
+    description: "Use Arrow Keys or W/A/S/D to move left and right. Press Space, W, or Up Arrow to jump. On mobile, touch and drag anywhere on the left half of the screen to use the floating joystick, and tap the JUMP button on the right to leap!",
     emoji: "⌨️",
     visual: "⬅️ ➡️ ⬆️ [SPACE]",
   },
