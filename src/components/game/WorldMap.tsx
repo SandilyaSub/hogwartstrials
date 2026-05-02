@@ -62,6 +62,9 @@ const PET_IMAGES: Record<string, string> = {
   festival_yule_fox: yuleFoxImg,
   festival_diya_peacock: diyaPeacockImg,
   festival_amour_fawn: amourFawnImg,
+  festival_seashell_turtle: seashellTurtleImg,
+  festival_sun_phoenix: sunPhoenixImg,
+  festival_new_year_owl: newYearOwlImg,
 };
 
 interface WorldMapProps {
